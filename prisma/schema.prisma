@@ -55,11 +55,17 @@ model VerificationToken {
 }
 
 model OrganizationOnUser {
-    userId         String
-    user           User               @relation(fields: [userId], references: [id])
-    organizationId String
-    organization   Organization       @relation(fields: [organizationId], references: [id])
-    status         OrganizationStatus
+    // this is needed for relations :D
+    id              String             @id @unique @default(cuid())
+    userId          String
+    user            User               @relation(fields: [userId], references: [id])
+    organizationId  String
+    organization    Organization       @relation(fields: [organizationId], references: [id])
+    status          OrganizationStatus
+    attributes      UserAttribute[]
+
+    createdPreznts  Preznt[] @relation("CreatedPreznts")
+    redeemedPreznts Preznt[] @relation("RedeemedPreznts")
 
     @@unique([userId, organizationId])
 }
@@ -67,9 +73,50 @@ model OrganizationOnUser {
 model Organization {
     id      String               @id @default(cuid())
     slug    String               @unique
-    private Boolean              @default(false)
+    private Boolean
     name    String
     users   OrganizationOnUser[]
+    preznts Preznt[]
+}
+
+model UserAttribute {
+    name   String
+    value  String
+    userId String
+    user   OrganizationOnUser? @relation(fields: [userId], references: [id])
+
+    @@unique([userId, name])
+}
+
+model UserAttributeAction {
+    id     String         @id @default(cuid())
+    action KeyValueAction
+    value  Float
+
+    prezntId String
+    preznt   Preznt @relation(fields: [prezntId], references: [id])
+}
+
+model Preznt {
+    id      String                @id @default(cuid())
+    actions UserAttributeAction[]
+    // will make it show up on the calendar
+    main    Boolean
+    expires DateTime
+
+    createdAt DateTime           @default(now())
+    creatorId String
+    creator   OrganizationOnUser @relation(name: "CreatedPreznts", fields: [creatorId], references: [id])
+
+    organizationId String
+    organization   Organization         @relation(fields: [organizationId], references: [id])
+    redeemedBy     OrganizationOnUser[] @relation("RedeemedPreznts")
+}
+
+enum KeyValueAction {
+    INCREMENT
+    DECREMENT
+    SET
 }
 
 enum OrganizationStatus {
