@@ -65,9 +65,11 @@ model OrganizationOnUser {
 }
 
 model Organization {
-    id    String               @id @default(cuid())
-    name  String
-    users OrganizationOnUser[]
+    id      String               @id @default(cuid())
+    slug    String               @unique
+    private Boolean              @default(false)
+    name    String
+    users   OrganizationOnUser[]
 }
 
 enum OrganizationStatus {
@@ -76,7 +78,3 @@ enum OrganizationStatus {
     MEMBER
 }
 
-model Example {
-    id    String @id @default(cuid())
-    field String
-}

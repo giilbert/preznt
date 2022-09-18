@@ -15,13 +15,13 @@ const Home: NextPage = () => {
         <title>preznt</title>
       </Head>
 
-      <main className="p-8 flex justify-center">
+      <div className="p-8 flex justify-center">
         {status === "loading" && <p>Loading..</p>}
         {status === "unauthenticated" && (
           <Button onClick={() => signIn("google")}>Sign in</Button>
         )}
         {status === "authenticated" && (
-          <div className="w-5/6 max-w-4xl">
+          <main className="w-5/6 max-w-4xl">
             <div className="flex gap-4 items-center">
               <Text>Signed in as {data.user?.name}</Text>
               <Button color="danger" onClick={() => signOut()}>
@@ -34,9 +34,9 @@ const Home: NextPage = () => {
 
             <hr className="my-4" />
             <CreateOrganization />
-          </div>
+          </main>
         )}
-      </main>
+      </div>
     </>
   );
 };

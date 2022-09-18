@@ -26,4 +26,28 @@ export const organizationRouter = t.router({
         },
       });
     }),
+
+  getBySlug: t.procedure
+    .input(
+      z.object({
+        slug: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      return ctx.prisma.organization.findFirst({
+        where: {
+          OR: [
+            {
+              private: false,
+              slug: input.slug,
+            },
+            {
+              users: {
+                some: { userId: ctx.session?.user?.id },
+              },
+            },
+          ],
+        },
+      });
+    }),
 });
