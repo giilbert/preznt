@@ -99,10 +99,11 @@ model UserAttributeAction {
 
 model Preznt {
     id      String                @id @default(cuid())
-    actions UserAttributeAction[]
+    name    String
     // will make it show up on the calendar
     main    Boolean
     expires DateTime
+    actions UserAttributeAction[]
 
     createdAt DateTime           @default(now())
     creatorId String
