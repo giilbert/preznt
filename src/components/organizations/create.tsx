@@ -3,15 +3,18 @@ import { createOrganizationSchema } from "@/schemas/organization";
 import { trpc } from "@/utils/trpc";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
+import { Text } from "@/components/ui";
 
 export const CreateOrganization: React.FC = () => {
   const {
     handleSubmit,
     register,
+    reset,
     formState: { errors },
   } = useZodForm({
     schema: createOrganizationSchema,
   });
+  const { organization } = trpc.useContext();
   const { mutateAsync } = trpc.organization.create.useMutation();
 
   return (
@@ -19,17 +22,23 @@ export const CreateOrganization: React.FC = () => {
       onSubmit={handleSubmit(async (data) => {
         console.log(data);
         await mutateAsync(data);
+        await organization.getAll.invalidate();
+        reset();
       })}
     >
-      <label htmlFor="organization-name">Organization Name</label>
+      <label htmlFor="organization-name" className="text-gray-100">
+        Organization Name
+      </label>
       <input
         {...register("name")}
         id="organization-name"
-        className="bg-neutral-200 px-3 py-2 ml-2"
+        className="bg-neutral-800 px-3 py-2 ml-2 text-gray-100 rounded"
       />
-      <p className="text-red-500">{errors.name?.message}</p>
+      <Text>{errors.name?.message}</Text>
 
-      <Button type="submit">Create Organization</Button>
+      <Button type="submit" className="mt-4">
+        Create Organization
+      </Button>
     </form>
   );
 };

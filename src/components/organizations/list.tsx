@@ -1,4 +1,5 @@
 import { trpc } from "@/utils/trpc";
+import { Text } from "../ui";
 
 export const OrganizationList: React.FC = () => {
   const {
@@ -14,9 +15,9 @@ export const OrganizationList: React.FC = () => {
 
   return (
     <div>
-      <h1 className="font-bold text-2xl">Joined organizations</h1>
+      <Text className="font-bold text-2xl">Joined organizations</Text>
       {organizations.map(({ organization }) => (
-        <p key={organization.id}>{organization.name}</p>
+        <Text key={organization.id}>- {organization.name}</Text>
       ))}
     </div>
   );

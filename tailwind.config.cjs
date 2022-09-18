@@ -10,7 +10,6 @@ module.exports = {
       fontFamily: {
         sans: ["Roboto", ...defaultTheme.fontFamily.sans],
       },
-
       colors: {
         background: { primary: "#171717", secondary: "#1d1d1d" },
         accent: {

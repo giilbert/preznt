@@ -4,6 +4,7 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import { trpc } from "@/utils/trpc";
 import { OrganizationList } from "@/components/organizations/list";
 import { CreateOrganization } from "@/components/organizations/create";
+import { Button, Text } from "@/components/ui";
 
 const Home: NextPage = () => {
   const { status, data } = useSession();
@@ -14,26 +15,18 @@ const Home: NextPage = () => {
         <title>preznt</title>
       </Head>
 
-      <main className="p-8">
+      <main className="p-8 flex justify-center">
         {status === "loading" && <p>Loading..</p>}
         {status === "unauthenticated" && (
-          <button
-            onClick={() => signIn("google")}
-            className="bg-green-500 px-4 py-2 cursor-pointer text-white hover:bg-green-600 font-black rounded"
-          >
-            Sign in
-          </button>
+          <Button onClick={() => signIn("google")}>Sign in</Button>
         )}
         {status === "authenticated" && (
-          <>
+          <div className="w-5/6 max-w-4xl">
             <div className="flex gap-4 items-center">
-              <p>Signed in as {data.user?.name}</p>
-              <button
-                onClick={() => signOut()}
-                className="bg-red-500 px-4 py-2 cursor-pointer text-white hover:bg-red-600 font-black rounded"
-              >
+              <Text>Signed in as {data.user?.name}</Text>
+              <Button color="danger" onClick={() => signOut()}>
                 Sign out
-              </button>
+              </Button>
             </div>
 
             <hr className="my-4" />
@@ -41,7 +34,7 @@ const Home: NextPage = () => {
 
             <hr className="my-4" />
             <CreateOrganization />
-          </>
+          </div>
         )}
       </main>
     </>
