@@ -23,7 +23,7 @@ const OrganizationPage: React.FC = () => {
         <Text>Id: {organization.id}</Text>
         <Text>Name: {organization.name}</Text>
         <Text>Slug: {organization.slug}</Text>
-        <Text>Private: {String(organization.private)}</Text>
+        <Text>Private: {organization.private ? "Yes" : "No"}</Text>
       </main>
     </div>
   );

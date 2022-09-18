@@ -14,4 +14,5 @@ export const createOrganizationSchema = z.object({
     .refine((slug) => !RESERVED_SLUGS.includes(slug), {
       message: "Slug is reserved.",
     }),
+  private: z.preprocess((a) => Boolean(a), z.boolean()),
 });

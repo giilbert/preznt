@@ -31,6 +31,7 @@ export const CreateOrganization: React.FC = () => {
         </label>
         <input
           {...register("name")}
+          autoComplete="off"
           id="organization-name"
           className="bg-neutral-800 px-3 py-2 text-gray-100 rounded"
         />
@@ -41,10 +42,23 @@ export const CreateOrganization: React.FC = () => {
         </label>
         <input
           {...register("slug")}
+          autoComplete="off"
           id="organization-slug"
           className="bg-neutral-800 px-3 py-2 text-gray-100 rounded"
         />
         <Text className="text-red-400">{errors.slug?.message}</Text>
+
+        <label htmlFor="private" className="text-gray-100">
+          Private
+        </label>
+        <input
+          {...register("private")}
+          type="checkbox"
+          autoComplete="off"
+          id="private"
+          className="bg-neutral-800 px-3 py-2 text-gray-100 rounded"
+        />
+        <Text className="text-red-400">{errors.private?.message}</Text>
 
         <Button type="submit" className="mt-4">
           Create Organization
