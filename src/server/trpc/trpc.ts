@@ -17,7 +17,8 @@ export const authedProcedure = t.procedure.use(({ ctx, next }) => {
     ctx: {
       ...ctx,
       // infers that `session` is non-nullable to downstream resolvers
-      session: { ...ctx.session, user: ctx.session.user },
+      // session: { ...ctx.session, user: ctx.session.user },
+      user: ctx.session.user,
     },
   });
 });

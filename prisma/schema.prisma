@@ -56,10 +56,10 @@ model VerificationToken {
 
 model OrganizationOnUser {
     userId         String
-    user           User         @relation(fields: [userId], references: [id])
+    user           User               @relation(fields: [userId], references: [id])
     organizationId String
-    organization   Organization @relation(fields: [organizationId], references: [id])
-    isAdmin        Boolean      @default(false)
+    organization   Organization       @relation(fields: [organizationId], references: [id])
+    status         OrganizationStatus
 
     @@unique([userId, organizationId])
 }
@@ -68,4 +68,15 @@ model Organization {
     id    String               @id @default(cuid())
     name  String
     users OrganizationOnUser[]
+}
+
+enum OrganizationStatus {
+    OWNER
+    ADMIN
+    MEMBER
+}
+
+model Example {
+    id    String @id @default(cuid())
+    field String
 }
