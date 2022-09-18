@@ -5,7 +5,7 @@ class CustomDocument extends Document {
     return (
       <Html lang="en">
         <Head />
-        <body>
+        <body className="bg-background-primary">
           <Main />
           <NextScript />
         </body>
