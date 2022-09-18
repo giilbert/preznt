@@ -34,19 +34,20 @@ export const organizationRouter = t.router({
       })
     )
     .query(async ({ ctx, input }) => {
-      return ctx.prisma.organization.findFirst({
+      let maybePrivateOrganization = await ctx.prisma.organization.findFirst({
         where: {
-          OR: [
-            {
-              private: false,
-              slug: input.slug,
-            },
-            {
-              users: {
-                some: { userId: ctx.session?.user?.id },
-              },
-            },
-          ],
+          private: false,
+          slug: input.slug,
+        },
+      });
+      if (maybePrivateOrganization) return maybePrivateOrganization;
+
+      return await ctx.prisma.organization.findFirst({
+        where: {
+          private: true,
+          users: {
+            some: { userId: ctx.session?.user?.id },
+          },
         },
       });
     }),
