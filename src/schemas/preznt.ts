@@ -1,10 +1,6 @@
 import { KeyValueAction } from "@prisma/client";
 import { z } from "zod";
 
-// makes it work with forms
-// which booleans are "true" and "false" strings
-const dumbFormBoolean = z.preprocess((a) => Boolean(a), z.boolean());
-
 export const userAttributeAction = z.object({
   action: z.nativeEnum(KeyValueAction),
   value: z.number(),

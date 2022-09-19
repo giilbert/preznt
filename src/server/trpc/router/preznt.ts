@@ -6,10 +6,7 @@ export const prezntRouter = t.router({
   create: authedProcedure
     .input(createPrezntSchema)
     .mutation(async ({ input, ctx }) => {
-      const { id: organizationUserId } = await enforceOrganizationAdmin(
-        ctx,
-        input
-      );
+      const { userId } = await enforceOrganizationAdmin(ctx, input);
 
       await ctx.prisma.preznt.create({
         data: {
@@ -19,7 +16,7 @@ export const prezntRouter = t.router({
               data: input.actions,
             },
           },
-          creatorId: organizationUserId,
+          creatorId: userId,
         },
       });
     }),
