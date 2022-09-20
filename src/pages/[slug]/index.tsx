@@ -2,6 +2,7 @@ import { useRouter } from "next/router";
 import { Text } from "@/components/ui";
 import { trpc } from "@/utils/trpc";
 import { CreatePreznt } from "@/components/preznt/create";
+import { PrezntList } from "@/components/preznt/list";
 
 const OrganizationPage: React.FC = () => {
   const { query } = useRouter();
@@ -26,7 +27,8 @@ const OrganizationPage: React.FC = () => {
         <Text>Slug: {organization.slug}</Text>
         <Text>Private: {organization.private ? "Yes" : "No"}</Text>
 
-        <CreatePreznt />
+        <CreatePreznt organizationId={organization.id} />
+        <PrezntList organizationId={organization.id} />
       </main>
     </div>
   );

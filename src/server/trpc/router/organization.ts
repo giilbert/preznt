@@ -34,7 +34,7 @@ export const organizationRouter = t.router({
       })
     )
     .query(async ({ ctx, input }) => {
-      let maybePrivateOrganization = await ctx.prisma.organization.findFirst({
+      const maybePrivateOrganization = await ctx.prisma.organization.findFirst({
         where: {
           private: false,
           slug: input.slug,
@@ -48,6 +48,22 @@ export const organizationRouter = t.router({
           users: {
             some: { userId: ctx.session?.user?.id },
           },
+        },
+      });
+    }),
+
+  getAllPreznts: t.procedure
+    .input(
+      z.object({
+        organizationId: z.string(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      return await ctx.prisma.preznt.findMany({
+        where: { organizationId: input.organizationId },
+        include: {
+          creator: true,
+          actions: true,
         },
       });
     }),

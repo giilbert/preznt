@@ -7,7 +7,9 @@ import { createPrezntSchema } from "@/schemas/preznt";
 import { z } from "zod";
 import { useRouter } from "next/router";
 
-export const CreatePreznt: React.FC = () => {
+export const CreatePreznt: React.FC<{ organizationId: string }> = ({
+  organizationId,
+}) => {
   const { query } = useRouter();
   const {
     handleSubmit,
@@ -21,24 +23,18 @@ export const CreatePreznt: React.FC = () => {
   const { organization } = trpc.useContext();
   const { mutateAsync } = trpc.preznt.create.useMutation();
 
+  // TODO
   setValue("actions", []);
-
-  console.log(errors);
 
   return (
     <form
       onSubmit={handleSubmit(async (data) => {
-        // yatayatayata it wont be null in the context of this form
-        // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain, @typescript-eslint/no-non-null-assertion
-        const organizationId = organization.getBySlug.getData({
-          slug: query.slug as string,
-        })?.id!;
-
         console.log(data);
         await mutateAsync({
           ...data,
           organizationId,
         });
+        organization.getAllPreznts.invalidate();
         reset();
       })}
     >
