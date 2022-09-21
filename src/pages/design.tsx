@@ -3,14 +3,14 @@ import { NextPage } from "next";
 
 const DesignPage: NextPage = () => {
   return (
-    <div className="p-4">
+    <div className="flex gap-4 flex-col m-8">
       <div className="flex gap-2">
         <Button>Primary</Button>
         <Button color="secondary">Secondary</Button>
         <Button color="danger">Danger</Button>
         <Button color="confirm">Confirm</Button>
       </div>
-      <div className="mt-4">
+      <div>
         <Button size="sm" className="mr-2">
           Small
         </Button>

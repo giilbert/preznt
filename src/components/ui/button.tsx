@@ -3,7 +3,7 @@ import { ButtonHTMLAttributes, forwardRef, PropsWithChildren } from "react";
 
 const buttonColors = {
   primary: "bg-blue-500 hover:bg-blue-600 text-white active:bg-blue-700",
-  secondary: "bg-gray-500 hover:bg-gray-600 text-white active:bg-gray-700",
+  secondary: "bg-gray-600 hover:bg-gray-700 text-white active:bg-gray-700",
   danger: "bg-red-500 hover:bg-red-600 text-white active:bg-red-700",
   confirm: "bg-green-500 hover:bg-green-600 text-white active:bg-green-700",
 };
