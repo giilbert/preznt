@@ -1,7 +1,30 @@
-import { createOrganizationSchema } from "@/schemas/organization";
+import {
+  createOrganizationSchema,
+  joinOrganizationSchema,
+} from "@/schemas/organization";
+import { enforceOrganizationAdmin } from "@/server/common/organization-perms";
 import { OrganizationStatus } from "@prisma/client";
 import { z } from "zod";
 import { t, authedProcedure } from "../trpc";
+import { customAlphabet } from "nanoid";
+import { Context } from "../context";
+
+const alphabetNumericNanoid = customAlphabet(
+  "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
+);
+
+const generateJoinCode = async (ctx: Context): Promise<string> => {
+  // is there a better way to do this?
+  const code = alphabetNumericNanoid(8);
+  const organization = await ctx.prisma.organization.findUnique({
+    where: { joinCode: code },
+  });
+
+  // code is taken
+  if (organization) return await generateJoinCode(ctx);
+
+  return code;
+};
 
 export const organizationRouter = t.router({
   getAll: authedProcedure.query(async ({ ctx }) => {
@@ -21,7 +44,7 @@ export const organizationRouter = t.router({
             connect: { id: ctx.user.id },
           },
           organization: {
-            create: input,
+            create: { ...input, joinCode: await generateJoinCode(ctx) },
           },
         },
       });
@@ -59,11 +82,29 @@ export const organizationRouter = t.router({
       })
     )
     .query(async ({ input, ctx }) => {
+      enforceOrganizationAdmin(ctx, input);
+
       return await ctx.prisma.preznt.findMany({
         where: { organizationId: input.organizationId },
         include: {
           creator: true,
           actions: true,
+        },
+      });
+    }),
+
+  joinOrganization: authedProcedure
+    .input(joinOrganizationSchema)
+    .mutation(async ({ input, ctx }) => {
+      await ctx.prisma.organizationOnUser.create({
+        data: {
+          status: OrganizationStatus.MEMBER,
+          organization: {
+            connect: { joinCode: input.joinCode },
+          },
+          user: {
+            connect: { id: ctx.user.id },
+          },
         },
       });
     }),

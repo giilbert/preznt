@@ -16,3 +16,7 @@ export const createOrganizationSchema = z.object({
     }),
   private: z.preprocess((a) => Boolean(a), z.boolean()),
 });
+
+export const joinOrganizationSchema = z.object({
+  joinCode: z.string(),
+});

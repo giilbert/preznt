@@ -24,6 +24,7 @@ const OrganizationPage: React.FC = () => {
       <main className="w-5/6 max-w-4xl">
         <Text>Id: {organization.id}</Text>
         <Text>Name: {organization.name}</Text>
+        <Text>Join code: {organization.joinCode}</Text>
         <Text>Slug: {organization.slug}</Text>
         <Text>Private: {organization.private ? "Yes" : "No"}</Text>
 

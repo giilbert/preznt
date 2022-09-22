@@ -5,6 +5,7 @@ import { trpc } from "@/utils/trpc";
 import { OrganizationList } from "@/components/organizations/list";
 import { CreateOrganization } from "@/components/organizations/create";
 import { Button, Text } from "@/components/ui";
+import { JoinOrganization } from "@/components/organizations/join";
 
 const Home: NextPage = () => {
   const { status, data } = useSession();
@@ -30,6 +31,7 @@ const Home: NextPage = () => {
             </div>
 
             <hr className="my-4" />
+            <JoinOrganization />
             <OrganizationList />
 
             <hr className="my-4" />
