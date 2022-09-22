@@ -28,9 +28,14 @@ const OrganizationPage: React.FC = () => {
         <Text>Join code: {organization.joinCode}</Text>
         <Text>Slug: {organization.slug}</Text>
         <Text>Private: {organization.private ? "Yes" : "No"}</Text>
+        <hr className="my-4" />
 
         <CreatePreznt organizationId={organization.id} />
+        <hr className="my-4" />
+
         <PrezntList organizationId={organization.id} />
+        <hr />
+
         <OrganizationMembersList />
       </main>
     </div>

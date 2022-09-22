@@ -92,8 +92,9 @@ model UserAttribute {
 
 model UserAttributeAction {
     id     String         @id @default(cuid())
-    action KeyValueAction
-    value  Float
+    action    KeyValueAction
+    attribute String
+    value     Float
 
     prezntId String
     preznt   Preznt @relation(fields: [prezntId], references: [id])

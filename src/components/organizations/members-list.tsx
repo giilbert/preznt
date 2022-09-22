@@ -24,6 +24,7 @@ export const OrganizationMembersList: React.FC = () => {
 
   return (
     <div>
+      <Text className="text-2xl">Members</Text>
       {members.map((member) => (
         <Text key={member.id}>{member.user.name}</Text>
       ))}
