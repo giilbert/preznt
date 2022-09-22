@@ -1,15 +1,13 @@
 import { useZodForm } from "@/lib/use-zod-form";
-import { createOrganizationSchema } from "@/schemas/organization";
 import { trpc } from "@/utils/trpc";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui";
 import { createPrezntSchema } from "@/schemas/preznt";
 import { z } from "zod";
-import { useRouter } from "next/router";
-import { useState } from "react";
-import { KeyValueAction, UserAttributeAction } from "@prisma/client";
+import { useCallback, useState } from "react";
+import { KeyValueAction } from "@prisma/client";
 
-type Actions = Omit<UserAttributeAction, "prezntId" | "id">[];
+type Action = z.infer<typeof createPrezntSchema>["actions"][0];
 
 export const CreatePreznt: React.FC<{ organizationId: string }> = ({
   organizationId,
@@ -19,16 +17,23 @@ export const CreatePreznt: React.FC<{ organizationId: string }> = ({
     register,
     reset,
     setValue,
+    getValues,
+    trigger,
     formState: { errors },
   } = useZodForm({
     schema: createPrezntSchema.omit({ organizationId: true }),
+    defaultValues: {
+      actions: [],
+    },
   });
   const { organization } = trpc.useContext();
   const { mutateAsync } = trpc.preznt.create.useMutation();
-  const [actions, setActions] = useState<Actions>([]);
 
-  // TODO
-  setValue("actions", []);
+  const addAction = useCallback((action: Action) => {
+    setValue("actions", [action, ...getValues("actions")]);
+    // forces the form to rerender
+    trigger("actions");
+  }, []);
 
   return (
     <form
@@ -37,7 +42,6 @@ export const CreatePreznt: React.FC<{ organizationId: string }> = ({
         await mutateAsync({
           ...data,
           organizationId,
-          actions,
         });
         organization.getAllPreznts.invalidate();
         reset();
@@ -79,7 +83,7 @@ export const CreatePreznt: React.FC<{ organizationId: string }> = ({
         <Text className="text-red-400">{errors.main?.message}</Text>
 
         <Text className="text-2xl">Actions</Text>
-        <CreateAction actions={actions} setActions={setActions} />
+        <CreateAction actions={getValues("actions")} addAction={addAction} />
 
         <Button type="submit" className="mt-4">
           Create Preznt
@@ -90,19 +94,20 @@ export const CreatePreznt: React.FC<{ organizationId: string }> = ({
 };
 
 const CreateAction: React.FC<{
-  actions: Actions;
-  setActions: React.Dispatch<React.SetStateAction<Actions>>;
-}> = ({ actions, setActions }) => {
+  actions: Action[];
+  addAction: (action: Action) => void;
+}> = ({ actions, addAction }) => {
   const [attribute, setAttribute] = useState("");
   const [action, setAction] = useState<KeyValueAction>("INCREMENT");
   const [value, setValue] = useState(0);
+  const [defaultValue, setDefaultValue] = useState(0);
 
   // this cant be a form since a <form> inside a <form> is invalid DOM
   return (
     <div className="flex flex-col">
-      {actions.map(({ attribute, action, value }, i) => (
+      {actions.map(({ attribute, action, value, defaultValue }, i) => (
         <Text key={i}>
-          {attribute}: {action} {value}
+          {attribute}: {action} {value}, default: {defaultValue}
         </Text>
       ))}
 
@@ -141,13 +146,29 @@ const CreateAction: React.FC<{
         value={value}
       />
 
+      <label htmlFor="default-value" className="text-gray-100">
+        Default Value
+      </label>
+      <input
+        id="default-value"
+        type="number"
+        className="bg-neutral-800 px-3 py-2 text-gray-100 rounded"
+        onChange={(e) => setDefaultValue(parseFloat(e.target.value))}
+        value={defaultValue}
+      />
+
       <Button
         className="mt-4"
         color="secondary"
         type="button"
         onClick={() => {
           if (attribute !== "" && action && value != 0) {
-            setActions([{ attribute, action, value }, ...actions]);
+            addAction({ attribute, action, value, defaultValue });
+
+            setAttribute("");
+            setAction("INCREMENT");
+            setValue(0);
+            setDefaultValue(0);
             console.log(attribute, action, value);
           }
         }}

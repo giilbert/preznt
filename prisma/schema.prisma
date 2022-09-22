@@ -82,19 +82,20 @@ model Organization {
 }
 
 model UserAttribute {
-    name   String
-    value  String
-    userId String
-    user   OrganizationOnUser? @relation(fields: [userId], references: [id])
+    name         String
+    value        String
+    userId       String
+    user         OrganizationOnUser? @relation(fields: [userId], references: [id])
 
     @@unique([userId, name])
 }
 
 model UserAttributeAction {
-    id     String         @id @default(cuid())
-    action    KeyValueAction
-    attribute String
-    value     Float
+    id           String         @id @default(cuid())
+    action       KeyValueAction
+    attribute    String
+    value        Float
+    defaultValue Float
 
     prezntId String
     preznt   Preznt @relation(fields: [prezntId], references: [id])

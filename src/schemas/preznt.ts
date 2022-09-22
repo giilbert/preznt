@@ -2,8 +2,10 @@ import { KeyValueAction } from "@prisma/client";
 import { z } from "zod";
 
 export const userAttributeAction = z.object({
+  attribute: z.string(),
   action: z.nativeEnum(KeyValueAction),
   value: z.number(),
+  defaultValue: z.number(),
 });
 
 export const createPrezntSchema = z.object({
