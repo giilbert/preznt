@@ -67,6 +67,7 @@ export const organizationRouter = t.router({
       return await ctx.prisma.organization.findFirst({
         where: {
           private: true,
+          slug: input.slug,
           users: {
             some: { userId: ctx.session?.user?.id },
           },
