@@ -12,7 +12,6 @@ import { Context } from "../context";
 const alphabetNumericNanoid = customAlphabet(
   "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
 );
-
 const generateJoinCode = async (ctx: Context): Promise<string> => {
   // is there a better way to do this?
   const code = alphabetNumericNanoid(8);
@@ -105,6 +104,26 @@ export const organizationRouter = t.router({
           user: {
             connect: { id: ctx.user.id },
           },
+        },
+      });
+    }),
+
+  getAllMembers: authedProcedure
+    .input(
+      z.object({
+        organizationId: z.string(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      enforceOrganizationAdmin(ctx, input);
+
+      return await ctx.prisma.organizationOnUser.findMany({
+        where: {
+          organizationId: input.organizationId,
+        },
+        include: {
+          attributes: true,
+          user: true,
         },
       });
     }),

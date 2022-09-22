@@ -3,6 +3,7 @@ import { Text } from "@/components/ui";
 import { trpc } from "@/utils/trpc";
 import { CreatePreznt } from "@/components/preznt/create";
 import { PrezntList } from "@/components/preznt/list";
+import { OrganizationMembersList } from "@/components/organizations/members-list";
 
 const OrganizationPage: React.FC = () => {
   const { query } = useRouter();
@@ -30,6 +31,7 @@ const OrganizationPage: React.FC = () => {
 
         <CreatePreznt organizationId={organization.id} />
         <PrezntList organizationId={organization.id} />
+        <OrganizationMembersList />
       </main>
     </div>
   );
