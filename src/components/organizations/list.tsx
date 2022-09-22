@@ -7,7 +7,7 @@ export const OrganizationList: React.FC = () => {
     data: organizations,
     status,
     error,
-  } = trpc.organization.getAll.useQuery();
+  } = trpc.organization.getAllJoined.useQuery();
 
   if (status === "loading") return <Text>Loading</Text>;
   if (status === "error") return <Text>Error: {error.message}</Text>;

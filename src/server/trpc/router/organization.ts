@@ -27,7 +27,7 @@ const generateJoinCode = async (ctx: Context): Promise<string> => {
 };
 
 export const organizationRouter = t.router({
-  getAll: authedProcedure.query(async ({ ctx }) => {
+  getAllJoined: authedProcedure.query(async ({ ctx }) => {
     return await ctx.prisma.organizationOnUser.findMany({
       where: { userId: ctx.user.id },
       include: { organization: true },

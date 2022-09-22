@@ -21,7 +21,7 @@ export const CreateOrganization: React.FC = () => {
       onSubmit={handleSubmit(async (data) => {
         console.log(data);
         await mutateAsync(data);
-        await organization.getAll.invalidate();
+        await organization.getAllJoined.invalidate();
         reset();
       })}
     >

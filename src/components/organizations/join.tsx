@@ -20,7 +20,7 @@ export const JoinOrganization: React.FC = () => {
       onSubmit={handleSubmit(async (data) => {
         console.log(data);
         await mutateAsync(data);
-        organization.getAll.invalidate();
+        organization.getAllJoined.invalidate();
         reset();
       })}
     >
