@@ -17,4 +17,5 @@ export const createPrezntSchema = z.object({
   expires: z.date(),
   actions: z.array(userAttributeAction),
   organizationId: z.string(),
+  allowJoin: z.boolean(),
 });

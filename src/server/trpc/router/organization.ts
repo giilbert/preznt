@@ -8,13 +8,11 @@ import { z } from "zod";
 import { t, authedProcedure } from "../trpc";
 import { customAlphabet } from "nanoid";
 import { Context } from "../context";
+import { alphanumericNanoid } from "@/utils/alphanumericNanoid";
 
-const alphabetNumericNanoid = customAlphabet(
-  "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
-);
 const generateJoinCode = async (ctx: Context): Promise<string> => {
   // is there a better way to do this?
-  const code = alphabetNumericNanoid(8);
+  const code = alphanumericNanoid(8);
   const organization = await ctx.prisma.organization.findUnique({
     where: { joinCode: code },
   });

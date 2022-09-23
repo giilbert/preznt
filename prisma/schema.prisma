@@ -102,12 +102,14 @@ model UserAttributeAction {
 }
 
 model Preznt {
-    id      String                @id @default(cuid())
-    name    String
+    id        String                @id @default(cuid())
+    name      String
     // will make it show up on the calendar
-    main    Boolean
-    expires DateTime
-    actions UserAttributeAction[]
+    main      Boolean
+    expires   DateTime
+    actions   UserAttributeAction[]
+    allowJoin Boolean
+    code      String
 
     createdAt DateTime @default(now())
     creatorId String
@@ -116,6 +118,8 @@ model Preznt {
     organizationId String
     organization   Organization         @relation(fields: [organizationId], references: [id])
     redeemedBy     User[]               @relation("RedeemedPreznts")
+
+    @@unique([code, organizationId])
 }
 
 enum KeyValueAction {

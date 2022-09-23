@@ -29,11 +29,14 @@ export const CreatePreznt: React.FC<{ organizationId: string }> = ({
   const { organization } = trpc.useContext();
   const { mutateAsync } = trpc.preznt.create.useMutation();
 
-  const addAction = useCallback((action: Action) => {
-    setValue("actions", [action, ...getValues("actions")]);
-    // forces the form to rerender
-    trigger("actions");
-  }, []);
+  const addAction = useCallback(
+    (action: Action) => {
+      setValue("actions", [action, ...getValues("actions")]);
+      // forces the form to rerender
+      trigger("actions");
+    },
+    [getValues, setValue, trigger]
+  );
 
   return (
     <form
@@ -81,6 +84,17 @@ export const CreatePreznt: React.FC<{ organizationId: string }> = ({
           className="bg-neutral-800 px-3 py-2 text-gray-100 rounded"
         />
         <Text className="text-red-400">{errors.main?.message}</Text>
+
+        <label htmlFor="allow-join" className="text-gray-100">
+          Allow users to join the organization from this link
+        </label>
+        <input
+          {...register("allowJoin")}
+          type="checkbox"
+          id="allow-join"
+          className="bg-neutral-800 px-3 py-2 text-gray-100 rounded"
+        />
+        <Text className="text-red-400">{errors.allowJoin?.message}</Text>
 
         <Text className="text-2xl">Actions</Text>
         <CreateAction actions={getValues("actions")} addAction={addAction} />
