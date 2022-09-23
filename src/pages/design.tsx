@@ -1,4 +1,6 @@
+import { Text } from "@/components/ui";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { NextPage } from "next";
 
 const DesignPage: NextPage = () => {
@@ -19,6 +21,10 @@ const DesignPage: NextPage = () => {
         </Button>
         <Button size="lg">Large</Button>
       </div>
+
+      <Card>
+        <Text className="text-4xl">sadas</Text>
+      </Card>
     </div>
   );
 };
