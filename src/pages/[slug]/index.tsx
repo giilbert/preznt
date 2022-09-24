@@ -4,6 +4,7 @@ import { trpc } from "@/utils/trpc";
 import { CreatePreznt } from "@/components/preznt/create";
 import { PrezntList } from "@/components/preznt/list";
 import { OrganizationMembersList } from "@/components/organizations/members-list";
+import { AttributesList } from "@/components/organizations/attributes-list";
 
 const OrganizationPage: React.FC = () => {
   const { query } = useRouter();
@@ -20,6 +21,8 @@ const OrganizationPage: React.FC = () => {
   if (status === "error") return <Text>Error: {error.message}</Text>;
   if (!organization) return <Text>Organization not found</Text>;
 
+  // TODO: put organizationId into context maybe?
+  // is there a way to pass trpc response data through components?
   return (
     <div className="flex justify-center mt-4">
       <main className="w-5/6 max-w-4xl">
@@ -30,13 +33,16 @@ const OrganizationPage: React.FC = () => {
         <Text>Private: {organization.private ? "Yes" : "No"}</Text>
         <hr className="my-4" />
 
+        <AttributesList organizationId={organization.id} />
+        <hr className="my-4" />
+
         <CreatePreznt organizationId={organization.id} />
         <hr className="my-4" />
 
         <PrezntList organizationId={organization.id} />
         <hr />
 
-        <OrganizationMembersList />
+        <OrganizationMembersList organizationId={organization.id} />
       </main>
     </div>
   );

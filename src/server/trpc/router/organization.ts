@@ -9,6 +9,7 @@ import { t, authedProcedure } from "../trpc";
 import { customAlphabet } from "nanoid";
 import { Context } from "../context";
 import { alphanumericNanoid } from "@/utils/alphanumericNanoid";
+import { TRPCError } from "@trpc/server";
 
 const generateJoinCode = async (ctx: Context): Promise<string> => {
   // is there a better way to do this?
@@ -125,5 +126,29 @@ export const organizationRouter = t.router({
           user: true,
         },
       });
+    }),
+
+  getSelfAttributes: authedProcedure
+    .input(
+      z.object({
+        organizationId: z.string(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const organizationMember = await ctx.prisma.organizationOnUser.findUnique(
+        {
+          where: {
+            userId_organizationId: {
+              organizationId: input.organizationId,
+              userId: ctx.user.id,
+            },
+          },
+          include: { attributes: true },
+        }
+      );
+
+      if (!organizationMember) throw new TRPCError({ code: "NOT_FOUND" });
+
+      return organizationMember.attributes;
     }),
 });

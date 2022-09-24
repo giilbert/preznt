@@ -50,6 +50,8 @@ export const prezntRouter = t.router({
       });
     }),
 
+  // TODO: validate that the preznt is valid for the current time
+  // TODO: test it more!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   redeem: authedProcedure
     .input(
       z.object({

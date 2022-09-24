@@ -14,7 +14,7 @@ const PrezntPage: NextPage = () => {
         code: query.code as string,
         slug: query.slug as string,
       });
-  }, [query]);
+  }, [query, mutateAsync, status]);
 
   return (
     <div className="m-4">

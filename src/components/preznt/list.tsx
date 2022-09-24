@@ -25,6 +25,7 @@ export const PrezntList: React.FC<{ organizationId: string }> = ({
           <Text>{preznt.name}</Text>
           <Text>Created by {preznt.creator.name}</Text>
           <Text>Actions: {JSON.stringify(preznt.actions)}</Text>
+          <Text>Code: {preznt.code}</Text>
         </div>
       ))}
     </div>
