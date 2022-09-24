@@ -10,7 +10,7 @@ export const enforceOrganizationAdmin = async (
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 
-  const organization = await ctx.prisma.organizationOnUser.findFirst({
+  const organizationMember = await ctx.prisma.organizationOnUser.findFirst({
     where: {
       organizationId: input.organizationId,
       userId: ctx.session.user.id,
@@ -18,7 +18,7 @@ export const enforceOrganizationAdmin = async (
     },
   });
 
-  if (!organization) throw new TRPCError({ code: "UNAUTHORIZED" });
+  if (!organizationMember) throw new TRPCError({ code: "UNAUTHORIZED" });
 
-  return organization;
+  return organizationMember;
 };

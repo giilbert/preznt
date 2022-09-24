@@ -81,7 +81,9 @@ export const organizationRouter = t.router({
       })
     )
     .query(async ({ input, ctx }) => {
-      enforceOrganizationAdmin(ctx, input);
+      await enforceOrganizationAdmin(ctx, input);
+
+      console.log(input);
 
       return await ctx.prisma.preznt.findMany({
         where: { organizationId: input.organizationId },
@@ -115,7 +117,7 @@ export const organizationRouter = t.router({
       })
     )
     .query(async ({ input, ctx }) => {
-      enforceOrganizationAdmin(ctx, input);
+      await enforceOrganizationAdmin(ctx, input);
 
       return await ctx.prisma.organizationOnUser.findMany({
         where: {
