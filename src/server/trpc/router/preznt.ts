@@ -1,3 +1,5 @@
+// prepare some bleach for your eyes!
+
 import { createPrezntSchema } from "@/schemas/preznt";
 import { enforceOrganizationAdmin } from "@/server/common/organization-perms";
 import { alphanumericNanoid } from "@/utils/alphanumericNanoid";
@@ -82,6 +84,21 @@ export const prezntRouter = t.router({
         },
       });
 
+      const hasRedeemed =
+        (await ctx.prisma.preznt.count({
+          where: {
+            id: preznt.id,
+            redeemedBy: {
+              some: { id: ctx.user.id },
+            },
+          },
+        })) !== 0;
+      if (hasRedeemed)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Preznt already redeemed",
+        });
+
       let hasJoinedOrganization = false;
       // if the preznt does not allow the user to join the organization
       // and the user is not already in the organization, fail
@@ -111,13 +128,10 @@ export const prezntRouter = t.router({
         },
       });
 
-      console.log(attributes, preznt.actions, ctx.user);
-
       await ctx.prisma.$transaction(
         preznt.actions.map(({ attribute, value, defaultValue }) => {
           const change =
             attributes.find((a) => a.name === attribute)?.value || defaultValue;
-          console.log(attribute, attributes, value, change);
           return ctx.prisma.userAttribute.upsert({
             where: {
               // the above checks enforce that a user is part / has joined an organization
@@ -138,8 +152,19 @@ export const prezntRouter = t.router({
         })
       );
 
+      // add user to redeemedBy n-m
+      await ctx.prisma.preznt.update({
+        where: { id: preznt.id },
+        data: {
+          redeemedBy: {
+            connect: { id: ctx.user.id },
+          },
+        },
+      });
+
       return {
         hasJoinedOrganization,
+        preznt,
       };
     }),
 });
