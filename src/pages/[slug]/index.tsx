@@ -5,6 +5,9 @@ import { CreatePreznt } from "@/components/preznt/create";
 import { PrezntList } from "@/components/preznt/list";
 import { OrganizationMembersList } from "@/components/organizations/members-list";
 import { AttributesList } from "@/components/organizations/attributes-list";
+import { RenderIfStatus } from "@/components/auth/render-if-status";
+import { organizationRouter } from "@/server/trpc/router/organization";
+import { OrganizationStatus } from "@prisma/client";
 
 const OrganizationPage: React.FC = () => {
   const { query } = useRouter();
@@ -26,23 +29,28 @@ const OrganizationPage: React.FC = () => {
   return (
     <div className="flex justify-center mt-4">
       <main className="w-5/6 max-w-4xl">
-        <Text>Id: {organization.id}</Text>
-        <Text>Name: {organization.name}</Text>
-        <Text>Join code: {organization.joinCode}</Text>
-        <Text>Slug: {organization.slug}</Text>
-        <Text>Private: {organization.private ? "Yes" : "No"}</Text>
-        <hr className="my-4" />
-
         <AttributesList organizationId={organization.id} />
         <hr className="my-4" />
 
-        <CreatePreznt organizationId={organization.id} />
-        <hr className="my-4" />
+        <RenderIfStatus
+          organizationId={organization.id}
+          status={OrganizationStatus.ADMIN}
+        >
+          <Text>Id: {organization.id}</Text>
+          <Text>Name: {organization.name}</Text>
+          <Text>Join code: {organization.joinCode}</Text>
+          <Text>Slug: {organization.slug}</Text>
+          <Text>Private: {organization.private ? "Yes" : "No"}</Text>
+          <hr className="my-4" />
 
-        <PrezntList organizationId={organization.id} />
-        <hr />
+          <CreatePreznt organizationId={organization.id} />
+          <hr className="my-4" />
 
-        <OrganizationMembersList organizationId={organization.id} />
+          <PrezntList organizationId={organization.id} />
+          <hr />
+
+          <OrganizationMembersList organizationId={organization.id} />
+        </RenderIfStatus>
       </main>
     </div>
   );

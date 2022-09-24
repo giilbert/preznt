@@ -25,6 +25,29 @@ const generateJoinCode = async (ctx: Context): Promise<string> => {
 };
 
 export const organizationRouter = t.router({
+  getRelation: authedProcedure
+    .input(
+      z.object({
+        organizationId: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const organizationMember = await ctx.prisma.organizationOnUser.findUnique(
+        {
+          where: {
+            userId_organizationId: {
+              userId: ctx.user.id,
+              organizationId: input.organizationId,
+            },
+          },
+        }
+      );
+
+      if (!organizationMember) throw new TRPCError({ code: "NOT_FOUND" });
+
+      return organizationMember.status;
+    }),
+
   getAllJoined: authedProcedure.query(async ({ ctx }) => {
     return await ctx.prisma.organizationOnUser.findMany({
       where: { userId: ctx.user.id },
