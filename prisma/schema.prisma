@@ -83,7 +83,7 @@ model Organization {
 
 model UserAttribute {
     name         String
-    value        String
+    value        Float
     userId       String
     user         OrganizationOnUser? @relation(fields: [userId], references: [id])
 
