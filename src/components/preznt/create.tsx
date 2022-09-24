@@ -173,7 +173,7 @@ const CreateAction: React.FC<{
 
       <Button
         className="mt-4"
-        color="secondary"
+        variant="outline-secondary"
         type="button"
         onClick={() => {
           if (attribute !== "" && action && value != 0) {

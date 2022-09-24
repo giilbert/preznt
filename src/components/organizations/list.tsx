@@ -17,9 +17,9 @@ export const OrganizationList: React.FC = () => {
       <Text className="font-bold text-2xl">Joined organizations</Text>
       {organizations.map(({ organization }) => (
         <Link href={`/${organization.slug}`} key={organization.id}>
-          <Text key={organization.id} className="mb-2">
+          <p key={organization.id} className="mb-2">
             - {organization.name}
-          </Text>
+          </p>
         </Link>
       ))}
     </div>
