@@ -1,5 +1,4 @@
 import { trpc } from "@/utils/trpc";
-import Link from "next/link";
 import { Text } from "../ui";
 
 export const PrezntList: React.FC<{ organizationId: string }> = ({
@@ -26,6 +25,7 @@ export const PrezntList: React.FC<{ organizationId: string }> = ({
           <Text>Created by {preznt.creator.name}</Text>
           <Text>Actions: {JSON.stringify(preznt.actions)}</Text>
           <Text>Code: {preznt.code}</Text>
+          <Text>Link: {`${window.location.href}/preznt/${preznt.code}`}</Text>
         </div>
       ))}
     </div>
