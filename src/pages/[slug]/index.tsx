@@ -8,6 +8,7 @@ import { AttributesList } from "@/components/organizations/attributes-list";
 import { RenderIfStatus } from "@/components/auth/render-if-status";
 import { organizationRouter } from "@/server/trpc/router/organization";
 import { OrganizationStatus } from "@prisma/client";
+import { RedeemPreznt } from "@/components/preznt/redeem";
 
 const OrganizationPage: React.FC = () => {
   const { query } = useRouter();
@@ -27,8 +28,10 @@ const OrganizationPage: React.FC = () => {
   // TODO: put organizationId into context maybe?
   // is there a way to pass trpc response data through components?
   return (
-    <div className="flex justify-center mt-4">
+    <div className="flex justify-center my-16">
       <main className="w-5/6 max-w-4xl">
+        <RedeemPreznt />
+        <hr className="my-4" />
         <AttributesList organizationId={organization.id} />
         <hr className="my-4" />
 
