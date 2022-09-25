@@ -1,20 +1,19 @@
 import clsx from "clsx";
-import { forwardRef, HTMLAttributes, PropsWithChildren } from "react";
+import { forwardRef } from "react";
 
 export const Card = forwardRef<
   HTMLDivElement,
-  PropsWithChildren<HTMLAttributes<HTMLDivElement>>
->(({ children, className, ...rest }, ref) => {
+  React.HTMLAttributes<HTMLDivElement>
+>((props, ref) => {
   return (
     <div
-      className={clsx(
-        "border border-gray-500 text-gray-300 px-6 py-4",
-        className
-      )}
-      {...rest}
       ref={ref}
+      className={clsx(
+        "bg-background-secondary border-accent-stroke border px-4 py-2 rounded",
+        props.className
+      )}
     >
-      {children}
+      {props.children}
     </div>
   );
 });

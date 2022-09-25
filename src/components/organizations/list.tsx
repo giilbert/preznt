@@ -1,6 +1,7 @@
 import { trpc } from "@/utils/trpc";
 import Link from "next/link";
-import { Text } from "../ui";
+import { FiChevronRight } from "react-icons/fi";
+import { Card, Text } from "../ui";
 
 export const OrganizationList: React.FC = () => {
   const {
@@ -14,12 +15,17 @@ export const OrganizationList: React.FC = () => {
 
   return (
     <div>
-      <Text className="font-bold text-2xl">Joined organizations</Text>
       {organizations.map(({ organization }) => (
-        <Link href={`/${organization.slug}`} key={organization.id}>
-          <Text key={organization.id} className="mb-2">
-            - {organization.name}
-          </Text>
+        <Link href={`/${organization.slug}`} key={organization.id} passHref>
+          <a>
+            <Card
+              key={organization.id}
+              className="my-3 flex flex-row items-center hover:border-gray-700"
+            >
+              <p className="text-xl mr-auto">{organization.name}</p>
+              <FiChevronRight size="24" />
+            </Card>
+          </a>
         </Link>
       ))}
     </div>

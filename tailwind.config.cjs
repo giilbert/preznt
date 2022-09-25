@@ -11,12 +11,17 @@ module.exports = {
         sans: ["Roboto", ...defaultTheme.fontFamily.sans],
       },
       colors: {
-        background: { primary: "#171717", secondary: "#1d1d1d" },
+        background: {
+          primary: "#171717",
+          secondary: "#1d1d1d",
+          tint: "#111111",
+        },
+        foreground: { primary: "#efefef", secondary: "#dddddd" },
         accent: {
-          primary: "#592483",
-          secondary: "#252525",
+          primary: "#0077b6",
+          secondary: "#5b7280",
           danger: "#F45050",
-          stroke: "#343232",
+          stroke: "#23232e",
         },
       },
     },

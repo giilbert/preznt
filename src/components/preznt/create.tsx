@@ -6,12 +6,12 @@ import { createPrezntSchema } from "@/schemas/preznt";
 import { z } from "zod";
 import { useCallback, useState } from "react";
 import { KeyValueAction } from "@prisma/client";
+import { useOrganization } from "@/lib/use-organization";
 
 type Action = z.infer<typeof createPrezntSchema>["actions"][0];
 
-export const CreatePreznt: React.FC<{ organizationId: string }> = ({
-  organizationId,
-}) => {
+export const CreatePreznt: React.FC = () => {
+  const { id: organizationId } = useOrganization();
   const {
     handleSubmit,
     register,
@@ -173,7 +173,7 @@ const CreateAction: React.FC<{
 
       <Button
         className="mt-4"
-        color="secondary"
+        variant="outline-secondary"
         type="button"
         onClick={() => {
           if (attribute !== "" && action && value != 0) {

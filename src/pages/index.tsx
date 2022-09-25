@@ -1,45 +1,41 @@
 import type { NextPage } from "next";
-import Head from "next/head";
-import { signIn, signOut, useSession } from "next-auth/react";
-import { trpc } from "@/utils/trpc";
+import { signIn, useSession } from "next-auth/react";
 import { OrganizationList } from "@/components/organizations/list";
 import { CreateOrganization } from "@/components/organizations/create";
-import { Button, Text } from "@/components/ui";
+import { Button } from "@/components/ui";
 import { JoinOrganization } from "@/components/organizations/join";
+import { Layout } from "@/components/layout/layout";
 
 const Home: NextPage = () => {
-  const { status, data } = useSession();
+  const { status } = useSession();
+
+  if (status === "loading") return <p>Loading..</p>;
+  if (status === "unauthenticated")
+    return <Button onClick={() => signIn("google")}>Sign in</Button>;
 
   return (
-    <>
-      <Head>
-        <title>preznt</title>
-      </Head>
-
-      <div className="p-8 flex justify-center">
-        {status === "loading" && <p>Loading..</p>}
-        {status === "unauthenticated" && (
-          <Button onClick={() => signIn("google")}>Sign in</Button>
-        )}
-        {status === "authenticated" && (
-          <main className="w-5/6 max-w-4xl">
-            <div className="flex gap-4 items-center">
-              <Text>Signed in as {data.user?.name}</Text>
-              <Button color="danger" onClick={() => signOut()}>
-                Sign out
-              </Button>
-            </div>
-
-            <hr className="my-4" />
-            <JoinOrganization />
-            <OrganizationList />
-
-            <hr className="my-4" />
-            <CreateOrganization />
-          </main>
-        )}
+    <Layout
+      breadcrumbs={[
+        {
+          name: "these",
+          path: "/",
+        },
+        {
+          name: "are",
+          path: "are",
+        },
+        {
+          name: "breadcrumbs",
+          path: "asdasd",
+        },
+      ]}
+    >
+      <div className="flex gap-2">
+        <JoinOrganization />
+        <CreateOrganization />
       </div>
-    </>
+      <OrganizationList />
+    </Layout>
   );
 };
 

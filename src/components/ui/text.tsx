@@ -1,18 +1,33 @@
 import clsx from "clsx";
-import { DetailedHTMLProps, HTMLAttributes, PropsWithChildren } from "react";
+import { forwardRef } from "react";
 
-export const Text: React.FC<
-  PropsWithChildren<
-    DetailedHTMLProps<
-      HTMLAttributes<HTMLParagraphElement>,
-      HTMLParagraphElement
-    >
-  >
-> = ({ children, className, ...others }) => {
-  // TODO:
+const sizes = {
+  xs: "text-xs",
+  sm: "text-sm",
+  md: "text-base",
+  lg: "text-lg",
+};
+
+interface TextProps extends React.HTMLAttributes<HTMLHeadingElement> {
+  /**
+   * The font size.
+   * @default "md" (1rem)
+   */
+  size?: keyof typeof sizes;
+}
+
+const defaultProps = {
+  size: "md",
+} as const;
+
+export const Text = forwardRef<HTMLParagraphElement, TextProps>((p, ref) => {
+  const props = { ...defaultProps, ...p };
+
   return (
-    <p className={clsx("text-gray-200", className)} {...others}>
-      {children}
+    <p ref={ref} className={clsx(sizes[props.size], props.className)}>
+      {props.children}
     </p>
   );
-};
+});
+
+Text.displayName = "Text";
