@@ -44,7 +44,7 @@ export const Navbar: React.FC<{
               <p className="text-gray-200 ml-3" key={i}>
                 <Link href={path}>{breadcrumb.name}</Link>
                 {i + 1 !== breadcrumbs.length && (
-                  <span className="ml-3 text-gray-500">/</span>
+                  <span className="ml-3">/</span>
                 )}
               </p>
             );

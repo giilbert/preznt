@@ -1,3 +1,4 @@
+import { useOrganization } from "@/lib/use-organization";
 import { trpc } from "@/utils/trpc";
 import { OrganizationStatus } from "@prisma/client";
 
@@ -8,13 +9,13 @@ const hierarchy: Record<OrganizationStatus, number> = {
 };
 
 export const RenderIfStatus: React.FC<{
-  organizationId: string;
   // (status greater than)
   status: OrganizationStatus;
   children: React.ReactNode | ((higher: boolean) => React.ReactNode);
-}> = ({ status, organizationId, children }) => {
+}> = ({ status, children }) => {
+  const { id } = useOrganization();
   const { data, status: queryStatus } = trpc.organization.getRelation.useQuery({
-    organizationId,
+    organizationId: id,
   });
 
   if (queryStatus === "loading") return null;

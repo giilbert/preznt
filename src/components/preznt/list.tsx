@@ -1,15 +1,15 @@
+import { useOrganization } from "@/lib/use-organization";
 import { trpc } from "@/utils/trpc";
 import { Text } from "../ui";
 
-export const PrezntList: React.FC<{ organizationId: string }> = ({
-  organizationId,
-}) => {
+export const PrezntList: React.FC = () => {
+  const organization = useOrganization();
   const {
     data: preznts,
     status,
     error,
   } = trpc.organization.getAllPreznts.useQuery({
-    organizationId,
+    organizationId: organization.id,
   });
 
   if (status === "loading") return <Text>Loading</Text>;

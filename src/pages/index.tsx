@@ -1,16 +1,13 @@
 import type { NextPage } from "next";
-import Head from "next/head";
-import { signIn, signOut, useSession } from "next-auth/react";
-import { trpc } from "@/utils/trpc";
+import { signIn, useSession } from "next-auth/react";
 import { OrganizationList } from "@/components/organizations/list";
 import { CreateOrganization } from "@/components/organizations/create";
-import { Button, Text } from "@/components/ui";
+import { Button } from "@/components/ui";
 import { JoinOrganization } from "@/components/organizations/join";
-import { Navbar } from "@/components/layout/navbar";
 import { Layout } from "@/components/layout/layout";
 
 const Home: NextPage = () => {
-  const { status, data } = useSession();
+  const { status } = useSession();
 
   if (status === "loading") return <p>Loading..</p>;
   if (status === "unauthenticated")
