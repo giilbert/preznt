@@ -15,7 +15,7 @@ export const Layout: React.FC<
 
       <Navbar breadcrumbs={breadcrumbs ? breadcrumbs : undefined} />
 
-      <div className="mx-16 mt-20 flex justify-center">
+      <div className="mx-16 mt-24 flex justify-center">
         <main className="max-w-5xl w-screen">{children}</main>
       </div>
     </>

@@ -14,12 +14,27 @@ const Home: NextPage = () => {
     return <Button onClick={() => signIn("google")}>Sign in</Button>;
 
   return (
-    <Layout>
-      <JoinOrganization />
+    <Layout
+      breadcrumbs={[
+        {
+          name: "these",
+          path: "/",
+        },
+        {
+          name: "are",
+          path: "are",
+        },
+        {
+          name: "breadcrumbs",
+          path: "asdasd",
+        },
+      ]}
+    >
+      <div className="flex gap-2">
+        <JoinOrganization />
+        <CreateOrganization />
+      </div>
       <OrganizationList />
-
-      <hr className="my-4" />
-      <CreateOrganization />
     </Layout>
   );
 };

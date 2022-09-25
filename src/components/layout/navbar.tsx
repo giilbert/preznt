@@ -18,7 +18,7 @@ export const Navbar: React.FC<{
   const { status, data } = useSession();
 
   return (
-    <div className="fixed top-0 left-0 py-2 px-4 w-screen flex justify-center bg-background-primary border-b-neutral-800 border-b">
+    <div className="fixed top-0 left-0 py-4 px-4 w-screen flex justify-center bg-background-tint border-b-neutral-800 border-b">
       <div className="flex items-center max-w-5xl w-screen">
         <div className="mr-auto flex items-center">
           <Link href="/">
@@ -41,10 +41,10 @@ export const Navbar: React.FC<{
             console.log(path, breadcrumbs.slice(0, i + 1));
 
             return (
-              <p className="text-gray-200 ml-3" key={i}>
+              <p className="text-gray-300 ml-3 text-lg" key={i}>
                 <Link href={path}>{breadcrumb.name}</Link>
                 {i + 1 !== breadcrumbs.length && (
-                  <span className="ml-3">/</span>
+                  <span className="ml-3 text-gray-500">/</span>
                 )}
               </p>
             );
