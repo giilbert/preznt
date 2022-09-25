@@ -9,7 +9,7 @@ export const Card = forwardRef<
     <div
       ref={ref}
       className={clsx(
-        "bg-background-secondary border-accent-stroke border-2 p-4 rounded-md",
+        "bg-background-secondary border-accent-stroke border px-4 py-2 rounded",
         props.className
       )}
     >
@@ -17,3 +17,5 @@ export const Card = forwardRef<
     </div>
   );
 });
+
+Card.displayName = "Card";

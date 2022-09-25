@@ -18,7 +18,7 @@ export const Navbar: React.FC<{
   const { status, data } = useSession();
 
   return (
-    <div className="fixed top-0 left-0 py-2 px-4 w-screen flex justify-center bg-background-primary border-b-neutral-800 border-b-2">
+    <div className="fixed top-0 left-0 py-2 px-4 w-screen flex justify-center bg-background-primary border-b-neutral-800 border-b">
       <div className="flex items-center max-w-5xl w-screen">
         <div className="mr-auto flex items-center">
           <Link href="/">

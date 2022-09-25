@@ -14,24 +14,12 @@ const Home: NextPage = () => {
     return <Button onClick={() => signIn("google")}>Sign in</Button>;
 
   return (
-    <Layout
-      breadcrumbs={[
-        {
-          path: "/",
-          name: "Dashboard",
-        },
-      ]}
-    >
-      <main className="w-5/6 max-w-4xl">
-        <div className="flex gap-4 items-center"></div>
+    <Layout>
+      <JoinOrganization />
+      <OrganizationList />
 
-        <hr className="my-4" />
-        <JoinOrganization />
-        <OrganizationList />
-
-        <hr className="my-4" />
-        <CreateOrganization />
-      </main>
+      <hr className="my-4" />
+      <CreateOrganization />
     </Layout>
   );
 };
