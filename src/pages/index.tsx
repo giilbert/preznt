@@ -15,20 +15,13 @@ const Home: NextPage = () => {
 
   return (
     <Layout
-      breadcrumbs={[
+      tabs={[
         {
-          name: "these",
+          name: "Organizations",
           path: "/",
         },
-        {
-          name: "are",
-          path: "are",
-        },
-        {
-          name: "breadcrumbs",
-          path: "asdasd",
-        },
       ]}
+      selectedTab="Organizations"
     >
       <div className="flex gap-2">
         <JoinOrganization />
