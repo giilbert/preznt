@@ -6,12 +6,12 @@ export const OrganizationContext = createContext<
 >(null);
 
 export const useOrganization = () => {
-  const organiation = useContext(OrganizationContext);
+  const organization = useContext(OrganizationContext);
 
-  if (!organiation)
+  if (!organization)
     throw new Error(
       "Attempted to use useOrganization outside of an OrganizationContext or before organization has been loaded."
     );
 
-  return organiation;
+  return organization;
 };
