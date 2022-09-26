@@ -3,13 +3,14 @@ import {
   joinOrganizationSchema,
 } from "@/schemas/organization";
 import { enforceOrganizationAdmin } from "@/server/common/organization-perms";
-import { OrganizationStatus } from "@prisma/client";
+import { Organization, OrganizationStatus } from "@prisma/client";
 import { z } from "zod";
 import { t, authedProcedure } from "../trpc";
 import { customAlphabet } from "nanoid";
 import { Context } from "../context";
 import { alphanumericNanoid } from "@/utils/alphanumericNanoid";
 import { TRPCError } from "@trpc/server";
+import { organizationMemberTabs } from "@/utils/tabs/organization";
 
 const generateJoinCode = async (ctx: Context): Promise<string> => {
   // is there a better way to do this?
@@ -77,25 +78,47 @@ export const organizationRouter = t.router({
         slug: z.string(),
       })
     )
-    .query(async ({ ctx, input }) => {
-      const maybePrivateOrganization = await ctx.prisma.organization.findFirst({
-        where: {
-          private: false,
-          slug: input.slug,
-        },
-      });
-      if (maybePrivateOrganization) return maybePrivateOrganization;
+    .query(
+      async ({
+        ctx,
+        input,
+      }): Promise<Organization & { status: OrganizationStatus }> => {
+        if (ctx.session?.user) {
+          const organizationMember =
+            await ctx.prisma.organizationOnUser.findFirst({
+              where: {
+                userId: ctx.session.user.id,
+                organization: {
+                  slug: input.slug,
+                },
+              },
+              include: { organization: true },
+            });
 
-      return await ctx.prisma.organization.findFirst({
-        where: {
-          private: true,
-          slug: input.slug,
-          users: {
-            some: { userId: ctx.session?.user?.id },
-          },
-        },
-      });
-    }),
+          if (organizationMember)
+            return {
+              ...organizationMember.organization,
+              status: organizationMember.status,
+            };
+        }
+
+        const maybePrivateOrganization =
+          await ctx.prisma.organization.findFirst({
+            where: {
+              private: false,
+              slug: input.slug,
+            },
+          });
+        if (maybePrivateOrganization)
+          return {
+            ...maybePrivateOrganization,
+            // FIXME: do something with this!
+            status: "" as OrganizationStatus,
+          };
+
+        throw new TRPCError({ code: "NOT_FOUND" });
+      }
+    ),
 
   getAllPreznts: t.procedure
     .input(

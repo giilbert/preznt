@@ -7,6 +7,7 @@ import { Menu, Popover, Transition } from "@headlessui/react";
 import { Fragment } from "react";
 import Link from "next/link";
 import clsx from "clsx";
+import { useRouter } from "next/router";
 
 export interface Breadcrumb {
   name: string;
@@ -42,7 +43,7 @@ export const Navbar: React.FC<{
         <ProfileButton />
       </div>
 
-      {tabs && selectedTab && <Tabs tabs={tabs} selected={selectedTab} />}
+      {tabs && <Tabs tabs={tabs} selected={selectedTab || ""} />}
     </div>
   </div>
 );
@@ -110,19 +111,29 @@ const Tabs: React.FC<{ tabs: Tab[]; selected: string }> = ({
   tabs,
   selected,
 }) => {
+  const router = useRouter();
+
   return (
-    <div className="w-full mt-3">
+    <div className="w-full mt-3 flex gap-4">
       {tabs.map((tab, i) => (
-        <p
-          className={clsx(
-            "text-gray-400 hover:text-gray-50 hover:bg-background-secondary w-min px-2 py-0.5 rounded cursor-pointer transition-all",
-            tab.name === selected &&
-              "text-gray-50 after:border-b-2 after:border-gray-100 after:block after:relative after:-bottom-2"
-          )}
+        <Link
+          href={{
+            pathname: tab.path,
+            query: router.query,
+          }}
+          passHref
           key={i}
         >
-          {tab.name}
-        </p>
+          <a
+            className={clsx(
+              "text-gray-400 hover:text-gray-50 hover:bg-background-secondary w-min px-2 py-0.5 rounded cursor-pointer transition-all",
+              tab.name === selected &&
+                "text-gray-50 after:border-b-2 after:border-gray-100 after:block after:relative after:-bottom-2"
+            )}
+          >
+            {tab.name}
+          </a>
+        </Link>
       ))}
     </div>
   );
