@@ -41,7 +41,7 @@ export const OrganizationWrapper: React.FC<{
           !!organization && [
             {
               name: organization.name,
-              path: organization.slug,
+              path: `/[slug]`,
             },
             ...(breadcrumbs ? breadcrumbs : []),
           ]

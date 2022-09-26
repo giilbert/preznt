@@ -15,20 +15,6 @@ const Home: NextPage = () => {
 
   return (
     <Layout
-      breadcrumbs={[
-        {
-          name: "these",
-          path: "/",
-        },
-        {
-          name: "are",
-          path: "are",
-        },
-        {
-          name: "breadcrumbs",
-          path: "asdasd",
-        },
-      ]}
       tabs={[
         {
           name: "Organizations",

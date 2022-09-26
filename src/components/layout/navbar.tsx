@@ -51,20 +51,16 @@ export const Navbar: React.FC<{
 const Breadcrumbs: React.FC<{ breadcrumbs: Breadcrumb[] }> = ({
   breadcrumbs,
 }) => {
+  const router = useRouter();
+
   return (
     <>
       {breadcrumbs.map((breadcrumb, i) => {
-        const path =
-          "/" +
-          breadcrumbs
-            .slice(0, i + 1)
-            .map((v) => v.path)
-            .join("/");
-        console.log(path, breadcrumbs.slice(0, i + 1));
-
         return (
           <p className="text-gray-300 ml-3 text-lg" key={i}>
-            <Link href={path}>{breadcrumb.name}</Link>
+            <Link href={{ pathname: breadcrumb.path, query: router.query }}>
+              {breadcrumb.name}
+            </Link>
             {i + 1 !== breadcrumbs.length && (
               <span className="ml-3 text-gray-500">/</span>
             )}
