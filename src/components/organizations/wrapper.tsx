@@ -15,16 +15,24 @@ export const OrganizationWrapper: React.FC<{
   selectedTab?: string;
   breadcrumbs?: Breadcrumb[];
   children: ReactNode | ((organization: Organization) => ReactNode);
-}> = ({ selectedTab = "", breadcrumbs, children }) => {
-  const { query } = useRouter();
+  requiresAdmin?: boolean;
+}> = ({ requiresAdmin = true, selectedTab = "", breadcrumbs, children }) => {
+  const router = useRouter();
   const {
     data: organization,
     status,
     error,
   } = trpc.organization.getBySlug.useQuery(
-    { slug: query.slug as string },
-    { enabled: !!query.slug }
+    { slug: router.query.slug as string },
+    { enabled: !!router.query.slug }
   );
+
+  if (
+    status === "success" &&
+    organization.status === OrganizationStatus.MEMBER &&
+    requiresAdmin
+  )
+    router.back();
 
   return (
     <OrganizationContext.Provider value={organization}>
@@ -47,9 +55,10 @@ export const OrganizationWrapper: React.FC<{
       >
         <>
           {status === "loading" && <Text>Loading</Text>}
-          {organization && typeof children === "function"
-            ? children(organization)
-            : children}
+          {organization &&
+            (typeof children === "function"
+              ? children(organization)
+              : children)}
         </>
       </Layout>
     </OrganizationContext.Provider>
