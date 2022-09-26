@@ -7,6 +7,7 @@ import { PropsWithChildren, useCallback, useState } from "react";
 import { KeyValueAction } from "@prisma/client";
 import { useOrganization } from "@/lib/use-organization";
 import { useDisclosure } from "@/lib/use-disclosure";
+import { FiX } from "react-icons/fi";
 
 type Action = z.infer<typeof createPrezntSchema>["actions"][0];
 
@@ -43,6 +44,11 @@ export const CreatePreznt: React.FC = () => {
     <>
       <Button onClick={modalDisclosure.onOpen}>Create Preznt</Button>
       <DialogWrapper {...modalDisclosure}>
+        <div className="flex items-center">
+          <Heading level="h2" className="pb-2">
+            Create Preznt
+          </Heading>
+        </div>
         <form
           onSubmit={handleSubmit(async (data) => {
             console.log(data);
@@ -53,7 +59,7 @@ export const CreatePreznt: React.FC = () => {
             organization.getAllPreznts.invalidate();
             reset();
           })}
-          className="w-screen max-w-2xl flex gap-2 flex-col"
+          className="md:w-screen md:max-w-2xl flex gap-2 flex-col"
         >
           <label htmlFor="name" className="text-gray-100">
             Name
