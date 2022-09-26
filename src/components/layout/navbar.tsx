@@ -23,9 +23,9 @@ export const Navbar: React.FC<{
   tabs?: Tab[];
   selectedTab?: string;
 }> = ({ breadcrumbs, tabs, selectedTab }) => (
-  <div className="fixed top-0 left-0 py-2 w-screen bg-background-tint border-b-neutral-800 border-b flex justify-center">
-    <div>
-      <div className="flex items-center max-w-5xl w-screen">
+  <div className="fixed top-0 left-0 p-2 w-screen bg-background-tint border-b-neutral-800 border-b flex justify-center">
+    <div className="w-full max-w-5xl">
+      <div className="flex items-center w-full">
         <div className="mr-auto flex items-center">
           <Link href="/">
             <Image
@@ -111,7 +111,7 @@ const Tabs: React.FC<{ tabs: Tab[]; selected: string }> = ({
   selected,
 }) => {
   return (
-    <div className="max-w-5xl w-screen mt-3">
+    <div className="w-full mt-3">
       {tabs.map((tab, i) => (
         <p
           className={clsx(
