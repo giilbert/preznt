@@ -10,6 +10,7 @@ import { OrganizationStatus } from "@prisma/client";
 import { RedeemPreznt } from "@/components/preznt/redeem";
 import { Layout } from "@/components/layout/layout";
 import { OrganizationContext } from "@/lib/use-organization";
+import Link from "next/link";
 
 const OrganizationPage: React.FC = () => {
   const { query } = useRouter();
@@ -41,6 +42,7 @@ const OrganizationPage: React.FC = () => {
         {status === "loading" && <Text>Loading</Text>}
         {organization && (
           <>
+            <Link href="/[slug]/asdasd">adasd</Link>
             <RedeemPreznt />
             <hr className="my-4" />
             <AttributesList />

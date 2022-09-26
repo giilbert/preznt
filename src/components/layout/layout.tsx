@@ -1,21 +1,27 @@
 import Head from "next/head";
 import { PropsWithChildren } from "react";
-import { Breadcrumb, Navbar } from "./navbar";
+import { Breadcrumb, Navbar, Tab } from "./navbar";
 
 export const Layout: React.FC<
   PropsWithChildren<{
     breadcrumbs?: false | Breadcrumb[];
+    tabs?: false | Tab[];
+    selectedTab?: false | string;
   }>
-> = ({ children, breadcrumbs = [] }) => {
+> = ({ children, breadcrumbs = [], tabs = [], selectedTab = "" }) => {
   return (
     <>
       <Head>
         <title>preznt</title>
       </Head>
 
-      <Navbar breadcrumbs={breadcrumbs ? breadcrumbs : undefined} />
+      <Navbar
+        breadcrumbs={breadcrumbs ? breadcrumbs : undefined}
+        tabs={tabs ? tabs : undefined}
+        selectedTab={selectedTab ? selectedTab : undefined}
+      />
 
-      <div className="mx-16 mt-24 flex justify-center">
+      <div className="mx-16 mt-28 flex justify-center">
         <main className="max-w-5xl w-screen">{children}</main>
       </div>
     </>

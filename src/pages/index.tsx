@@ -29,6 +29,13 @@ const Home: NextPage = () => {
           path: "asdasd",
         },
       ]}
+      tabs={[
+        {
+          name: "Organizations",
+          path: "/",
+        },
+      ]}
+      selectedTab="Organizations"
     >
       <div className="flex gap-2">
         <JoinOrganization />
