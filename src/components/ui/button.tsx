@@ -90,7 +90,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         <button
           ref={ref}
           className={clsx(
-            `font-medium transition-all truncate`,
+            `font-medium transition-all truncate flex justify-center`,
             sizes[size],
             variants[variant],
             !disabled && !loading && `${variantHover[variant]} active:scale-95`,
