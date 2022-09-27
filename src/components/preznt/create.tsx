@@ -79,7 +79,7 @@ export const CreatePreznt: React.FC = () => {
           <input
             {...register("expires", { valueAsDate: true })}
             autoComplete="off"
-            type="date"
+            type="datetime-local"
             id="expires"
             className="bg-neutral-800 px-3 py-2 text-gray-100 rounded"
           />
