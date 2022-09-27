@@ -29,7 +29,7 @@ export const CreatePreznt: React.FC = () => {
     },
   });
   const { organization } = trpc.useContext();
-  const { mutateAsync } = trpc.preznt.create.useMutation();
+  const { mutateAsync, isLoading } = trpc.preznt.create.useMutation();
   const modalDisclosure = useDisclosure();
 
   const addAction = useCallback(
@@ -52,13 +52,12 @@ export const CreatePreznt: React.FC = () => {
         </div>
         <form
           onSubmit={handleSubmit(async (data) => {
-            console.log(data);
             await mutateAsync({
               ...data,
               organizationId,
             });
-            organization.getAllPreznts.invalidate();
-            reset();
+            await organization.getAllPreznts.invalidate();
+            modalDisclosure.onClose();
           })}
           className="md:w-screen md:max-w-2xl flex gap-2 flex-col"
         >
@@ -117,7 +116,11 @@ export const CreatePreznt: React.FC = () => {
           <Heading level="h2">Actions</Heading>
           <CreateAction actions={getValues("actions")} addAction={addAction} />
 
-          <Button type="submit" className="mt-4 text-center w-min">
+          <Button
+            type="submit"
+            className="mt-4 text-center"
+            loading={isLoading}
+          >
             Create Preznt
           </Button>
         </form>
