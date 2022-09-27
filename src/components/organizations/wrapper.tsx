@@ -16,7 +16,7 @@ export const OrganizationWrapper: React.FC<{
   breadcrumbs?: Breadcrumb[];
   children: ReactNode | ((organization: Organization) => ReactNode);
   requiresAdmin?: boolean;
-}> = ({ requiresAdmin = true, selectedTab = "", breadcrumbs, children }) => {
+}> = ({ requiresAdmin = false, selectedTab = "", breadcrumbs, children }) => {
   const router = useRouter();
   const {
     data: organization,
@@ -47,9 +47,10 @@ export const OrganizationWrapper: React.FC<{
           ]
         }
         tabs={
-          organization?.status === OrganizationStatus.MEMBER
-            ? organizationMemberTabs
-            : organizationAdminTabs
+          organization?.status === OrganizationStatus.ADMIN ||
+          organization?.status === OrganizationStatus.OWNER
+            ? organizationAdminTabs
+            : organizationMemberTabs
         }
         selectedTab={selectedTab}
       >
