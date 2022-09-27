@@ -101,13 +101,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           role={href ? "link" : "button"}
           {...rest}
         >
-          <span>
-            {!loading && icon}
-            {loading && <Spinner />}
-          </span>
-          <span className={clsx((icon || loading) && rest.children && "ml-2")}>
-            {props.children}
-          </span>
+          {icon && <span>{icon}</span>}
+          {!loading ? props.children : <Spinner />}
         </button>
       </WrapperComponent>
     );
