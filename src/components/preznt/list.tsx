@@ -18,7 +18,6 @@ export const PrezntList: React.FC = () => {
   return (
     <div className="mt-4">
       {preznts.map((preznt) => (
-        // TODO: actual UI
         <Card
           key={preznt.id}
           className="mb-2 flex gap-4 items-center cursor-pointer hover:bg-neutral-900 transition-colors"

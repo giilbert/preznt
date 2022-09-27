@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 
 export const RedeemPreznt: React.FC = () => {
   const { query } = useRouter();
-  const { mutateAsync } = trpc.preznt.redeem.useMutation();
+  const { mutate, error } = trpc.preznt.redeem.useMutation();
   const {
     handleSubmit,
     register,
@@ -24,30 +24,29 @@ export const RedeemPreznt: React.FC = () => {
             "put this inside a route with an organization slug in its path"
           );
 
-        await mutateAsync({
+        mutate({
           ...data,
           slug: query.slug as string,
         });
         reset();
       })}
+      className="mb-2"
     >
-      <Text className="text-2xl">Redeem preznt</Text>
-      <div className="flex gap-2 max-w-xl">
-        <label htmlFor="code" className="text-gray-100">
-          Code
-        </label>
+      <div className="flex gap-1 max-w-xl">
         <input
           {...register("code")}
           autoComplete="off"
-          id="code"
           className="bg-neutral-800 px-3 py-1 text-gray-100 rounded"
+          placeholder="Code"
         />
-        <Text className="text-red-400">{errors.code?.message}</Text>
 
         <Button type="submit" size="sm">
           Redeem
         </Button>
       </div>
+
+      <Text className="text-red-400">{errors.code?.message}</Text>
+      <Text className="text-red-400">{error?.message}</Text>
     </form>
   );
 };
