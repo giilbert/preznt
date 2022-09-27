@@ -72,53 +72,38 @@ export const organizationRouter = t.router({
       });
     }),
 
-  getBySlug: t.procedure
+  getBySlug: authedProcedure
     .input(
       z.object({
         slug: z.string(),
       })
     )
-    .query(
-      async ({
-        ctx,
-        input,
-      }): Promise<Organization & { status: OrganizationStatus }> => {
-        if (ctx.session?.user) {
-          const organizationMember =
-            await ctx.prisma.organizationOnUser.findFirst({
-              where: {
-                userId: ctx.session.user.id,
-                organization: {
-                  slug: input.slug,
-                },
-              },
-              include: { organization: true },
-            });
-
-          if (organizationMember)
-            return {
-              ...organizationMember.organization,
-              status: organizationMember.status,
-            };
-        }
-
-        const maybePrivateOrganization =
-          await ctx.prisma.organization.findFirst({
-            where: {
-              private: false,
-              slug: input.slug,
+    .query(async ({ ctx, input }) => {
+      const organizationMember = await ctx.prisma.organizationOnUser.findFirst({
+        where: {
+          userId: ctx.user.id,
+          organization: {
+            slug: input.slug,
+          },
+        },
+        include: {
+          organization: {
+            select: {
+              id: true,
+              slug: true,
+              name: true,
             },
-          });
-        if (maybePrivateOrganization)
-          return {
-            ...maybePrivateOrganization,
-            // FIXME: do something with this!
-            status: "" as OrganizationStatus,
-          };
+          },
+        },
+      });
 
-        throw new TRPCError({ code: "NOT_FOUND" });
-      }
-    ),
+      if (!organizationMember) throw new TRPCError({ code: "NOT_FOUND" });
+
+      return {
+        ...organizationMember.organization,
+        status: organizationMember.status,
+      };
+    }),
 
   getAllPreznts: t.procedure
     .input(
@@ -198,5 +183,23 @@ export const organizationRouter = t.router({
       if (!organizationMember) throw new TRPCError({ code: "NOT_FOUND" });
 
       return organizationMember.attributes;
+    }),
+
+  getOrganizationAsAdmin: authedProcedure
+    .input(
+      z.object({
+        organizationId: z.string(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      await enforceOrganizationAdmin(ctx, input);
+
+      const organization = await ctx.prisma.organization.findUnique({
+        where: { id: input.organizationId },
+      });
+
+      if (!organization) throw new TRPCError({ code: "NOT_FOUND" });
+
+      return organization;
     }),
 });

@@ -1,4 +1,7 @@
-import { OrganizationContext } from "@/lib/use-organization";
+import {
+  OrganizationContext,
+  PublicOrganization,
+} from "@/lib/use-organization";
 import {
   organizationAdminTabs,
   organizationMemberTabs,
@@ -14,7 +17,7 @@ import { Breadcrumb } from "../layout/navbar";
 export const OrganizationWrapper: React.FC<{
   selectedTab?: string;
   breadcrumbs?: Breadcrumb[];
-  children: ReactNode | ((organization: Organization) => ReactNode);
+  children: ReactNode | ((organization: PublicOrganization) => ReactNode);
   requiresAdmin?: boolean;
 }> = ({ requiresAdmin = false, selectedTab = "", breadcrumbs, children }) => {
   const router = useRouter();
