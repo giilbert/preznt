@@ -26,6 +26,6 @@ export const organizationMemberTabs: Tab[] = [
   },
   {
     name: "Preznts",
-    path: "/[slug]/preznt",
+    path: "/[slug]/preznts",
   },
 ];
