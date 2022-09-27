@@ -29,13 +29,15 @@ export const Navbar: React.FC<{
       <div className="flex items-center w-full">
         <div className="mr-auto flex items-center">
           <Link href="/">
-            <Image
-              src="/logo.svg"
-              alt=""
-              width="40px"
-              height="40px"
-              className="cursor-pointer hover:scale-105"
-            />
+            <a>
+              <Image
+                src="/logo.svg"
+                alt=""
+                width="40px"
+                height="40px"
+                className="cursor-pointer hover:scale-105"
+              />
+            </a>
           </Link>
 
           {breadcrumbs && <Breadcrumbs breadcrumbs={breadcrumbs} />}

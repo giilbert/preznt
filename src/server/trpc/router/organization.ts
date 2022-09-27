@@ -220,4 +220,35 @@ export const organizationRouter = t.router({
 
       return organization;
     }),
+
+  changeMemberStatus: authedProcedure
+    .input(
+      z.object({
+        organizationId: z.string(),
+        userId: z.string(),
+        status: z.nativeEnum(OrganizationStatus),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { status } = await enforceOrganizationAdmin(ctx, input);
+
+      // only owners can promote people to ADMIN
+      if (
+        input.status === OrganizationStatus.ADMIN &&
+        status !== OrganizationStatus.OWNER
+      )
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+
+      await ctx.prisma.organizationOnUser.update({
+        where: {
+          userId_organizationId: {
+            userId: input.userId,
+            organizationId: input.organizationId,
+          },
+        },
+        data: {
+          status: input.status,
+        },
+      });
+    }),
 });

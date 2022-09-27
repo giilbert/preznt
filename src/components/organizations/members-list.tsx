@@ -1,6 +1,7 @@
 import { useOrganization } from "@/lib/use-organization";
 import { trpc } from "@/utils/trpc";
-import { Text } from "../ui";
+import { Card, Heading, Text } from "../ui";
+import { MemberStatus } from "./member-status";
 
 export const OrganizationMembersList: React.FC = () => {
   const organization = useOrganization();
@@ -17,9 +18,13 @@ export const OrganizationMembersList: React.FC = () => {
 
   return (
     <div>
-      <Text className="text-2xl">Members</Text>
       {members.map((member) => (
-        <Text key={member.id}>{member.user.name}</Text>
+        <Card key={member.id} className="mt-2 flex">
+          <p>{member.user.name}</p>
+          <div className="ml-auto">
+            <MemberStatus member={member} />
+          </div>
+        </Card>
       ))}
     </div>
   );
