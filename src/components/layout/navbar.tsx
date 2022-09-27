@@ -24,7 +24,7 @@ export const Navbar: React.FC<{
   tabs?: Tab[];
   selectedTab?: string;
 }> = ({ breadcrumbs, tabs, selectedTab }) => (
-  <div className="fixed top-0 left-0 p-2 w-screen bg-background-tint border-b-neutral-800 border-b flex justify-center">
+  <div className="fixed top-0 left-0 px-4 py-2 w-screen bg-background-tint border-b-neutral-800 border-b flex justify-center">
     <div className="w-full max-w-5xl">
       <div className="flex items-center w-full">
         <div className="mr-auto flex items-center">
@@ -127,7 +127,7 @@ const Tabs: React.FC<{ tabs: Tab[]; selected: string }> = ({
             className={clsx(
               "text-gray-400 hover:text-gray-50 hover:bg-background-secondary w-min px-2 py-0.5 rounded cursor-pointer transition-all",
               tab.name === selected &&
-                "text-gray-50 after:border-b-2 after:border-gray-100 after:block after:relative after:-bottom-2"
+                "text-gray-50 after:border-b-2 after:border-gray-100 after:block after:relative after:-bottom-2.5"
             )}
           >
             {tab.name}
