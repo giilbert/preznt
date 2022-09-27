@@ -1,6 +1,6 @@
 import { useOrganization } from "@/lib/use-organization";
 import { trpc } from "@/utils/trpc";
-import { Text } from "../ui";
+import { Card, Heading, Text } from "../ui";
 
 export const PrezntList: React.FC = () => {
   const organization = useOrganization();
@@ -17,16 +17,21 @@ export const PrezntList: React.FC = () => {
 
   return (
     <div className="mt-4">
-      <Text className="font-bold text-2xl">Preznts</Text>
       {preznts.map((preznt) => (
         // TODO: actual UI
-        <div key={preznt.id} className="mb-2">
-          <Text>{preznt.name}</Text>
-          <Text>Created by {preznt.creator.name}</Text>
-          <Text>Actions: {JSON.stringify(preznt.actions)}</Text>
-          <Text>Code: {preznt.code}</Text>
-          <Text>Link: {`${window.location.href}/preznt/${preznt.code}`}</Text>
-        </div>
+        <Card
+          key={preznt.id}
+          className="mb-2 flex gap-4 items-center cursor-pointer hover:bg-neutral-900 transition-colors"
+        >
+          <Heading>{preznt.name}</Heading>
+          <p className="text-gray-300">
+            Expires{" "}
+            {Intl.DateTimeFormat(undefined, {
+              dateStyle: "short",
+              timeStyle: "medium",
+            }).format(preznt.expires)}
+          </p>
+        </Card>
       ))}
     </div>
   );
