@@ -28,11 +28,12 @@ export const OrganizationWrapper: React.FC<{
   );
 
   if (
-    status === "success" &&
-    organization.status === OrganizationStatus.MEMBER &&
-    requiresAdmin
+    (status === "success" &&
+      organization.status === OrganizationStatus.MEMBER &&
+      requiresAdmin) ||
+    status === "error"
   )
-    router.back();
+    router.push("/");
 
   return (
     <OrganizationContext.Provider value={organization}>

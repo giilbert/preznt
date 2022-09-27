@@ -89,7 +89,10 @@ const ProfileButton: React.FC = () => {
         <Popover.Panel className="absolute right-1/2 z-10 mt-3 w-56 transform translate-x-9 px-4">
           {() => (
             <Button
-              onClick={() => signOut()}
+              onClick={async () => {
+                await signOut();
+                window.location.href = "/";
+              }}
               variant="danger"
               size="sm"
               className="w-full flex justify-center"
