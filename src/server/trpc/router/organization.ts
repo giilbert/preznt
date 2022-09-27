@@ -128,17 +128,35 @@ export const organizationRouter = t.router({
   joinOrganization: authedProcedure
     .input(joinOrganizationSchema)
     .mutation(async ({ input, ctx }) => {
-      await ctx.prisma.organizationOnUser.create({
-        data: {
-          status: OrganizationStatus.MEMBER,
-          organization: {
-            connect: { joinCode: input.joinCode },
-          },
-          user: {
-            connect: { id: ctx.user.id },
-          },
-        },
+      // check that the organization exists
+      const organization = await ctx.prisma.organization.findUnique({
+        where: { joinCode: input.joinCode },
       });
+      if (!organization)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Organization does not exist.",
+        });
+
+      try {
+        await ctx.prisma.organizationOnUser.create({
+          data: {
+            status: OrganizationStatus.MEMBER,
+            organization: {
+              connect: { joinCode: input.joinCode },
+            },
+            user: {
+              connect: { id: ctx.user.id },
+            },
+          },
+        });
+      } catch {
+        // unique constraint failed... (user is already in organization)
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "User is already in organization.",
+        });
+      }
     }),
 
   getAllMembers: authedProcedure

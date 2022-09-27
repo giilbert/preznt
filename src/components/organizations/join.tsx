@@ -15,7 +15,8 @@ export const JoinOrganization: React.FC = () => {
   } = useZodForm({
     schema: joinOrganizationSchema,
   });
-  const { mutateAsync } = trpc.organization.joinOrganization.useMutation();
+  const { mutate, isLoading, error } =
+    trpc.organization.joinOrganization.useMutation();
   const { organization } = trpc.useContext();
   const modalDisclosure = useDisclosure();
 
@@ -26,11 +27,11 @@ export const JoinOrganization: React.FC = () => {
         isOpen={modalDisclosure.isOpen}
         onClose={modalDisclosure.onClose}
       >
-        <Heading className="mb-4">Join an Organization</Heading>
+        <Heading className="mb-4">Join Organization</Heading>
         <form
           onSubmit={handleSubmit(async (data) => {
             console.log(data);
-            await mutateAsync(data);
+            mutate(data);
             organization.getAllJoined.invalidate();
             reset();
           })}
@@ -49,9 +50,14 @@ export const JoinOrganization: React.FC = () => {
             <Text className="text-red-400">{errors.joinCode?.message}</Text>
           </div>
 
-          <Button type="submit" className="flex justify-center">
+          <Button
+            type="submit"
+            className="flex justify-center"
+            loading={isLoading}
+          >
             Join
           </Button>
+          <Text className="text-red-400">{error?.message}</Text>
         </form>
       </DialogWrapper>
     </>
