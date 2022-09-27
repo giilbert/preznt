@@ -90,11 +90,11 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         <button
           ref={ref}
           className={clsx(
-            `font-medium transition-all truncate flex items-center max-w-xs`,
+            `font-medium transition-all truncate`,
             sizes[size],
             variants[variant],
             !disabled && !loading && `${variantHover[variant]} active:scale-95`,
-            disabled && "opacity-50 cursor-not-allowed",
+            (disabled || loading) && "opacity-50 cursor-not-allowed",
             className
           )}
           aria-disabled={disabled}

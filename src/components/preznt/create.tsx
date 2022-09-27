@@ -7,7 +7,8 @@ import { PropsWithChildren, useCallback, useState } from "react";
 import { KeyValueAction } from "@prisma/client";
 import { useOrganization } from "@/lib/use-organization";
 import { useDisclosure } from "@/lib/use-disclosure";
-import { FiX } from "react-icons/fi";
+import { FiPlus, FiX } from "react-icons/fi";
+import { TinyButton } from "../ui/tiny-button";
 
 type Action = z.infer<typeof createPrezntSchema>["actions"][0];
 
@@ -116,7 +117,7 @@ export const CreatePreznt: React.FC = () => {
           <Heading level="h2">Actions</Heading>
           <CreateAction actions={getValues("actions")} addAction={addAction} />
 
-          <Button type="submit" className="mt-4">
+          <Button type="submit" className="mt-4 text-center w-min">
             Create Preznt
           </Button>
         </form>
@@ -197,6 +198,16 @@ const CreateAction: React.FC<{
           className="bg-neutral-800 px-3 py-2 text-gray-100 rounded w-24"
           {...register("defaultValue", { valueAsNumber: true })}
         />
+
+        <TinyButton
+          type="button"
+          onClick={handleSubmit((data) => {
+            addAction(data);
+            reset();
+          })}
+        >
+          <FiPlus />
+        </TinyButton>
       </div>
 
       {Object.values(errors).map((err) => (
@@ -204,17 +215,6 @@ const CreateAction: React.FC<{
           {err.ref?.name}: {err.message}
         </Text>
       ))}
-      <Button
-        className="w-min mt-3"
-        variant="outline-secondary"
-        type="button"
-        onClick={handleSubmit((data) => {
-          addAction(data);
-          reset();
-        })}
-      >
-        Add Action
-      </Button>
     </div>
   );
 };
