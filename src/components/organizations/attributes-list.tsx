@@ -36,14 +36,16 @@ export const AttributesList: React.FC = () => {
             </tr>
           </thead>
 
-          {attributes.map((attribute) => (
-            <tr key={attribute.name}>
-              <td className={clsx(tableCellClasses, "font-mono")}>
-                {attribute.name}
-              </td>
-              <td className={tableCellClasses}>{attribute.value}</td>
-            </tr>
-          ))}
+          <tbody>
+            {attributes.map((attribute) => (
+              <tr key={attribute.name}>
+                <td className={clsx(tableCellClasses, "font-mono")}>
+                  {attribute.name}
+                </td>
+                <td className={tableCellClasses}>{attribute.value}</td>
+              </tr>
+            ))}
+          </tbody>
         </table>
       ) : (
         <p className="text-gray-300">
