@@ -9,7 +9,7 @@ import { Layout } from "@/components/layout/layout";
 const Home: NextPage = () => {
   const { status } = useSession();
 
-  if (status === "loading") return <p>Loading..</p>;
+  if (status === "loading") return <p>Defrosting lambda functions...</p>;
   if (status === "unauthenticated")
     return <Button onClick={() => signIn("google")}>Sign in</Button>;
 
