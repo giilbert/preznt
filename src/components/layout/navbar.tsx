@@ -8,6 +8,7 @@ import { Fragment } from "react";
 import Link from "next/link";
 import clsx from "clsx";
 import { useRouter } from "next/router";
+import { ParsedUrlQuery } from "querystring";
 
 export interface Breadcrumb {
   name: string;
@@ -60,7 +61,12 @@ const Breadcrumbs: React.FC<{ breadcrumbs: Breadcrumb[] }> = ({
       {breadcrumbs.map((breadcrumb, i) => {
         return (
           <p className="text-gray-300 ml-3 text-lg" key={i}>
-            <Link href={{ pathname: breadcrumb.path, query: router.query }}>
+            <Link
+              href={{
+                pathname: breadcrumb.path,
+                query: createQuery(router.query, breadcrumb.path),
+              }}
+            >
               {breadcrumb.name}
             </Link>
             {i + 1 !== breadcrumbs.length && (
@@ -120,7 +126,7 @@ const Tabs: React.FC<{ tabs: Tab[]; selected: string }> = ({
         <Link
           href={{
             pathname: tab.path,
-            query: router.query,
+            query: createQuery(router.query, tab.path),
           }}
           passHref
           key={i}
@@ -139,3 +145,12 @@ const Tabs: React.FC<{ tabs: Tab[]; selected: string }> = ({
     </div>
   );
 };
+
+// makes it so only query parameters valid in the pathname is exposed
+function createQuery(query: ParsedUrlQuery, path: string) {
+  return Object.fromEntries(
+    Object.entries(query as Record<string, string>).filter((v) =>
+      path.includes(v[0])
+    )
+  );
+}
