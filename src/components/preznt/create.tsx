@@ -6,13 +6,13 @@ import { z } from "zod";
 import { PropsWithChildren, useCallback, useState } from "react";
 import { KeyValueAction } from "@prisma/client";
 import { useOrganization } from "@/lib/use-organization";
-import { useDisclosure } from "@/lib/use-disclosure";
+import { Disclosure, useDisclosure } from "@/lib/use-disclosure";
 import { FiPlus, FiX } from "react-icons/fi";
 import { TinyButton } from "../ui/tiny-button";
 
 type Action = z.infer<typeof createPrezntSchema>["actions"][0];
 
-export const CreatePreznt: React.FC = () => {
+export const CreatePreznt: React.FC<Disclosure> = (modalDisclosure) => {
   const { id: organizationId } = useOrganization();
   const {
     handleSubmit,
@@ -30,7 +30,6 @@ export const CreatePreznt: React.FC = () => {
   });
   const { organization } = trpc.useContext();
   const { mutateAsync, isLoading } = trpc.preznt.create.useMutation();
-  const modalDisclosure = useDisclosure();
 
   const addAction = useCallback(
     (action: Action) => {
@@ -43,7 +42,6 @@ export const CreatePreznt: React.FC = () => {
 
   return (
     <>
-      <Button onClick={modalDisclosure.onOpen}>Create Preznt</Button>
       <DialogWrapper {...modalDisclosure}>
         <div className="flex items-center">
           <Heading level="h2" className="pb-2">
