@@ -169,4 +169,24 @@ export const prezntRouter = t.router({
         preznt,
       };
     }),
+
+  getByCode: authedProcedure
+    .input(
+      z.object({
+        code: z.string(),
+        organizationId: z.string(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      await enforceOrganizationAdmin(ctx, input);
+      const preznt = await ctx.prisma.preznt.findUnique({
+        where: {
+          code_organizationId: input,
+        },
+      });
+
+      if (!preznt) throw new TRPCError({ code: "NOT_FOUND" });
+
+      return preznt;
+    }),
 });

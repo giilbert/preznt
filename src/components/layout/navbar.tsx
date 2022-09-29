@@ -129,7 +129,7 @@ const Tabs: React.FC<{ tabs: Tab[]; selected: string }> = ({
             className={clsx(
               "text-gray-400 hover:text-gray-50 hover:bg-background-secondary w-min px-2 py-0.5 rounded cursor-pointer transition-all",
               tab.name === selected &&
-                "text-gray-50 after:border-b-2 after:border-gray-100 after:block after:relative after:-bottom-2.5"
+                "text-gray-50 after:border-b-2 after:border-accent-primary after:block after:relative after:-bottom-2.5"
             )}
           >
             {tab.name}
