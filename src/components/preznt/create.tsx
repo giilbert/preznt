@@ -1,7 +1,7 @@
 import { useZodForm } from "@/lib/use-zod-form";
 import { trpc } from "@/utils/trpc";
 import { Text, DialogWrapper, Button, Heading } from "@/components/ui";
-import { createPrezntSchema } from "@/schemas/preznt";
+import { Action, createPrezntSchema } from "@/schemas/preznt";
 import { z } from "zod";
 import { PropsWithChildren, useCallback, useState } from "react";
 import { KeyValueAction } from "@prisma/client";
@@ -9,9 +9,8 @@ import { useOrganization } from "@/lib/use-organization";
 import { Disclosure, useDisclosure } from "@/lib/use-disclosure";
 import { FiPlus, FiX } from "react-icons/fi";
 import { TinyButton } from "../ui/tiny-button";
-
-type Action = z.infer<typeof createPrezntSchema>["actions"][0];
-
+import { CreateAction } from "./create-action";
+import { ListActions } from "./list-actions";
 export const CreatePreznt: React.FC<Disclosure> = (modalDisclosure) => {
   const { id: organizationId } = useOrganization();
   const {
@@ -28,12 +27,14 @@ export const CreatePreznt: React.FC<Disclosure> = (modalDisclosure) => {
       actions: [],
     },
   });
+  const [createActionActive, setCreateActionActive] = useState(false);
   const { organization } = trpc.useContext();
   const { mutateAsync, isLoading } = trpc.preznt.create.useMutation();
 
   const addAction = useCallback(
     (action: Action) => {
       setValue("actions", [action, ...getValues("actions")]);
+      setCreateActionActive(false);
       // forces the form to rerender
       trigger("actions");
     },
@@ -112,7 +113,14 @@ export const CreatePreznt: React.FC<Disclosure> = (modalDisclosure) => {
           <hr className="border-gray-800 my-2" />
 
           <Heading level="h2">Actions</Heading>
-          <CreateAction actions={getValues("actions")} addAction={addAction} />
+          <ListActions actions={getValues("actions")} />
+          {createActionActive ? (
+            <CreateAction addAction={addAction} />
+          ) : (
+            <TinyButton onClick={() => setCreateActionActive(true)}>
+              <FiPlus />
+            </TinyButton>
+          )}
 
           <Button
             type="submit"
@@ -126,100 +134,3 @@ export const CreatePreznt: React.FC<Disclosure> = (modalDisclosure) => {
     </>
   );
 };
-
-const CreateAction: React.FC<{
-  actions: Action[];
-  addAction: (action: Action) => void;
-}> = ({ actions, addAction }) => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useZodForm({
-    schema: z.object({
-      attribute: z.string().min(1),
-      action: z.nativeEnum(KeyValueAction),
-      value: z.number(),
-      defaultValue: z.number(),
-    }),
-    defaultValues: {
-      defaultValue: 0,
-      value: 0,
-    },
-  });
-
-  // this cant be a form since a <form> inside a <form> is invalid DOM
-  return (
-    <div className="flex flex-col">
-      {actions.map(({ attribute, action, value, defaultValue }, i) => (
-        <Text className="mt-2" key={i}>
-          <DarkBg>{action}</DarkBg> <DarkBg>{attribute}</DarkBg> by{" "}
-          <DarkBg>{value}</DarkBg>, defaulting to{" "}
-          <DarkBg>{defaultValue}</DarkBg>
-        </Text>
-      ))}
-
-      <hr className="border-gray-800 my-4" />
-
-      <div className="flex gap-2 items-center flex-wrap">
-        <select
-          id="action"
-          className="bg-neutral-800 px-3 py-3 text-gray-100 rounded"
-          {...register("action")}
-        >
-          <option>INCREMENT</option>
-          <option>DECREMENT</option>
-          <option>SET</option>
-        </select>
-
-        <input
-          placeholder="Attribute"
-          id="attribute"
-          className="bg-neutral-800 px-3 py-2 text-gray-100 rounded font-mono w-32"
-          {...register("attribute")}
-        />
-
-        <label htmlFor="value" className="text-gray-100 mr-1">
-          by
-        </label>
-        <input
-          id="value"
-          type="number"
-          className="bg-neutral-800 px-3 py-2 text-gray-100 rounded w-24"
-          {...register("value", { valueAsNumber: true })}
-        />
-
-        <label htmlFor="default-value" className="text-gray-100 mr-1">
-          or default to
-        </label>
-        <input
-          id="default-value"
-          type="number"
-          className="bg-neutral-800 px-3 py-2 text-gray-100 rounded w-24"
-          {...register("defaultValue", { valueAsNumber: true })}
-        />
-
-        <TinyButton
-          type="button"
-          onClick={handleSubmit((data) => {
-            addAction(data);
-            reset();
-          })}
-        >
-          <FiPlus />
-        </TinyButton>
-      </div>
-
-      {Object.values(errors).map((err) => (
-        <Text key={err.ref?.name} className="text-red-400">
-          {err.ref?.name}: {err.message}
-        </Text>
-      ))}
-    </div>
-  );
-};
-
-const DarkBg: React.FC<PropsWithChildren<unknown>> = ({ children }) => (
-  <span className="px-2 py-1 bg-gray-800 rounded">{children}</span>
-);

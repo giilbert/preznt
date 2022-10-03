@@ -19,3 +19,5 @@ export const createPrezntSchema = z.object({
   organizationId: z.string(),
   allowJoin: z.boolean(),
 });
+
+export type Action = z.infer<typeof createPrezntSchema>["actions"][0];
