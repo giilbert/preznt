@@ -13,6 +13,7 @@ import { PropsWithChildren, ReactNode } from "react";
 import { Layout } from "../layout/layout";
 import { Text } from "@/components/ui";
 import { Breadcrumb } from "../layout/navbar";
+import { Spinner } from "../util/spinner";
 
 export const OrganizationWrapper: React.FC<{
   selectedTab?: string;
@@ -59,7 +60,11 @@ export const OrganizationWrapper: React.FC<{
         selectedTab={selectedTab}
       >
         <>
-          {status === "loading" && <Text>Loading</Text>}
+          {status === "loading" && (
+            <div className="flex justify-center items-center mt-8">
+              <Spinner />
+            </div>
+          )}
           {organization &&
             (typeof children === "function"
               ? children(organization)

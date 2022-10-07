@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
 import { Card, Heading, Text } from "../ui";
+import { SkeletonCard } from "../ui/skeletons";
 
 export const PrezntList: React.FC = () => {
   const router = useRouter();
@@ -22,7 +23,7 @@ export const PrezntList: React.FC = () => {
     return prezntsRaw.sort((a, b) => b.expires.getTime() - a.expires.getTime());
   }, [prezntsRaw]);
 
-  if (!preznts || status === "loading") return <Text>Loading</Text>;
+  if (!preznts || status === "loading") return <SkeletonCard amount={5} />;
   if (status === "error") return <Text>Error: {error.message}</Text>;
 
   return (

@@ -1,6 +1,7 @@
 import { useOrganization } from "@/lib/use-organization";
 import { trpc } from "@/utils/trpc";
 import { Card, Heading, Text } from "../ui";
+import { SkeletonCard } from "../ui/skeletons";
 import { MemberStatus } from "./member-status";
 
 export const OrganizationMembersList: React.FC = () => {
@@ -13,7 +14,7 @@ export const OrganizationMembersList: React.FC = () => {
     organizationId: organization.id,
   });
 
-  if (status === "loading") return <Text>Loading</Text>;
+  if (status === "loading") return <SkeletonCard amount={10} />;
   if (status === "error") return <Text>Error: {error.message}</Text>;
 
   return (
