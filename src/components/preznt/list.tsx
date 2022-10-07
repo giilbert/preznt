@@ -26,12 +26,16 @@ export const PrezntList: React.FC = () => {
   if (status === "error") return <Text>Error: {error.message}</Text>;
 
   return (
-    <div className="mt-4">
-      <table className="border-spacing-x-5 mt-2 w-full">
+    <div>
+      <table className="mt-2 w-full border-spacing-y-2 border-separate">
         <thead className="bg-background-secondary">
-          <tr className="border-2 border-neutral-800">
-            <th className="w-max px-4 py-2 font-bold text-start">NAME</th>
-            <th className="px-4 py-2 font-bold text-start w-96">EXPIRES</th>
+          <tr>
+            <th className="w-max px-4 py-2 font-bold text-start text-gray-300">
+              NAME
+            </th>
+            <th className="px-4 py-2 font-bold text-start w-96 text-gray-300">
+              EXPIRES
+            </th>
           </tr>
         </thead>
 
@@ -68,31 +72,6 @@ export const PrezntList: React.FC = () => {
           ))}
         </tbody>
       </table>
-      {/*preznts.map((preznt) => (
-        <Link
-          key={preznt.id}
-          href={{
-            pathname: "/[slug]/preznt/[code]",
-            query: {
-              code: preznt.code,
-              ...router.query,
-            },
-          }}
-        >
-          <a>
-            <Card className="mb-2 flex gap-4 items-center cursor-pointer hover:bg-neutral-900 transition-colors">
-              <Heading>{preznt.name}</Heading>
-              <p className="text-gray-300">
-                Expires{" "}
-                {Intl.DateTimeFormat(undefined, {
-                  dateStyle: "short",
-                  timeStyle: "medium",
-                }).format(preznt.expires)}
-              </p>
-            </Card>
-          </a>
-        </Link>
-      ))*/}
     </div>
   );
 };

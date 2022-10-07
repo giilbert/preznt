@@ -22,7 +22,7 @@ export const AttributesList: React.FC = () => {
     <div>
       <Heading>Attributes</Heading>
       {attributes.length > 0 ? (
-        <table className="bg-background-secondary border-spacing-x-5 mt-2">
+        <table className="w-96 bg-background-secondary border-spacing-x-5 mt-2">
           <thead>
             <tr>
               <th
