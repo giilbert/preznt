@@ -87,12 +87,10 @@ export const prezntRouter = t.router({
       });
 
       const hasRedeemed =
-        (await ctx.prisma.preznt.count({
+        (await ctx.prisma.prezntOnUser.count({
           where: {
-            id: preznt.id,
-            redeemedBy: {
-              some: { id: ctx.user.id },
-            },
+            prezntId: preznt.id,
+            userId: ctx.user.id,
           },
         })) !== 0;
       if (hasRedeemed)
@@ -155,14 +153,20 @@ export const prezntRouter = t.router({
       );
 
       // add user to redeemedBy n-m
-      await ctx.prisma.preznt.update({
-        where: { id: preznt.id },
+      await ctx.prisma.prezntOnUser.create({
         data: {
-          redeemedBy: {
-            connect: { id: ctx.user.id },
-          },
+          userId: ctx.user.id,
+          prezntId: preznt.id,
         },
       });
+      // await ctx.prisma.preznt.update({
+      //   where: { id: preznt.id },
+      //   data: {
+      //     redeemedBy: {
+      //       connect: { id: ctx.user.id },
+      //     },
+      //   },
+      // });
 
       return {
         hasJoinedOrganization,

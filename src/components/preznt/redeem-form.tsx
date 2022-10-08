@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 
 export const RedeemPreznt: React.FC = () => {
   const { query } = useRouter();
-  const { mutate, error } = trpc.preznt.redeem.useMutation();
+  const { mutateAsync, error, isLoading } = trpc.preznt.redeem.useMutation();
   const {
     handleSubmit,
     register,
@@ -15,6 +15,7 @@ export const RedeemPreznt: React.FC = () => {
   } = useZodForm({
     schema: z.object({ code: z.string() }),
   });
+  const { organization } = trpc.useContext();
 
   return (
     <form
@@ -24,10 +25,13 @@ export const RedeemPreznt: React.FC = () => {
             "put this inside a route with an organization slug in its path"
           );
 
-        mutate({
+        await mutateAsync({
           ...data,
           slug: query.slug as string,
-        });
+        }).catch(() => 0);
+
+        await organization.getRedeemedPreznts.invalidate();
+
         reset();
       })}
       className="mb-2"
@@ -40,7 +44,7 @@ export const RedeemPreznt: React.FC = () => {
           placeholder="Code"
         />
 
-        <Button type="submit" size="sm">
+        <Button type="submit" size="sm" loading={isLoading}>
           Redeem
         </Button>
       </div>

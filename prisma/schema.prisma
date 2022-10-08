@@ -46,8 +46,8 @@ model User {
     sessions      Session[]
     
     organizations   OrganizationOnUser[]
-    createdPreznts  Preznt[] @relation("CreatedPreznts")
-    redeemedPreznts Preznt[] @relation("RedeemedPreznts")
+    createdPreznts  Preznt[]             @relation("CreatedPreznts")
+    redeemedPreznts PrezntOnUser[]
 }
 
 model VerificationToken {
@@ -118,10 +118,20 @@ model Preznt {
     creator   User     @relation(name: "CreatedPreznts", fields: [creatorId], references: [id])
 
     organizationId String
-    organization   Organization         @relation(fields: [organizationId], references: [id])
-    redeemedBy     User[]               @relation("RedeemedPreznts")
+    organization   Organization   @relation(fields: [organizationId], references: [id])
+    redeeemedBy    PrezntOnUser[]
 
     @@unique([code, organizationId])
+}
+
+model PrezntOnUser {
+    prezntId   String
+    preznt     Preznt   @relation(fields: [prezntId], references: [id])
+    userId     String
+    user       User     @relation(fields: [userId], references: [id])
+    redeemedAt DateTime @default(now())
+
+    @@unique([prezntId, userId])
 }
 
 enum KeyValueAction {
