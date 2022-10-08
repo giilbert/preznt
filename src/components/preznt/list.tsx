@@ -4,27 +4,36 @@ import clsx from "clsx";
 import moment from "moment";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import { FiArrowLeft, FiArrowRight } from "react-icons/fi";
 import { Card, Heading, Text } from "../ui";
 import { SkeletonCard } from "../ui/skeletons";
+import { TinyButton } from "../ui/tiny-button";
 
 export const PrezntList: React.FC = () => {
   const router = useRouter();
   const organization = useOrganization();
+  const [page, setPage] = useState(0);
   const {
-    data: prezntsRaw,
-    status,
-    error,
-  } = trpc.organization.getAllPreznts.useQuery({
+    data: prezntPages,
+    status: prezntPagesStatus,
+    error: prezntPagesError,
+  } = trpc.organization.getNumberOfPrezntPages.useQuery({
     organizationId: organization.id,
   });
-  const preznts = useMemo(() => {
-    if (!prezntsRaw) return null;
-    return prezntsRaw.sort((a, b) => b.expires.getTime() - a.expires.getTime());
-  }, [prezntsRaw]);
+  const {
+    data: preznts,
+    status,
+    error,
+  } = trpc.organization.getPreznts.useQuery({
+    organizationId: organization.id,
+    page,
+  });
 
-  if (!preznts || status === "loading") return <SkeletonCard amount={5} />;
-  if (status === "error") return <Text>Error: {error.message}</Text>;
+  if (prezntPagesStatus === "loading" || status === "loading")
+    return <SkeletonCard amount={5} />;
+  if (prezntPagesStatus === "error" || status === "error")
+    return <Text>Error: {error?.message || prezntPagesError?.message}</Text>;
 
   return (
     <div>
@@ -73,6 +82,20 @@ export const PrezntList: React.FC = () => {
           ))}
         </tbody>
       </table>
+
+      <div className="flex gap-4 justify-center items-center mb-4">
+        <TinyButton onClick={() => page > 0 && setPage(page - 1)}>
+          <FiArrowLeft />
+        </TinyButton>
+
+        <p>
+          Page {page + 1} / {prezntPages}
+        </p>
+
+        <TinyButton onClick={() => page < prezntPages - 1 && setPage(page + 1)}>
+          <FiArrowRight />
+        </TinyButton>
+      </div>
     </div>
   );
 };

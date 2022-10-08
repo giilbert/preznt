@@ -55,7 +55,7 @@ export const CreatePreznt: React.FC<Disclosure> = (modalDisclosure) => {
               ...data,
               organizationId,
             });
-            await organization.getAllPreznts.invalidate();
+            await organization.getPreznts.invalidate();
             modalDisclosure.onClose();
           })}
           className="md:w-screen md:max-w-2xl flex gap-2 flex-col"

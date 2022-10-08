@@ -12,6 +12,8 @@ import { alphanumericNanoid } from "@/utils/alphanumericNanoid";
 import { TRPCError } from "@trpc/server";
 import { organizationMemberTabs } from "@/utils/tabs/organization";
 
+const PER_PAGE = 8;
+
 const generateJoinCode = async (ctx: Context): Promise<string> => {
   // is there a better way to do this?
   const code = alphanumericNanoid(8);
@@ -105,16 +107,15 @@ export const organizationRouter = t.router({
       };
     }),
 
-  getAllPreznts: t.procedure
+  getPreznts: authedProcedure
     .input(
       z.object({
         organizationId: z.string(),
+        page: z.number(),
       })
     )
     .query(async ({ input, ctx }) => {
       await enforceOrganizationAdmin(ctx, input);
-
-      console.log(input);
 
       return await ctx.prisma.preznt.findMany({
         where: { organizationId: input.organizationId },
@@ -122,7 +123,27 @@ export const organizationRouter = t.router({
           creator: true,
           actions: true,
         },
+        orderBy: {
+          expires: "desc",
+        },
+        skip: PER_PAGE * input.page,
+        take: PER_PAGE,
       });
+    }),
+
+  getNumberOfPrezntPages: authedProcedure
+    .input(
+      z.object({
+        organizationId: z.string(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      await enforceOrganizationAdmin(ctx, input);
+      return Math.ceil(
+        (await ctx.prisma.preznt.count({
+          where: { organizationId: input.organizationId },
+        })) / PER_PAGE
+      );
     }),
 
   joinOrganization: authedProcedure
