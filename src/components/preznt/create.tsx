@@ -28,7 +28,7 @@ export const CreatePreznt: React.FC<Disclosure> = (modalDisclosure) => {
     },
   });
   const [createActionActive, setCreateActionActive] = useState(false);
-  const { organization } = trpc.useContext();
+  const { preznt } = trpc.useContext();
   const { mutateAsync, isLoading } = trpc.preznt.create.useMutation();
 
   const addAction = useCallback(
@@ -55,7 +55,7 @@ export const CreatePreznt: React.FC<Disclosure> = (modalDisclosure) => {
               ...data,
               organizationId,
             });
-            await organization.getPreznts.invalidate();
+            await preznt.getPreznts.invalidate();
             modalDisclosure.onClose();
           })}
           className="md:w-screen md:max-w-2xl flex gap-2 flex-col"

@@ -9,6 +9,8 @@ import { z } from "zod";
 import { Context } from "../context";
 import { authedProcedure, t } from "../trpc";
 
+const PER_PAGE = 16;
+
 const generateCode = async (
   ctx: Context,
   organizationId: string
@@ -152,21 +154,16 @@ export const prezntRouter = t.router({
         })
       );
 
-      // add user to redeemedBy n-m
-      await ctx.prisma.prezntOnUser.create({
-        data: {
-          userId: ctx.user.id,
-          prezntId: preznt.id,
-        },
-      });
-      // await ctx.prisma.preznt.update({
-      //   where: { id: preznt.id },
-      //   data: {
-      //     redeemedBy: {
-      //       connect: { id: ctx.user.id },
-      //     },
-      //   },
-      // });
+      try {
+        await ctx.prisma.prezntOnUser.create({
+          data: {
+            userId: ctx.user.id,
+            prezntId: preznt.id,
+          },
+        });
+      } catch (e) {
+        console.error(e);
+      }
 
       return {
         hasJoinedOrganization,
@@ -192,5 +189,71 @@ export const prezntRouter = t.router({
       if (!preznt) throw new TRPCError({ code: "NOT_FOUND" });
 
       return preznt;
+    }),
+
+  getPreznts: authedProcedure
+    .input(
+      z.object({
+        organizationId: z.string(),
+        page: z.number(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      await enforceOrganizationAdmin(ctx, input);
+
+      return await ctx.prisma.preznt.findMany({
+        where: { organizationId: input.organizationId },
+        include: {
+          creator: true,
+          actions: true,
+        },
+        orderBy: {
+          expires: "desc",
+        },
+        skip: PER_PAGE * input.page,
+        take: PER_PAGE,
+      });
+    }),
+
+  getNumberOfPrezntPages: authedProcedure
+    .input(
+      z.object({
+        organizationId: z.string(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      await enforceOrganizationAdmin(ctx, input);
+      return Math.ceil(
+        (await ctx.prisma.preznt.count({
+          where: { organizationId: input.organizationId },
+        })) / PER_PAGE
+      );
+    }),
+
+  getRedeemedPreznts: authedProcedure
+    .input(
+      z.object({
+        organizationId: z.string(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      return (
+        await ctx.prisma.user.findUnique({
+          where: { id: ctx.user.id },
+          include: {
+            redeemedPreznts: {
+              where: {
+                preznt: {
+                  organizationId: input.organizationId,
+                },
+              },
+              include: { preznt: true },
+            },
+          },
+        })
+      )?.redeemedPreznts.map((p) => ({
+        redeemedAt: p.redeemedAt,
+        ...p.preznt,
+      }));
     }),
 });

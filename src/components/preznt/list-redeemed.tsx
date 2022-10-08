@@ -10,7 +10,7 @@ export const ListRedeemedPreznts: React.FC = () => {
     data: preznts,
     status,
     error,
-  } = trpc.organization.getRedeemedPreznts.useQuery({
+  } = trpc.preznt.getRedeemedPreznts.useQuery({
     organizationId: organization.id,
   });
 

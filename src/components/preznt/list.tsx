@@ -18,14 +18,14 @@ export const PrezntList: React.FC = () => {
     data: prezntPages,
     status: prezntPagesStatus,
     error: prezntPagesError,
-  } = trpc.organization.getNumberOfPrezntPages.useQuery({
+  } = trpc.preznt.getNumberOfPrezntPages.useQuery({
     organizationId: organization.id,
   });
   const {
     data: preznts,
     status,
     error,
-  } = trpc.organization.getPreznts.useQuery({
+  } = trpc.preznt.getPreznts.useQuery({
     organizationId: organization.id,
     page,
   });

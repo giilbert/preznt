@@ -4,15 +4,21 @@ import { useEffect } from "react";
 
 export const RedeemPrezntPage: React.FC = () => {
   const { query } = useRouter();
-  const { mutateAsync, status, error, data } = trpc.preznt.redeem.useMutation();
+  const { mutate, status, error, data, reset } =
+    trpc.preznt.redeem.useMutation();
 
   useEffect(() => {
-    if (status === "idle" && query.code && query.slug)
-      mutateAsync({
+    if (query.code && query.slug) {
+      mutate({
         code: query.code as string,
         slug: query.slug as string,
       });
-  }, [query, mutateAsync, status]);
+    }
+
+    return () => {
+      reset();
+    };
+  }, [query, mutate, reset]);
 
   return <div>{status}</div>;
 };

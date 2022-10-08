@@ -15,7 +15,7 @@ export const RedeemPreznt: React.FC = () => {
   } = useZodForm({
     schema: z.object({ code: z.string() }),
   });
-  const { organization } = trpc.useContext();
+  const { preznt } = trpc.useContext();
 
   return (
     <form
@@ -30,7 +30,7 @@ export const RedeemPreznt: React.FC = () => {
           slug: query.slug as string,
         }).catch(() => 0);
 
-        await organization.getRedeemedPreznts.invalidate();
+        await preznt.getRedeemedPreznts.invalidate();
 
         reset();
       })}
