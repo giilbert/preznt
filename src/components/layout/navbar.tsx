@@ -25,8 +25,8 @@ export const Navbar: React.FC<{
   tabs?: Tab[];
   selectedTab?: string;
 }> = ({ breadcrumbs, tabs, selectedTab }) => (
-  <div className="fixed top-0 left-0 px-4 pt-4 pb-2 w-screen bg-background-tint border-b-neutral-800 border-b flex justify-center">
-    <div className="w-full max-w-5xl">
+  <div className="fixed top-0 left-0 px-4 pt-6 pb-2 w-screen bg-background-tint border-b-neutral-800 border-b flex justify-center">
+    <div className="w-full max-w-7xl">
       <div className="flex items-center w-full">
         <div className="mr-auto flex items-center">
           <Link href="/">
@@ -121,7 +121,7 @@ const Tabs: React.FC<{ tabs: Tab[]; selected: string }> = ({
   const router = useRouter();
 
   return (
-    <div className="w-full mt-3 flex gap-4">
+    <div className="w-full mt-4 flex gap-4">
       {tabs.map((tab, i) => (
         <Link
           href={{
