@@ -119,7 +119,7 @@ model Preznt {
 
     organizationId String
     organization   Organization   @relation(fields: [organizationId], references: [id])
-    redeeemedBy    PrezntOnUser[]
+    redeemedBy     PrezntOnUser[]
 
     @@unique([code, organizationId])
 }

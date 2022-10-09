@@ -191,7 +191,7 @@ export const prezntRouter = t.router({
           code_organizationId: input,
         },
         include: {
-          redeeemedBy: {
+          redeemedBy: {
             where: { userId: ctx.user.id },
           },
           actions: true,
@@ -202,7 +202,7 @@ export const prezntRouter = t.router({
 
       return {
         preznt,
-        hasRedeemed: preznt.redeeemedBy.length > 0,
+        hasRedeemed: preznt.redeemedBy.length > 0,
       };
     }),
 

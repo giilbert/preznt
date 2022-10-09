@@ -30,7 +30,7 @@ export const ListRedeemedPreznts: React.FC = () => {
                 NAME
               </th>
               <th className="px-4 py-2 font-bold text-start w-96 text-gray-300">
-                REDEEEMED
+                REDEEMED
               </th>
             </tr>
           </thead>
