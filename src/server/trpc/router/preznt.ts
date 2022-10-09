@@ -154,16 +154,12 @@ export const prezntRouter = t.router({
         })
       );
 
-      try {
-        await ctx.prisma.prezntOnUser.create({
-          data: {
-            userId: ctx.user.id,
-            prezntId: preznt.id,
-          },
-        });
-      } catch (e) {
-        console.error(e);
-      }
+      await ctx.prisma.prezntOnUser.create({
+        data: {
+          userId: ctx.user.id,
+          prezntId: preznt.id,
+        },
+      });
 
       return {
         hasJoinedOrganization,
@@ -179,16 +175,35 @@ export const prezntRouter = t.router({
       })
     )
     .query(async ({ input, ctx }) => {
-      await enforceOrganizationAdmin(ctx, input);
+      const organization = await ctx.prisma.organizationOnUser.findUnique({
+        where: {
+          userId_organizationId: {
+            userId: ctx.user.id,
+            organizationId: input.organizationId,
+          },
+        },
+      });
+
+      if (!organization) throw new TRPCError({ code: "UNAUTHORIZED" });
+
       const preznt = await ctx.prisma.preznt.findUnique({
         where: {
           code_organizationId: input,
+        },
+        include: {
+          redeeemedBy: {
+            where: { userId: ctx.user.id },
+          },
+          actions: true,
         },
       });
 
       if (!preznt) throw new TRPCError({ code: "NOT_FOUND" });
 
-      return preznt;
+      return {
+        preznt,
+        hasRedeemed: preznt.redeeemedBy.length > 0,
+      };
     }),
 
   getPreznts: authedProcedure

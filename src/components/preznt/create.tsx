@@ -103,6 +103,7 @@ export const CreatePreznt: React.FC<Disclosure> = (modalDisclosure) => {
             </label>
             <input
               {...register("allowJoin")}
+              // value={getValues("allowJoin")}
               type="checkbox"
               id="allow-join"
               className="scale-150"

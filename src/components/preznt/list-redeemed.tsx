@@ -2,6 +2,8 @@ import { useOrganization } from "@/lib/use-organization";
 import { trpc } from "@/utils/trpc";
 import clsx from "clsx";
 import moment from "moment";
+import Link from "next/link";
+import { useRouter } from "next/router";
 import { Card } from "../ui";
 
 export const ListRedeemedPreznts: React.FC = () => {
@@ -13,6 +15,7 @@ export const ListRedeemedPreznts: React.FC = () => {
   } = trpc.preznt.getRedeemedPreznts.useQuery({
     organizationId: organization.id,
   });
+  const router = useRouter();
 
   if (status === "loading") return null;
   if (status === "error") return <p>Error: {error.message}</p>;
@@ -34,18 +37,29 @@ export const ListRedeemedPreznts: React.FC = () => {
 
           <tbody>
             {preznts.map((preznt) => (
-              <tr
+              <Link
                 key={preznt.id}
-                className="hover:bg-background-secondary transition-colors cursor-pointer"
+                href={{
+                  pathname: "/[slug]/preznt/[code]",
+                  query: {
+                    code: preznt.code,
+                    slug: router.query.slug,
+                  },
+                }}
               >
-                <td className="font-mono pl-4 py-2">{preznt.name}</td>
-                <td className="pl-4">
-                  {Intl.DateTimeFormat(undefined, {
-                    dateStyle: "short",
-                    timeStyle: "medium",
-                  }).format(preznt.redeemedAt)}
-                </td>
-              </tr>
+                <tr
+                  key={preznt.id}
+                  className="hover:bg-background-secondary transition-colors cursor-pointer"
+                >
+                  <td className="font-mono pl-4 py-2">{preznt.name}</td>
+                  <td className="pl-4">
+                    {Intl.DateTimeFormat(undefined, {
+                      dateStyle: "short",
+                      timeStyle: "medium",
+                    }).format(preznt.redeemedAt)}
+                  </td>
+                </tr>
+              </Link>
             ))}
           </tbody>
         </table>

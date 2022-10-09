@@ -57,7 +57,7 @@ export const PrezntList: React.FC = () => {
                 pathname: "/[slug]/preznt/[code]",
                 query: {
                   code: preznt.code,
-                  ...router.query,
+                  slug: router.query.slug,
                 },
               }}
             >
