@@ -11,6 +11,8 @@ import { FiPlus, FiX } from "react-icons/fi";
 import { TinyButton } from "../ui/tiny-button";
 import { CreateAction } from "./create-action";
 import { ListActions } from "./list-actions";
+import { Controller } from "react-hook-form";
+import moment from "moment";
 export const CreatePreznt: React.FC<Disclosure> = (modalDisclosure) => {
   const { id: organizationId } = useOrganization();
   const {
@@ -20,6 +22,8 @@ export const CreatePreznt: React.FC<Disclosure> = (modalDisclosure) => {
     setValue,
     getValues,
     trigger,
+    control,
+    watch,
     formState: { errors },
   } = useZodForm({
     schema: createPrezntSchema.omit({ organizationId: true }),
@@ -30,7 +34,7 @@ export const CreatePreznt: React.FC<Disclosure> = (modalDisclosure) => {
   const [createActionActive, setCreateActionActive] = useState(false);
   const { preznt } = trpc.useContext();
   const { mutateAsync, isLoading } = trpc.preznt.create.useMutation();
-
+  const [stage, setStage] = useState<"general" | "actions">("general");
   const addAction = useCallback(
     (action: Action) => {
       setValue("actions", [action, ...getValues("actions")]);
@@ -38,20 +42,13 @@ export const CreatePreznt: React.FC<Disclosure> = (modalDisclosure) => {
       // forces the form to rerender
       trigger("actions");
     },
-    [getValues, setValue, trigger]
+    [getValues, setValue]
   );
 
-  return (
-    <>
-      <DialogWrapper {...modalDisclosure}>
-        <div className="flex items-center">
-          <Heading level="h2" className="pb-2">
-            Create Preznt
-          </Heading>
-        </div>
-        <form
-          onSubmit={handleSubmit(async (data) => {
-            await mutateAsync({
+  console.log(getValues());
+
+  /*
+        <form onSubmit={handleSubmit(async (data) => { await mutateAsync({
               ...data,
               organizationId,
             });
@@ -60,78 +57,138 @@ export const CreatePreznt: React.FC<Disclosure> = (modalDisclosure) => {
           })}
           className="md:w-screen md:max-w-2xl flex gap-2 flex-col"
         >
-          <label htmlFor="name" className="text-gray-100">
-            Name
-          </label>
-          <input
-            {...register("name")}
-            autoComplete="off"
-            id="name"
-            className="bg-neutral-800 px-3 py-2 text-gray-100 rounded"
-          />
-          <Text className="text-red-400">{errors.name?.message}</Text>
+  */
 
-          <label htmlFor="expires" className="text-gray-100">
-            Expires
-          </label>
-          <input
-            {...register("expires", { valueAsDate: true })}
-            autoComplete="off"
-            type="datetime-local"
-            id="expires"
-            className="bg-neutral-800 px-3 py-2 text-gray-100 rounded"
-          />
-          <Text className="text-red-400">{errors.expires?.message}</Text>
+  console.log(moment(watch("expires")).format("YYYY-MM-DDThh:mm"));
 
-          <div>
-            <label htmlFor="main" className="text-gray-100 mr-3">
-              Show on calendar
+  return (
+    <DialogWrapper {...modalDisclosure}>
+      <form
+        onSubmit={handleSubmit(async (data) => {
+          if (stage === "general") {
+            setStage("actions");
+          } else if (stage === "actions") {
+            await mutateAsync({
+              ...data,
+              organizationId,
+            });
+            await preznt.getPreznts.invalidate();
+
+            modalDisclosure.onClose();
+            reset();
+          }
+        })}
+        className="md:w-screen md:max-w-2xl flex gap-2 flex-col"
+      >
+        {stage === "general" && (
+          <>
+            <div className="flex items-center">
+              <Heading level="h2" className="pb-2">
+                Create Preznt
+              </Heading>
+            </div>
+            <label htmlFor="name" className="text-gray-100">
+              Name
             </label>
             <input
-              {...register("main")}
-              type="checkbox"
-              id="main"
-              className="scale-150"
+              {...register("name")}
+              autoComplete="off"
+              id="name"
+              className="bg-neutral-800 px-3 py-2 text-gray-100 rounded"
             />
-          </div>
+            <Text className="text-red-400">{errors.name?.message}</Text>
 
-          <Text className="text-red-400">{errors.main?.message}</Text>
-
-          <div>
-            <label htmlFor="allow-join" className="text-gray-100 mr-3">
-              Allow users to join the organization using this Preznt
+            <label htmlFor="expires" className="text-gray-100">
+              Expires
             </label>
-            <input
-              {...register("allowJoin")}
-              // value={getValues("allowJoin")}
-              type="checkbox"
-              id="allow-join"
-              className="scale-150"
+            <Controller
+              name="expires"
+              control={control}
+              render={({ field }) => (
+                <input
+                  value={
+                    watch("expires")
+                      ? moment(watch("expires")).format("YYYY-MM-DDTHH:mm")
+                      : ""
+                  }
+                  onChange={(e) => {
+                    console.log(e.target.value);
+                    field.onChange(new Date(e.target.value as string));
+                  }}
+                  autoComplete="off"
+                  type="datetime-local"
+                  id="expires"
+                  className="bg-neutral-800 px-3 py-2 text-gray-100 rounded"
+                />
+              )}
             />
-          </div>
-          <Text className="text-red-400">{errors.allowJoin?.message}</Text>
+            <Text className="text-red-400">{errors.expires?.message}</Text>
 
-          <hr className="border-gray-800 my-2" />
+            <div>
+              <label htmlFor="main" className="text-gray-100 mr-3">
+                Show on calendar
+              </label>
+              <input
+                {...register("main")}
+                type="checkbox"
+                id="main"
+                className="scale-150"
+              />
+            </div>
 
-          <Heading level="h2">Actions</Heading>
-          <ListActions actions={getValues("actions")} />
-          {createActionActive ? (
-            <CreateAction addAction={addAction} />
-          ) : (
-            <TinyButton onClick={() => setCreateActionActive(true)}>
-              <FiPlus />
-            </TinyButton>
-          )}
+            <Text className="text-red-400">{errors.main?.message}</Text>
 
-          <Button
-            type="submit"
-            className="mt-4 text-center"
-            loading={isLoading}
-          >
-            Create Preznt
-          </Button>
-        </form>
-      </DialogWrapper>
-    </>
+            <div>
+              <label htmlFor="allow-join" className="text-gray-100 mr-3">
+                Allow users to join the organization using this Preznt
+              </label>
+              <input
+                {...register("allowJoin")}
+                // value={getValues("allowJoin")}
+                type="checkbox"
+                id="allow-join"
+                className="scale-150"
+              />
+            </div>
+            <Text className="text-red-400">{errors.allowJoin?.message}</Text>
+
+            <Button className="mt-4 text-center w-min" type="submit">
+              Next
+            </Button>
+          </>
+        )}
+
+        {stage === "actions" && (
+          <>
+            <Heading level="h2">Actions</Heading>
+            <ListActions actions={getValues("actions")} />
+            {createActionActive ? (
+              <CreateAction addAction={addAction} />
+            ) : (
+              <TinyButton onClick={() => setCreateActionActive(true)}>
+                <FiPlus />
+              </TinyButton>
+            )}
+
+            <div className="flex gap-2">
+              <Button type="submit" className="text-center w-min">
+                Submit
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                className="text-center w-min"
+                onClick={() => {
+                  setStage("general");
+                  trigger("expires");
+                }}
+              >
+                Go Back
+              </Button>
+            </div>
+          </>
+        )}
+      </form>
+    </DialogWrapper>
   );
 };

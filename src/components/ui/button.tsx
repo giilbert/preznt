@@ -13,7 +13,7 @@ const sizes = {
 const variants = {
   primary: "bg-accent-primary text-foreground-primary hover:bg-opacity-80",
   secondary:
-    "border-solid border-2 border-accent-stroke bg-accent-secondary text-white hover:bg-opacity-60",
+    "border-accent-stroke bg-accent-secondary text-white hover:bg-opacity-60",
   "outline-primary":
     "border-solid border-2 border-accent-primary hover:bg-accent-primary hover:text-foreground-primary",
   "outline-secondary":
