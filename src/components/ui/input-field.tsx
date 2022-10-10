@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import moment from "moment";
 import { DetailedHTMLProps, HTMLAttributes, InputHTMLAttributes } from "react";
 import { Controller, RegisterOptions, useFormContext } from "react-hook-form";
@@ -110,16 +111,30 @@ const Text: React.FC<SimpleInputProps> = (props) => {
   );
 };
 
-const Checkbox: React.FC<SimpleInputProps> = (props) => {
+const Checkbox: React.FC<SimpleInputProps> = ({ name, label, tip }) => {
+  const form = useFormContext();
+
   return (
-    <Generic
-      {...props}
-      type="checkbox"
-      className="scale-150 cursor-pointer"
-      wrapperProps={{
-        className: "flex gap-4 mt-2",
-      }}
-    />
+    <div className="my-1">
+      <div className="flex bg-neutral-800 py-2 rounded">
+        <input
+          {...form.register(name)}
+          autoComplete="off"
+          id={name}
+          className={clsx("box-border mt-0.5 w-5 h-5 cursor-pointer mx-4")}
+          type="checkbox"
+        />
+        <div>
+          <label htmlFor={name} className={labelClasses}>
+            {label || name.toUpperCase()}
+          </label>
+          {tip && <p className={tipClasses}>{tip}</p>}
+        </div>
+      </div>
+      <p className={errorClasses}>
+        {form.formState.errors[name]?.message as string}
+      </p>
+    </div>
   );
 };
 

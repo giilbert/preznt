@@ -8,11 +8,14 @@ import { KeyValueAction } from "@prisma/client";
 import { useOrganization } from "@/lib/use-organization";
 import { Disclosure, useDisclosure } from "@/lib/use-disclosure";
 import { FiPlus, FiX } from "react-icons/fi";
+import { HiSparkles } from "react-icons/hi";
 import { TinyButton } from "../ui/tiny-button";
 import { CreateAction } from "./create-action";
 import { ListActions } from "./list-actions";
-import { FormProvider } from "react-hook-form";
+import { FormProvider, useFormContext } from "react-hook-form";
 import { InputField } from "../ui/input-field";
+import { Moment } from "moment";
+import moment from "moment";
 
 export const CreatePreznt: React.FC<Disclosure> = (modalDisclosure) => {
   const { id: organizationId } = useOrganization();
@@ -62,22 +65,26 @@ export const CreatePreznt: React.FC<Disclosure> = (modalDisclosure) => {
                 </Heading>
               </div>
 
-              <InputField.Text name="name" />
-              <InputField.Date
-                name="expires"
-                tip="You'll be able to set the Preznt active or inactive after this."
-              />
+              <InputField.Text name="name" label="Name" />
+
+              <InputField.Date name="expires" label="Expires" />
+              <p className="mt-1 text-gray-400">
+                You&apos;ll be able to set the Preznt active or inactive after
+                this.
+              </p>
+
+              <ExpiresSuggestions />
 
               <hr />
 
               <InputField.Checkbox
                 name="main"
-                label="SHOW ON CALENDAR"
+                label="Show on calendar"
                 tip="Shows the Preznt on the calendar for redeemer. Useful for daily attendance, etc."
               />
               <InputField.Checkbox
                 name="allowJoin"
-                label="ALLOW JOIN"
+                label="Allow users to join organization"
                 tip="Allow users to join the organization from this Preznt, if they haven't already."
               />
 
@@ -116,5 +123,37 @@ export const CreatePreznt: React.FC<Disclosure> = (modalDisclosure) => {
         </form>
       </FormProvider>
     </DialogWrapper>
+  );
+};
+
+const suggestionClasses =
+  "bg-neutral-800 px-3 py-0.5 rounded hover:bg-neutral-700 cursor-pointer transition-all hover:scale-105";
+
+const ExpiresSuggestions: React.FC = () => {
+  const form = useFormContext();
+
+  const offset = useCallback(
+    (amount: number, unit: moment.unitOfTime.DurationConstructor) => {
+      return () => {
+        form.setValue("expires", moment().add(amount, unit).toDate());
+      };
+    },
+    [form]
+  );
+
+  return (
+    <div className="flex gap-2 items-center">
+      <HiSparkles size="20" className="text-yellow-200" />
+      <p>Suggestions: </p>
+      <p className={suggestionClasses} onClick={offset(5, "minutes")}>
+        In 5 minutes
+      </p>
+      <p className={suggestionClasses} onClick={offset(30, "minutes")}>
+        In 30 minutes
+      </p>
+      <p className={suggestionClasses} onClick={offset(1, "hour")}>
+        In 1 hour
+      </p>
+    </div>
   );
 };
