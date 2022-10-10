@@ -5,14 +5,11 @@ import { trpc } from "@/utils/trpc";
 import { useDisclosure } from "@/lib/use-disclosure";
 import { Fragment } from "react";
 import { Modal } from "../ui/modal";
+import { InputField } from "../ui/input-field";
+import { FormProvider } from "react-hook-form";
 
 export const JoinOrganization: React.FC = () => {
-  const {
-    handleSubmit,
-    register,
-    reset,
-    formState: { errors },
-  } = useZodForm({
+  const form = useZodForm({
     schema: joinOrganizationSchema,
   });
   const { mutate, isLoading, error } =
@@ -28,37 +25,28 @@ export const JoinOrganization: React.FC = () => {
         onClose={modalDisclosure.onClose}
       >
         <Heading className="mb-4">Join Organization</Heading>
-        <form
-          onSubmit={handleSubmit(async (data) => {
-            console.log(data);
-            mutate(data);
-            organization.getAllJoined.invalidate();
-            reset();
-          })}
-          className="flex flex-col gap-4"
-        >
-          <div>
-            <label htmlFor="join-code" className="text-gray-100 mr-2">
-              Join Code
-            </label>
-            <input
-              {...register("joinCode")}
-              autoComplete="off"
-              id="join-code"
-              className="bg-neutral-800 px-3 py-1 text-gray-100 rounded"
-            />
-            <Text className="text-red-400">{errors.joinCode?.message}</Text>
-          </div>
-
-          <Button
-            type="submit"
-            className="flex justify-center"
-            loading={isLoading}
+        <FormProvider {...form}>
+          <form
+            onSubmit={form.handleSubmit(async (data) => {
+              console.log(data);
+              mutate(data);
+              organization.getAllJoined.invalidate();
+              form.reset();
+            })}
+            className="flex flex-col gap-4 w-96"
           >
-            Join
-          </Button>
-          <Text className="text-red-400">{error?.message}</Text>
-        </form>
+            <InputField.Text name="joinCode" label="JOIN CODE" />
+
+            <Button
+              type="submit"
+              className="flex justify-center"
+              loading={isLoading}
+            >
+              Join
+            </Button>
+            <Text className="text-red-400">{error?.message}</Text>
+          </form>
+        </FormProvider>
       </DialogWrapper>
     </>
   );
