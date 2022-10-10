@@ -3,11 +3,25 @@
 import { createPrezntSchema } from "@/schemas/preznt";
 import { enforceOrganizationAdmin } from "@/server/common/organization-perms";
 import { alphanumericNanoid } from "@/utils/alphanumericNanoid";
-import { OrganizationStatus } from "@prisma/client";
+import {
+  OrganizationStatus,
+  Preznt,
+  PrezntOnUser,
+  UserAttributeAction,
+} from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { Context } from "../context";
 import { authedProcedure, t } from "../trpc";
+
+type CompletePrezntType = Preznt & { actions: UserAttributeAction[] } & (
+    | {
+        hasRedeemed: false;
+      }
+    | (PrezntOnUser & {
+        hasRedeemed: true;
+      })
+  );
 
 const PER_PAGE = 16;
 
@@ -175,6 +189,31 @@ export const prezntRouter = t.router({
       })
     )
     .query(async ({ input, ctx }) => {
+      await enforceOrganizationAdmin(ctx, input);
+
+      const preznt = await ctx.prisma.preznt.findUnique({
+        where: {
+          code_organizationId: input,
+        },
+        include: {
+          redeemedBy: true,
+          actions: true,
+        },
+      });
+
+      if (!preznt) throw new TRPCError({ code: "NOT_FOUND" });
+
+      return preznt;
+    }),
+
+  getByCodePublic: authedProcedure
+    .input(
+      z.object({
+        code: z.string(),
+        organizationId: z.string(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
       const organization = await ctx.prisma.organizationOnUser.findUnique({
         where: {
           userId_organizationId: {
@@ -186,10 +225,8 @@ export const prezntRouter = t.router({
 
       if (!organization) throw new TRPCError({ code: "UNAUTHORIZED" });
 
-      const preznt = await ctx.prisma.preznt.findUnique({
-        where: {
-          code_organizationId: input,
-        },
+      const prezntRaw = await ctx.prisma.preznt.findUnique({
+        where: { code_organizationId: input },
         include: {
           redeemedBy: {
             where: { userId: ctx.user.id },
@@ -198,12 +235,16 @@ export const prezntRouter = t.router({
         },
       });
 
-      if (!preznt) throw new TRPCError({ code: "NOT_FOUND" });
+      if (!prezntRaw) throw new TRPCError({ code: "NOT_FOUND" });
 
-      return {
-        preznt,
-        hasRedeemed: preznt.redeemedBy.length > 0,
-      };
+      const redeemed = prezntRaw.redeemedBy[0];
+      const preznt = {
+        ...prezntRaw,
+        ...redeemed,
+        hasRedeemed: !!redeemed,
+      } as CompletePrezntType;
+
+      return preznt;
     }),
 
   getPreznts: authedProcedure

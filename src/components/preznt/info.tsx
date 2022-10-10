@@ -13,7 +13,11 @@ import { TinyButton } from "../ui/tiny-button";
 export const PrezntInfo: React.FC = () => {
   const router = useRouter();
   const organization = useOrganization();
-  const { status, data, error } = trpc.preznt.getByCode.useQuery({
+  const {
+    status,
+    data: preznt,
+    error,
+  } = trpc.preznt.getByCode.useQuery({
     code: router.query.code as string,
     organizationId: organization.id,
   });
@@ -22,8 +26,6 @@ export const PrezntInfo: React.FC = () => {
 
   if (status === "loading") return <p>Loading..</p>;
   if (status === "error") return <p>Error: {error.message}</p>;
-
-  const { preznt } = data;
 
   return (
     <div>
