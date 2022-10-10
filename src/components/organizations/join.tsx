@@ -35,7 +35,11 @@ export const JoinOrganization: React.FC = () => {
             })}
             className="flex flex-col gap-4 w-96"
           >
-            <InputField.Text name="joinCode" label="JOIN CODE" />
+            <InputField.Text
+              name="joinCode"
+              label="Join Code"
+              tip="You should be given this by an organization's admin."
+            />
 
             <Button
               type="submit"

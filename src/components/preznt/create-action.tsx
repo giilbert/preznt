@@ -7,7 +7,8 @@ import { z } from "zod";
 import { Button } from "../ui";
 import { TinyButton } from "../ui/tiny-button";
 
-const inputClasses = "bg-neutral-800 px-3 py-2 text-gray-100 rounded font-mono";
+const inputClasses =
+  "bg-neutral-800 px-3 py-2 text-gray-100 rounded font-mono ring-accent-primary focus:ring-2";
 
 export const CreateAction: React.FC<{
   addAction: (action: Action) => void;

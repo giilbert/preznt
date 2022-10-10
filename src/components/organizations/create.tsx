@@ -33,12 +33,16 @@ export const CreateOrganization: React.FC = () => {
               await organization.getAllJoined.invalidate();
               form.reset();
             })}
-            className="w-96"
+            className="md:w-screen md:max-w-2xl flex gap-2 flex-col"
           >
-            <div className="flex flex-col gap-2 max-w-xl">
-              <InputField.Text name="name" label="ORGANIZATION NAME" />
-              <InputField.Text name="slug" />
-              <InputField.Checkbox name="private" />
+            <div className="flex flex-col gap-2">
+              <InputField.Text name="name" label="Organization name" />
+              <InputField.Text name="slug" label="Slug" />
+              <InputField.Checkbox
+                name="private"
+                label="Private"
+                tip="Users will be able to join your organization using an invite code or a Preznt, not from a sign up page."
+              />
 
               <Button type="submit" className="mt-4 flex justify-center">
                 Create Organization

@@ -142,8 +142,9 @@ const ExpiresSuggestions: React.FC = () => {
   );
 
   return (
-    <div className="flex gap-2 items-center">
+    <div className="flex gap-2 items-center flex-wrap">
       <HiSparkles size="20" className="text-yellow-200" />
+
       <p>Suggestions: </p>
       <p className={suggestionClasses} onClick={offset(5, "minutes")}>
         In 5 minutes

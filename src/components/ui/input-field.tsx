@@ -4,7 +4,8 @@ import { DetailedHTMLProps, HTMLAttributes, InputHTMLAttributes } from "react";
 import { Controller, RegisterOptions, useFormContext } from "react-hook-form";
 
 const labelClasses = "text-neutral-300 font-semibold";
-const inputClasses = "bg-neutral-800 px-3 py-2 text-gray-100 rounded mt-2";
+const inputClasses =
+  "bg-neutral-800 px-3 py-2 text-gray-100 rounded mt-2 ring-accent-primary focus:ring-2";
 const errorClasses = "text-red-400";
 const tipClasses = "mt-1 text-gray-400";
 
@@ -116,7 +117,12 @@ const Checkbox: React.FC<SimpleInputProps> = ({ name, label, tip }) => {
 
   return (
     <div className="my-1">
-      <div className="flex bg-neutral-800 py-2 rounded">
+      <div
+        className="flex bg-neutral-800 py-2 rounded cursor-pointer select-none hover:bg-neutral-850 transition-colors"
+        onClick={() => {
+          form.setValue(name, !form.getValues(name));
+        }}
+      >
         <input
           {...form.register(name)}
           autoComplete="off"
