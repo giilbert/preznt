@@ -1,9 +1,13 @@
 import { useZodForm } from "@/lib/use-zod-form";
 import type { Action } from "@/schemas/preznt";
 import { KeyValueAction } from "@prisma/client";
+import clsx from "clsx";
 import { FiPlus } from "react-icons/fi";
 import { z } from "zod";
+import { Button } from "../ui";
 import { TinyButton } from "../ui/tiny-button";
+
+const inputClasses = "bg-neutral-800 px-3 py-2 text-gray-100 rounded font-mono";
 
 export const CreateAction: React.FC<{
   addAction: (action: Action) => void;
@@ -43,7 +47,7 @@ export const CreateAction: React.FC<{
         <input
           placeholder="Attribute"
           id="attribute"
-          className="bg-neutral-800 px-3 py-2 text-gray-100 rounded font-mono w-32"
+          className={clsx(inputClasses, "w-36")}
           {...register("attribute")}
         />
 
@@ -53,7 +57,7 @@ export const CreateAction: React.FC<{
         <input
           id="value"
           type="number"
-          className="bg-neutral-800 px-3 py-2 text-gray-100 rounded w-24"
+          className={clsx(inputClasses, "w-20")}
           {...register("value", { valueAsNumber: true })}
         />
 
@@ -63,20 +67,23 @@ export const CreateAction: React.FC<{
         <input
           id="default-value"
           type="number"
-          className="bg-neutral-800 px-3 py-2 text-gray-100 rounded w-24"
+          className={clsx(inputClasses, "w-20")}
           {...register("defaultValue", { valueAsNumber: true })}
         />
-
-        <TinyButton
-          type="button"
-          onClick={handleSubmit((data) => {
-            addAction(data);
-            reset();
-          })}
-        >
-          <FiPlus />
-        </TinyButton>
       </div>
+
+      <Button
+        type="button"
+        onClick={handleSubmit((data) => {
+          addAction(data);
+          reset();
+        })}
+        variant="outline-secondary"
+        size="sm"
+        className="flex items-center w-min mt-2"
+      >
+        <FiPlus className="mr-2" /> Add action
+      </Button>
 
       {Object.values(errors).map((err) => (
         <p key={err.ref?.name} className="text-red-400">

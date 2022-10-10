@@ -69,7 +69,7 @@ export const RedeemPrezntPage: React.FC = () => {
         </p>
       )}
 
-      <hr className="border-gray-800 my-3" />
+      <hr />
 
       <Heading level="h3">Actions</Heading>
       {preznt.actions.length !== 0 ? (

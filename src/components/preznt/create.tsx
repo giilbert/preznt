@@ -22,14 +22,12 @@ export const CreatePreznt: React.FC<Disclosure> = (modalDisclosure) => {
       actions: [],
     },
   });
-  const [createActionActive, setCreateActionActive] = useState(false);
   const { preznt } = trpc.useContext();
   const { mutateAsync, isLoading } = trpc.preznt.create.useMutation();
   const [stage, setStage] = useState<"general" | "actions">("general");
   const addAction = useCallback(
     (action: Action) => {
       form.setValue("actions", [action, ...form.getValues("actions")]);
-      setCreateActionActive(false);
       // forces the form to rerender
       form.trigger("actions");
     },
@@ -65,9 +63,23 @@ export const CreatePreznt: React.FC<Disclosure> = (modalDisclosure) => {
               </div>
 
               <InputField.Text name="name" />
-              <InputField.Date name="expires" />
-              <InputField.Checkbox name="main" label="SHOW ON CALENDAR" />
-              <InputField.Checkbox name="allowJoin" label="ALLOW JOIN" />
+              <InputField.Date
+                name="expires"
+                tip="You'll be able to set the Preznt active or inactive after this."
+              />
+
+              <hr />
+
+              <InputField.Checkbox
+                name="main"
+                label="SHOW ON CALENDAR"
+                tip="Shows the Preznt on the calendar for redeemer. Useful for daily attendance, etc."
+              />
+              <InputField.Checkbox
+                name="allowJoin"
+                label="ALLOW JOIN"
+                tip="Allow users to join the organization from this Preznt, if they haven't already."
+              />
 
               <Button className="mt-4 text-center w-min" type="submit">
                 Next
@@ -77,15 +89,11 @@ export const CreatePreznt: React.FC<Disclosure> = (modalDisclosure) => {
 
           {stage === "actions" && (
             <>
-              <Heading level="h2">Actions</Heading>
+              <Heading level="h2">Create Preznt: Actions</Heading>
+
               <ListActions actions={form.getValues("actions")} />
-              {createActionActive ? (
-                <CreateAction addAction={addAction} />
-              ) : (
-                <TinyButton onClick={() => setCreateActionActive(true)}>
-                  <FiPlus />
-                </TinyButton>
-              )}
+              <hr />
+              <CreateAction addAction={addAction} />
 
               <div className="flex gap-2">
                 <Button type="submit" className="text-center w-min">

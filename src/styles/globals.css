@@ -11,3 +11,7 @@ body {
 :focus {
   outline: none;
 }
+
+hr {
+  @apply border-gray-800 my-3;
+}

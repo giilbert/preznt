@@ -5,6 +5,7 @@ import { Controller, RegisterOptions, useFormContext } from "react-hook-form";
 const labelClasses = "text-neutral-300 font-semibold";
 const inputClasses = "bg-neutral-800 px-3 py-2 text-gray-100 rounded mt-2";
 const errorClasses = "text-red-400";
+const tipClasses = "mt-1 text-gray-400";
 
 type HTMLInputProps = DetailedHTMLProps<
   InputHTMLAttributes<HTMLInputElement>,
@@ -34,7 +35,7 @@ const Generic: React.FC<GenericInputProps> = ({
   const form = useFormContext();
 
   return (
-    <>
+    <div className="my-1">
       <div {...wrapperProps}>
         <label htmlFor={name} className={labelClasses}>
           {label || name.toUpperCase()}
@@ -47,10 +48,11 @@ const Generic: React.FC<GenericInputProps> = ({
           {...rest}
         />
       </div>
+      {tip && <p className={tipClasses}>{tip}</p>}
       <p className={errorClasses}>
         {form.formState.errors[name]?.message as string}
       </p>
-    </>
+    </div>
   );
 };
 
@@ -82,6 +84,7 @@ const DateInput: React.FC<GenericInputProps> = ({ name, label, tip }) => {
           />
         )}
       />
+      {tip && <p className={tipClasses}>{tip}</p>}
       <p className={errorClasses}>
         {form.formState.errors[name]?.message as string}
       </p>
@@ -112,7 +115,7 @@ const Checkbox: React.FC<SimpleInputProps> = (props) => {
     <Generic
       {...props}
       type="checkbox"
-      className="scale-125"
+      className="scale-150 cursor-pointer"
       wrapperProps={{
         className: "flex gap-4 mt-2",
       }}
