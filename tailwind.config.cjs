@@ -24,6 +24,9 @@ module.exports = {
           danger: "#F45050",
           stroke: "#23232e",
         },
+        neutral: {
+          850: "#1f1f1f",
+        },
       },
     },
   },
