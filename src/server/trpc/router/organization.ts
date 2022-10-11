@@ -214,10 +214,11 @@ export const organizationRouter = t.router({
     .mutation(async ({ input, ctx }) => {
       const { status } = await enforceOrganizationAdmin(ctx, input);
 
-      // only owners can promote people to ADMIN
       if (
-        input.status === OrganizationStatus.ADMIN &&
-        status !== OrganizationStatus.OWNER
+        // only owners can promote people
+        status !== "OWNER" ||
+        // cannot promote someone to owner
+        input.status === "OWNER"
       )
         throw new TRPCError({ code: "UNAUTHORIZED" });
 
