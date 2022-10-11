@@ -3,12 +3,15 @@ import { useOrganization } from "@/lib/use-organization";
 import { useWindow } from "@/lib/use-window";
 import { trpc } from "@/utils/trpc";
 import { Transition } from "@headlessui/react";
+import moment from "moment";
 import { useRouter } from "next/router";
 import { Fragment, useState } from "react";
 import { FiX } from "react-icons/fi";
+import { ImEnlarge } from "react-icons/im";
 import QRCode from "react-qr-code";
 import { Button, Heading } from "../ui";
 import { TinyButton } from "../ui/tiny-button";
+import { ListPrezntRedeemers } from "./list-redeemers";
 
 export const PrezntInfo: React.FC = () => {
   const router = useRouter();
@@ -17,10 +20,13 @@ export const PrezntInfo: React.FC = () => {
     status,
     data: preznt,
     error,
-  } = trpc.preznt.getByCode.useQuery({
-    code: router.query.code as string,
-    organizationId: organization.id,
-  });
+  } = trpc.preznt.getByCode.useQuery(
+    {
+      code: router.query.code as string,
+      organizationId: organization.id,
+    },
+    { refetchOnWindowFocus: false }
+  );
   const { isOpen, onOpen, onClose } = useDisclosure();
   const window = useWindow();
 
@@ -28,7 +34,7 @@ export const PrezntInfo: React.FC = () => {
   if (status === "error") return <p>Error: {error.message}</p>;
 
   return (
-    <div>
+    <div className="flex gap-4">
       {window && (
         <Transition
           as={Fragment}
@@ -70,28 +76,41 @@ export const PrezntInfo: React.FC = () => {
                 </div>
               </div>
 
-              <div className="pt-8">
-                <Heading>Redeemed by</Heading>
-                <p>TODO</p>
+              <div className="pt-8 w-full mr-4">
+                <Heading className="mb-2">Redeemed by</Heading>
+                <ListPrezntRedeemers redeemers={preznt.redeemedBy} />
               </div>
             </div>
           </div>
         </Transition>
       )}
 
-      <Heading>{preznt.name}</Heading>
-      <p className="text-gray-300">
-        Expires{" "}
-        {Intl.DateTimeFormat(undefined, {
-          dateStyle: "short",
-          timeStyle: "medium",
-        }).format(preznt.expires)}
-      </p>
-      <p>
-        Code: <span className="font-mono">{preznt.code}</span>
-      </p>
+      <div className="w-[50rem] text-lg">
+        <div className="flex gap-2">
+          <Heading level="h1">{preznt.name}</Heading>
+          <Button
+            onClick={onOpen}
+            icon={<ImEnlarge />}
+            className="items-center gap-2 ml-auto"
+            size="sm"
+            variant="secondary"
+          >
+            Presentation
+          </Button>
+        </div>
 
-      <Button onClick={onOpen}>Full screen</Button>
+        <p className="text-gray-300">
+          Expires {moment(preznt.expires).calendar()}
+        </p>
+        <p>
+          Code: <span className="font-mono">{preznt.code}</span>
+        </p>
+      </div>
+
+      <div className="w-full">
+        <Heading className="mb-2">Redeemed by</Heading>
+        <ListPrezntRedeemers redeemers={preznt.redeemedBy} />
+      </div>
     </div>
   );
 };

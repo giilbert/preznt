@@ -196,7 +196,13 @@ export const prezntRouter = t.router({
           code_organizationId: input,
         },
         include: {
-          redeemedBy: true,
+          redeemedBy: {
+            include: {
+              user: {
+                select: { image: true, name: true, email: true },
+              },
+            },
+          },
           actions: true,
         },
       });
