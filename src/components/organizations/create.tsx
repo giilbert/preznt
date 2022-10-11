@@ -12,7 +12,7 @@ export const CreateOrganization: React.FC = () => {
     schema: createOrganizationSchema,
   });
   const { organization } = trpc.useContext();
-  const { mutateAsync } = trpc.organization.create.useMutation();
+  const { mutate, isLoading, error } = trpc.organization.create.useMutation();
   const modalDisclosure = useDisclosure();
 
   return (
@@ -28,10 +28,13 @@ export const CreateOrganization: React.FC = () => {
         <FormProvider {...form}>
           <form
             onSubmit={form.handleSubmit(async (data) => {
-              console.log(data);
-              await mutateAsync(data);
-              await organization.getAllJoined.invalidate();
-              form.reset();
+              mutate(data, {
+                async onSuccess() {
+                  form.reset();
+                  modalDisclosure.onClose();
+                  await organization.getAllJoined.invalidate();
+                },
+              });
             })}
             className="md:w-screen md:max-w-2xl flex gap-2 flex-col"
           >
@@ -44,9 +47,17 @@ export const CreateOrganization: React.FC = () => {
                 tip="Users will be able to join your organization using an invite code or a Preznt, not from a sign up page."
               />
 
-              <Button type="submit" className="mt-4 flex justify-center">
+              <Button
+                type="submit"
+                className="mt-4 flex justify-center"
+                loading={isLoading}
+              >
                 Create Organization
               </Button>
+
+              {error && (
+                <Text className="text-red-400">Error: {error.message}</Text>
+              )}
             </div>
           </form>
         </FormProvider>

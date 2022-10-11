@@ -9,32 +9,33 @@ export const MemberStatus: React.FC<{ member: OrganizationOnUser }> = ({
   member,
 }) => {
   const organization = useOrganization();
-  const { mutateAsync } = trpc.organization.changeMemberStatus.useMutation();
+  const { mutateAsync, isLoading } =
+    trpc.organization.changeMemberStatus.useMutation();
   const { data: session } = useSession();
   const trpcContext = trpc.useContext();
-  const [loading, setLoading] = useState(false);
 
-  if (session?.user?.id === member.userId) return <p>{member.status}</p>;
+  if (
+    session?.user?.id === member.userId ||
+    member.status === "OWNER" ||
+    (member.status === "ADMIN" && organization.status !== "OWNER")
+  )
+    return <p>{member.status}</p>;
 
   return (
     <div className="flex items-center gap-3">
-      {loading && <Spinner />}
+      {isLoading && <Spinner />}
 
       <select
         value={member.status}
         className="px-2 py-1 rounded"
         onChange={async (event) => {
-          setLoading(true);
-
           await mutateAsync({
             userId: member.userId,
             organizationId: organization.id,
             status: event.target.value as OrganizationStatus,
-          });
+          }).catch(() => 0);
 
           await trpcContext.organization.getAllMembers.invalidate();
-
-          setLoading(false);
         }}
       >
         <option>ADMIN</option>

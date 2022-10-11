@@ -28,10 +28,13 @@ export const JoinOrganization: React.FC = () => {
         <FormProvider {...form}>
           <form
             onSubmit={form.handleSubmit(async (data) => {
-              console.log(data);
-              mutate(data);
-              organization.getAllJoined.invalidate();
-              form.reset();
+              mutate(data, {
+                async onSuccess() {
+                  form.reset();
+                  modalDisclosure.onClose();
+                  await organization.getAllJoined.invalidate();
+                },
+              });
             })}
             className="flex flex-col gap-4 w-96"
           >
@@ -48,7 +51,10 @@ export const JoinOrganization: React.FC = () => {
             >
               Join
             </Button>
-            <Text className="text-red-400">{error?.message}</Text>
+
+            {error && (
+              <Text className="text-red-400">Error: {error.message}</Text>
+            )}
           </form>
         </FormProvider>
       </DialogWrapper>

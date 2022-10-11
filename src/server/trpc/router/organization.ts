@@ -61,17 +61,24 @@ export const organizationRouter = t.router({
   create: authedProcedure
     .input(createOrganizationSchema)
     .mutation(async ({ input, ctx }) => {
-      await ctx.prisma.organizationOnUser.create({
-        data: {
-          status: OrganizationStatus.OWNER,
-          user: {
-            connect: { id: ctx.user.id },
+      try {
+        await ctx.prisma.organizationOnUser.create({
+          data: {
+            status: OrganizationStatus.OWNER,
+            user: {
+              connect: { id: ctx.user.id },
+            },
+            organization: {
+              create: { ...input, joinCode: await generateJoinCode(ctx) },
+            },
           },
-          organization: {
-            create: { ...input, joinCode: await generateJoinCode(ctx) },
-          },
-        },
-      });
+        });
+      } catch {
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: "Organization slug is taken.",
+        });
+      }
     }),
 
   getBySlug: authedProcedure
