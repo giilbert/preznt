@@ -1,15 +1,19 @@
 import clsx from "clsx";
 import { forwardRef } from "react";
 
-export const Card = forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->((props, ref) => {
+interface ICardProps extends React.HTMLAttributes<HTMLDivElement> {
+  clickable?: boolean;
+  href?: string;
+}
+
+export const Card = forwardRef<HTMLDivElement, ICardProps>((props, ref) => {
   return (
     <div
       ref={ref}
       className={clsx(
-        "bg-background-secondary border-accent-stroke border px-4 py-2 rounded",
+        "bg-neutral-850 px-4 py-2 w-full rounded",
+        props.clickable &&
+          "hover:bg-neutral-800 transition-colors cursor-pointer",
         props.className
       )}
     >

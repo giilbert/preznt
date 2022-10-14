@@ -17,9 +17,9 @@ export const ListPrezntRedeemers: React.FC<{
   return (
     <div>
       {redeemers.map(({ user, ...redeemer }) => (
-        <div
+        <Card
           key={user.email}
-          className="bg-neutral-800 px-4 py-2 w-full flex gap-4 rounded items-center"
+          className="bg-neutral-800 flex gap-4 items-center"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -32,7 +32,7 @@ export const ListPrezntRedeemers: React.FC<{
           <p className="text-neutral-300">
             {moment(redeemer.redeemedAt).calendar()}
           </p>
-        </div>
+        </Card>
       ))}
     </div>
   );

@@ -241,4 +241,28 @@ export const organizationRouter = t.router({
         },
       });
     }),
+
+  getMemberById: authedProcedure
+    .input(
+      z.object({
+        organizationId: z.string(),
+        userId: z.string(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      await enforceOrganizationAdmin(ctx, input);
+
+      const user = await ctx.prisma.organizationOnUser.findUnique({
+        where: { userId_organizationId: input },
+        include: { user: true },
+      });
+
+      if (!user)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Member does not exist.",
+        });
+
+      return user;
+    }),
 });

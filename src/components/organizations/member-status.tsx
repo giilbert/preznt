@@ -35,7 +35,7 @@ export const MemberStatus: React.FC<{ member: OrganizationOnUser }> = ({
             status: event.target.value as OrganizationStatus,
           }).catch(() => 0);
 
-          await trpcContext.organization.getAllMembers.invalidate();
+          await trpcContext.organization.getMemberById.invalidate();
         }}
       >
         <option>ADMIN</option>
