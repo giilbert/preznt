@@ -38,7 +38,13 @@ export const CreatePreznt: React.FC<Disclosure> = (modalDisclosure) => {
   );
 
   return (
-    <DialogWrapper {...modalDisclosure}>
+    <DialogWrapper
+      {...modalDisclosure}
+      onClose={() => {
+        form.reset();
+        modalDisclosure.onClose();
+      }}
+    >
       <FormProvider {...form}>
         <form
           onSubmit={form.handleSubmit(async (data) => {
@@ -102,7 +108,7 @@ export const CreatePreznt: React.FC<Disclosure> = (modalDisclosure) => {
               <hr />
               <CreateAction addAction={addAction} />
 
-              <div className="flex gap-2">
+              <div className="flex gap-2 mt-4">
                 <Button type="submit" className="text-center w-min">
                   Submit
                 </Button>

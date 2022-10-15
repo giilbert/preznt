@@ -22,7 +22,10 @@ export const CreateOrganization: React.FC = () => {
       </Button>
       <DialogWrapper
         isOpen={modalDisclosure.isOpen}
-        onClose={modalDisclosure.onClose}
+        onClose={() => {
+          form.reset();
+          modalDisclosure.onClose();
+        }}
       >
         <Heading className="mb-4">Create Organization</Heading>
         <FormProvider {...form}>
