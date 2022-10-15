@@ -1,7 +1,8 @@
 import { useOrganization } from "@/lib/use-organization";
 import { trpc } from "@/utils/trpc";
 import { useRouter } from "next/router";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
+import ReactConfetti from "react-confetti";
 import { FiCheck, FiX } from "react-icons/fi";
 import { Heading } from "../ui";
 import { Spinner } from "../util/spinner";
@@ -16,6 +17,7 @@ export const RedeemPrezntPage: React.FC = () => {
   });
   const redeemPreznt = trpc.preznt.redeem.useMutation();
   const ctx = trpc.useContext();
+  const [doConfetti, setDoConfetti] = useState(false);
 
   const doRedeemPreznt = useCallback(async () => {
     await redeemPreznt.mutateAsync({
@@ -33,7 +35,13 @@ export const RedeemPrezntPage: React.FC = () => {
       prezntQuery.data &&
       !prezntQuery.data.hasRedeemed
     ) {
-      doRedeemPreznt().catch(() => 0);
+      doRedeemPreznt()
+        .catch(() => 0)
+        .then(() => {
+          setDoConfetti(true);
+
+          setTimeout(() => setDoConfetti(false), 8000);
+        });
     }
   }, [query, redeemPreznt, doRedeemPreznt, prezntQuery.data]);
 
@@ -44,7 +52,9 @@ export const RedeemPrezntPage: React.FC = () => {
   const preznt = prezntQuery.data;
 
   return (
-    <div>
+    <>
+      {doConfetti && <ReactConfetti numberOfPieces={800} recycle={false} />}
+
       <Heading level="h1">{preznt.name}</Heading>
       {preznt.hasRedeemed && (
         <p className="text-green-400 text-lg">
@@ -77,6 +87,6 @@ export const RedeemPrezntPage: React.FC = () => {
       ) : (
         <p className="text-neutral-400">This preznt has no actions</p>
       )}
-    </div>
+    </>
   );
 };
