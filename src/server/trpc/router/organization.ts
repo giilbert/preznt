@@ -3,7 +3,12 @@ import {
   joinOrganizationSchema,
 } from "@/schemas/organization";
 import { enforceOrganizationAdmin } from "@/server/common/organization-perms";
-import { Organization, OrganizationStatus } from "@prisma/client";
+import {
+  Organization,
+  OrganizationStatus,
+  Preznt,
+  PrezntOnUser,
+} from "@prisma/client";
 import { z } from "zod";
 import { t, authedProcedure } from "../trpc";
 import { customAlphabet, nanoid } from "nanoid";
@@ -53,10 +58,30 @@ export const organizationRouter = t.router({
     }),
 
   getAllJoined: authedProcedure.query(async ({ ctx }) => {
-    return await ctx.prisma.organizationOnUser.findMany({
+    const organizations = await ctx.prisma.organizationOnUser.findMany({
       where: { userId: ctx.user.id },
       include: { organization: true },
     });
+
+    const preznts: Record<string, (PrezntOnUser & { preznt: Preznt })[]> = (
+      await ctx.prisma.$transaction(
+        organizations.map(({ organizationId }) =>
+          ctx.prisma.prezntOnUser.findMany({
+            where: {
+              preznt: { organizationId },
+              userId: ctx.user.id,
+            },
+            include: { preznt: true },
+          })
+        )
+      )
+    ).reduce(
+      (a, v) => (v[0] ? { ...a, [v[0].preznt.organizationId]: v } : []),
+      {}
+    );
+
+    // match the preznts up with their organizations
+    return { organizations, preznts };
   }),
 
   create: authedProcedure

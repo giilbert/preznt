@@ -10,6 +10,7 @@ import {
   UserAttributeAction,
 } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
+import moment from "moment";
 import { z } from "zod";
 import { Context } from "../context";
 import { authedProcedure, t } from "../trpc";
@@ -317,5 +318,29 @@ export const prezntRouter = t.router({
         redeemedAt: p.redeemedAt,
         ...p.preznt,
       }));
+    }),
+
+  getRedeemedPrezntsInMonth: authedProcedure
+    .input(
+      z.object({
+        organizationId: z.string(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      return await ctx.prisma.prezntOnUser.findMany({
+        where: {
+          userId: ctx.user.id,
+          preznt: {
+            organizationId: input.organizationId,
+            createdAt: {
+              gte: moment().startOf("month").toDate(),
+              lte: moment().endOf("month").toDate(),
+            },
+          },
+        },
+        include: {
+          preznt: true,
+        },
+      });
     }),
 });

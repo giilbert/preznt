@@ -2,19 +2,19 @@ import { trpc } from "@/utils/trpc";
 import Link from "next/link";
 import { FiChevronRight } from "react-icons/fi";
 import { Card, Text } from "../ui";
+import { PrezntCalendars } from "./preznts-calendar";
 
 export const OrganizationList: React.FC = () => {
-  const {
-    data: organizations,
-    status,
-    error,
-  } = trpc.organization.getAllJoined.useQuery();
+  const organizationsQuery = trpc.organization.getAllJoined.useQuery();
 
-  if (status === "loading") return <Text>Loading</Text>;
-  if (status === "error") return <Text>Error: {error.message}</Text>;
+  if (organizationsQuery.status === "loading") return <Text>Loading</Text>;
+  if (organizationsQuery.status === "error")
+    return <Text>Error: {organizationsQuery.error.message}</Text>;
+
+  const { organizations, preznts } = organizationsQuery.data;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 mt-3 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mt-3 gap-4">
       {organizations.map(({ organization }) => (
         <Link href={`/${organization.slug}`} key={organization.id} passHref>
           <a>
@@ -34,6 +34,17 @@ export const OrganizationList: React.FC = () => {
 
               <div className="p-3">
                 <p className="text-xl mr-auto">{organization.name}</p>
+              </div>
+
+              <div className="flex justify-center">
+                <div className="w-96 sm:w-full">
+                  <PrezntCalendars
+                    preznts={preznts[organization.id] || []}
+                    size="sm"
+                    showDays={false}
+                    decoration={true}
+                  />
+                </div>
               </div>
             </div>
           </a>
