@@ -34,9 +34,9 @@ export const Navbar: React.FC<{
               <Image
                 src="/logo.svg"
                 alt=""
-                width="40px"
-                height="40px"
-                className="cursor-pointer hover:scale-105"
+                width="50px"
+                height="50px"
+                className="cursor-pointer hover:scale-105 transition-transform"
               />
             </a>
           </Link>
@@ -60,7 +60,7 @@ const Breadcrumbs: React.FC<{ breadcrumbs: Breadcrumb[] }> = ({
     <>
       {breadcrumbs.map((breadcrumb, i) => {
         return (
-          <p className="text-gray-300 ml-3 text-lg" key={i}>
+          <p className="text-gray-300 ml-4 text-lg" key={i}>
             <Link
               href={{
                 pathname: breadcrumb.path,

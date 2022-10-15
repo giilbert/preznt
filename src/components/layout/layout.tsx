@@ -21,7 +21,7 @@ export const Layout: React.FC<
         selectedTab={selectedTab ? selectedTab : undefined}
       />
 
-      <div className="mx-4 mt-36 flex justify-center">
+      <div className="mx-4 mt-40 flex justify-center">
         <main className="max-w-7xl w-screen">{children}</main>
       </div>
     </>
