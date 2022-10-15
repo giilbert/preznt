@@ -9,6 +9,7 @@ import { FiArrowLeft, FiArrowRight } from "react-icons/fi";
 import { Card, Heading, Text } from "../ui";
 import { SkeletonCard } from "../ui/skeletons";
 import { TinyButton } from "../ui/tiny-button";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 
 export const PrezntList: React.FC = () => {
   const router = useRouter();
@@ -29,6 +30,7 @@ export const PrezntList: React.FC = () => {
     organizationId: organization.id,
     page,
   });
+  const [ref] = useAutoAnimate<HTMLTableSectionElement>();
 
   if (prezntPagesStatus === "loading" || status === "loading")
     return <SkeletonCard amount={5} />;
@@ -49,7 +51,7 @@ export const PrezntList: React.FC = () => {
           </tr>
         </thead>
 
-        <tbody>
+        <tbody ref={ref}>
           {preznts.map((preznt) => (
             <Link
               key={preznt.id}
