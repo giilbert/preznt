@@ -6,11 +6,12 @@ import { enforceOrganizationAdmin } from "@/server/common/organization-perms";
 import { Organization, OrganizationStatus } from "@prisma/client";
 import { z } from "zod";
 import { t, authedProcedure } from "../trpc";
-import { customAlphabet } from "nanoid";
+import { customAlphabet, nanoid } from "nanoid";
 import { Context } from "../context";
 import { alphanumericNanoid } from "@/utils/alphanumericNanoid";
 import { TRPCError } from "@trpc/server";
 import { organizationMemberTabs } from "@/utils/tabs/organization";
+import { storage } from "@/server/common/storage";
 
 const PER_PAGE = 16;
 
@@ -61,6 +62,9 @@ export const organizationRouter = t.router({
   create: authedProcedure
     .input(createOrganizationSchema)
     .mutation(async ({ input, ctx }) => {
+      const imageKey = `organization_headers/${nanoid()}`;
+      await storage.uploadPublic(imageKey, input.header);
+
       try {
         await ctx.prisma.organizationOnUser.create({
           data: {
@@ -69,7 +73,13 @@ export const organizationRouter = t.router({
               connect: { id: ctx.user.id },
             },
             organization: {
-              create: { ...input, joinCode: await generateJoinCode(ctx) },
+              create: {
+                headerUrl: storage.key(imageKey),
+                name: input.name,
+                slug: input.slug,
+                private: input.private,
+                joinCode: await generateJoinCode(ctx),
+              },
             },
           },
         });

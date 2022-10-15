@@ -12,6 +12,9 @@ export const serverSchema = z.object({
   NEXTAUTH_URL: z.string().url(),
   GOOGLE_CLIENT_ID: z.string(),
   GOOGLE_CLIENT_SECRET: z.string(),
+
+  GOOGLE_CLOUD_SERVICE_CREDENTIALS: z.string(),
+  GOOGLE_CLOUD_STORAGE_BUCKET_NAME: z.string(),
 });
 
 /**

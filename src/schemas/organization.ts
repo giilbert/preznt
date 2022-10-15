@@ -1,8 +1,10 @@
 import { z } from "zod";
 
 const RESERVED_SLUGS = ["design", "api"];
+const MAX_FILE_SIZE = 1024 * 1024 * 4 * (4 / 3); // 4 mb in base64
 
 export const createOrganizationSchema = z.object({
+  header: z.string().max(MAX_FILE_SIZE),
   name: z
     .string()
     .min(5, "Organization name must contain more than 5 characters.")

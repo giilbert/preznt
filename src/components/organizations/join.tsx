@@ -36,7 +36,7 @@ export const JoinOrganization: React.FC = () => {
                 },
               });
             })}
-            className="flex flex-col gap-4 w-96"
+            className="flex flex-col gap-4 min-w-[24rem] w-full"
           >
             <InputField.Text
               name="joinCode"

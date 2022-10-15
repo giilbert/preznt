@@ -74,13 +74,14 @@ model OrganizationOnUser {
 }
 
 model Organization {
-    id       String               @id @default(cuid())
-    slug     String               @unique
-    joinCode String               @unique
-    private  Boolean
-    name     String
-    users    OrganizationOnUser[]
-    preznts  Preznt[]
+    id        String               @id @default(cuid())
+    headerUrl String
+    slug      String               @unique
+    joinCode  String               @unique
+    private   Boolean
+    name      String
+    users     OrganizationOnUser[]
+    preznts   Preznt[]
 }
 
 model UserAttribute {

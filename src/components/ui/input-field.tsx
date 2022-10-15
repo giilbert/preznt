@@ -1,7 +1,9 @@
+import { fileToBase64 } from "@/utils/file-to-base-64";
 import clsx from "clsx";
 import moment from "moment";
 import { DetailedHTMLProps, HTMLAttributes, InputHTMLAttributes } from "react";
 import { Controller, RegisterOptions, useFormContext } from "react-hook-form";
+import { ImageUpload } from "./image-upload";
 
 const labelClasses = "text-neutral-300 font-semibold";
 const inputClasses =
@@ -144,9 +146,43 @@ const Checkbox: React.FC<SimpleInputProps> = ({ name, label, tip }) => {
   );
 };
 
+// gets an image from the user and stores the base64 in the `name` field
+const Image: React.FC<SimpleInputProps & { aspectRatio: string }> = ({
+  name,
+  label,
+  tip,
+  aspectRatio,
+}) => {
+  const form = useFormContext();
+
+  return (
+    <div className="mt-1">
+      <label htmlFor={name} className={labelClasses}>
+        {label || name.toUpperCase()}
+      </label>
+      <ImageUpload
+        aspectRatio={aspectRatio}
+        onChange={async (file) => {
+          const base64 = await fileToBase64(file);
+          form.setValue(name, base64);
+        }}
+        className="w-full mt-2"
+        name={name}
+      />
+
+      {tip && <p className={tipClasses}>{tip}</p>}
+
+      <p className={errorClasses}>
+        {form.formState.errors[name]?.message as string}
+      </p>
+    </div>
+  );
+};
+
 export const InputField = {
   Text,
   Generic,
   Checkbox,
   Date: DateInput,
+  Image,
 };

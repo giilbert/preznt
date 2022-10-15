@@ -39,6 +39,12 @@ export const CreateOrganization: React.FC = () => {
             className="md:w-screen md:max-w-2xl flex gap-2 flex-col"
           >
             <div className="flex flex-col gap-2">
+              <InputField.Image
+                name="header"
+                label="Header"
+                tip="A 5:1 ratio image users will see on the sign up form and on the organization's card."
+                aspectRatio="5/1"
+              />
               <InputField.Text name="name" label="Organization name" />
               <InputField.Text name="slug" label="Slug" />
               <InputField.Checkbox

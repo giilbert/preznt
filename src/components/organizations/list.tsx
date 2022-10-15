@@ -14,17 +14,28 @@ export const OrganizationList: React.FC = () => {
   if (status === "error") return <Text>Error: {error.message}</Text>;
 
   return (
-    <div>
+    <div className="grid grid-cols-1 md:grid-cols-3 mt-3 gap-4">
       {organizations.map(({ organization }) => (
         <Link href={`/${organization.slug}`} key={organization.id} passHref>
           <a>
-            <Card
+            <div
               key={organization.id}
-              className="my-3 flex flex-row items-center hover:border-gray-700"
+              className="m-0 bg-background-secondary rounded-md hover:ring-2 ring-accent-primary transition-shadow"
             >
-              <p className="text-xl mr-auto">{organization.name}</p>
-              <FiChevronRight size="24" />
-            </Card>
+              <div
+                className="w-full rounded-tl-md rounded-tr-md"
+                style={{
+                  backgroundImage: `url("${organization.headerUrl}")`,
+                  backgroundRepeat: "no-repeat",
+                  backgroundSize: "cover",
+                  aspectRatio: "5/1",
+                }}
+              />
+
+              <div className="p-3">
+                <p className="text-xl mr-auto">{organization.name}</p>
+              </div>
+            </div>
           </a>
         </Link>
       ))}
