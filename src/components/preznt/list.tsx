@@ -91,7 +91,7 @@ export const PrezntList: React.FC = () => {
         </TinyButton>
 
         <p>
-          Page {page + 1} / {prezntPages}
+          Page {page + 1} / {Math.max(prezntPages, 1)}
         </p>
 
         <TinyButton onClick={() => page < prezntPages - 1 && setPage(page + 1)}>
