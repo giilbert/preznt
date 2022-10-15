@@ -32,7 +32,7 @@ export const OrganizationList: React.FC = () => {
                 }}
               />
 
-              <div className="p-3">
+              <div className="p-3 border-b-2 border-b-neutral-800">
                 <p className="text-xl mr-auto">{organization.name}</p>
               </div>
 
