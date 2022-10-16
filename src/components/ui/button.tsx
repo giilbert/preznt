@@ -102,7 +102,18 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           {...rest}
         >
           {icon && <span>{icon}</span>}
-          {!loading ? props.children : <Spinner />}
+
+          <div
+            className={clsx(loading ? "opacity-100" : "opacity-0", "absolute")}
+          >
+            <Spinner />
+          </div>
+
+          {loading ? (
+            <span className="opacity-0">{props.children}</span>
+          ) : (
+            props.children
+          )}
         </button>
       </WrapperComponent>
     );

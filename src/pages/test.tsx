@@ -1,10 +1,10 @@
-import { ImageUpload } from "@/components/ui/image-upload";
+import { Button } from "@/components/ui";
 import { NextPage } from "next";
 
 const TestPage: NextPage = () => {
   return (
     <div>
-      <ImageUpload aspectRatio="4 / 1" />
+      <Button loading={true}>skadlsdlsjakldjlsldsadsdsdsd</Button>
     </div>
   );
 };

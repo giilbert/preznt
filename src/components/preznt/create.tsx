@@ -42,6 +42,7 @@ export const CreatePreznt: React.FC<Disclosure> = (modalDisclosure) => {
       {...modalDisclosure}
       onClose={() => {
         form.reset();
+        setStage("general");
         modalDisclosure.onClose();
       }}
     >
@@ -57,6 +58,7 @@ export const CreatePreznt: React.FC<Disclosure> = (modalDisclosure) => {
               });
               await preznt.getPreznts.invalidate();
 
+              setStage("general");
               modalDisclosure.onClose();
               form.reset();
             }
@@ -109,7 +111,11 @@ export const CreatePreznt: React.FC<Disclosure> = (modalDisclosure) => {
               <CreateAction addAction={addAction} />
 
               <div className="flex gap-2 mt-4">
-                <Button type="submit" className="text-center w-min">
+                <Button
+                  type="submit"
+                  className="text-center w-min"
+                  loading={isLoading}
+                >
                   Submit
                 </Button>
                 <Button
