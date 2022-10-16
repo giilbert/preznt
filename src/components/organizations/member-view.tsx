@@ -3,6 +3,7 @@ import { trpc } from "@/utils/trpc";
 import { useRouter } from "next/router";
 import { useEffect, useMemo } from "react";
 import { Breadcrumb } from "../layout/navbar";
+import { ListRedeemedPreznts } from "../preznt/list-redeemed";
 import { Card } from "../ui";
 import { MemberAttributesEditor } from "./member-attributes-editor";
 import { MemberStatus } from "./member-status";
@@ -34,8 +35,8 @@ export const MemberView: React.FC<{
   const { user } = memberQuery.data;
 
   return (
-    <>
-      <div className="max-w-[32rem] flex flex-col gap-2">
+    <div className="flex gap-4">
+      <div className="max-w-[32rem] flex flex-col gap-2 w-full">
         <Card
           key={user.email}
           className="bg-neutral-800 w-full flex gap-4 items-center"
@@ -62,6 +63,15 @@ export const MemberView: React.FC<{
 
         <MemberAttributesEditor member={memberQuery.data} />
       </div>
-    </>
+
+      <div className="w-full -mt-4">
+        <ListRedeemedPreznts
+          preznts={memberQuery.data.user.redeemedPreznts.map((v) => ({
+            ...v.preznt,
+            ...v,
+          }))}
+        />
+      </div>
+    </div>
   );
 };

@@ -6,8 +6,11 @@ import { ListRedeemedPreznts } from "@/components/preznt/list-redeemed";
 import { RedeemPreznt } from "@/components/preznt/redeem-form";
 import { Button, Heading } from "@/components/ui";
 import { useDisclosure } from "@/lib/use-disclosure";
+import { useOrganization } from "@/lib/use-organization";
+import { trpc } from "@/utils/trpc";
 import { OrganizationStatus } from "@prisma/client";
 import { NextPage } from "next";
+import { useRouter } from "next/router";
 
 const OrganizationPrezntsPage: NextPage = () => {
   const createPrezntDisclosure = useDisclosure();
@@ -32,7 +35,7 @@ const OrganizationPrezntsPage: NextPage = () => {
                 <Heading className="mr-auto">Redeemed Preznts</Heading>
                 <RedeemPreznt />
               </div>
-              <ListRedeemedPreznts />
+              <RedeemedPreznts />
             </>
           )
         }
@@ -44,6 +47,23 @@ const OrganizationPrezntsPage: NextPage = () => {
       </RenderIfStatus>
     </OrganizationWrapper>
   );
+};
+
+const RedeemedPreznts: React.FC = () => {
+  const organization = useOrganization();
+  const {
+    data: preznts,
+    status,
+    error,
+  } = trpc.preznt.getRedeemedPreznts.useQuery({
+    organizationId: organization.id,
+  });
+  const router = useRouter();
+
+  if (status === "loading") return null;
+  if (status === "error") return <p>Error: {error.message}</p>;
+
+  return <ListRedeemedPreznts preznts={preznts} />;
 };
 
 export default OrganizationPrezntsPage;
