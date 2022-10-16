@@ -1,5 +1,8 @@
 <img src="public/large-logo.svg">
 
-# preznt
+---
 
-thanks to nirjhor who made all the dead simple ui components i dont want to make
+<div align="center">
+  The attendance app!
+</div>
+  
