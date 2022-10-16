@@ -33,11 +33,13 @@ export const OrganizationList: React.FC = () => {
               />
 
               <div className="p-3 border-b-2 border-b-neutral-800">
-                <p className="text-xl mr-auto">{organization.name}</p>
+                <p className="text-xl mr-auto text-ellipsis w-full overflow-hidden">
+                  {organization.name}
+                </p>
               </div>
 
               <div className="flex justify-center">
-                <div className="w-96 sm:w-full">
+                <div className="w-96 sm:w-full m-2">
                   <PrezntCalendars
                     preznts={preznts[organization.id] || []}
                     size="sm"
