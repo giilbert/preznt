@@ -290,7 +290,18 @@ export const organizationRouter = t.router({
 
       const user = await ctx.prisma.organizationOnUser.findUnique({
         where: { userId_organizationId: input },
-        include: { user: true, attributes: true },
+        include: {
+          user: {
+            include: {
+              redeemedPreznts: {
+                include: {
+                  preznt: true,
+                },
+              },
+            },
+          },
+          attributes: true,
+        },
       });
 
       if (!user)

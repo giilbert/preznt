@@ -41,44 +41,49 @@ export const PrezntCalendars: React.FC<{
   const daysInMonth = moment().daysInMonth();
 
   return (
-    <div
-      className={clsx(
-        "grid grid-cols-7 m-2",
-        size === "sm" && "max-w-sm",
-        size === "sm" ? "gap-2" : "gap-1"
-      )}
-    >
-      {showDays && (
-        <>
-          <p className={daysOfTheWeekClasses}>Sun</p>
-          <p className={daysOfTheWeekClasses}>Mon</p>
-          <p className={daysOfTheWeekClasses}>Tue</p>
-          <p className={daysOfTheWeekClasses}>Wed</p>
-          <p className={daysOfTheWeekClasses}>Thu</p>
-          <p className={daysOfTheWeekClasses}>Fri</p>
-          <p className={daysOfTheWeekClasses}>Sat</p>
-        </>
-      )}
+    <>
+      <Heading level="h3" className="mb-2">
+        Preznts in {moment().format("MMMM")}
+      </Heading>
+      <div
+        className={clsx(
+          "grid grid-cols-7",
+          size === "sm" && "max-w-sm",
+          size === "sm" ? "gap-2" : "gap-1"
+        )}
+      >
+        {showDays && (
+          <>
+            <p className={daysOfTheWeekClasses}>Sun</p>
+            <p className={daysOfTheWeekClasses}>Mon</p>
+            <p className={daysOfTheWeekClasses}>Tue</p>
+            <p className={daysOfTheWeekClasses}>Wed</p>
+            <p className={daysOfTheWeekClasses}>Thu</p>
+            <p className={daysOfTheWeekClasses}>Fri</p>
+            <p className={daysOfTheWeekClasses}>Sat</p>
+          </>
+        )}
 
-      {range(padding).map((i) => (
-        <div key={`pad-${i}`} />
-      ))}
-      {range(daysInMonth).map((i) => {
-        const preznts = prezntsData.get(i);
-        const hasMainPreznt = preznts?.some(({ preznt }) => preznt.main);
+        {range(padding).map((i) => (
+          <div key={`pad-${i}`} />
+        ))}
+        {range(daysInMonth).map((i) => {
+          const preznts = prezntsData.get(i);
+          const hasMainPreznt = preznts?.some(({ preznt }) => preznt.main);
 
-        return (
-          <CalendarCell
-            preznts={preznts || []}
-            hasMainPreznt={hasMainPreznt || false}
-            hasAnyPreznts={(preznts || []).length !== 0}
-            day={i + 1}
-            decoration={decoration || false}
-            key={i}
-          />
-        );
-      })}
-    </div>
+          return (
+            <CalendarCell
+              preznts={preznts || []}
+              hasMainPreznt={hasMainPreznt || false}
+              hasAnyPreznts={(preznts || []).length !== 0}
+              day={i + 1}
+              decoration={decoration || false}
+              key={i}
+            />
+          );
+        })}
+      </div>
+    </>
   );
 };
 

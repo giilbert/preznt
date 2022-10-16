@@ -6,6 +6,7 @@ import { Breadcrumb } from "../layout/navbar";
 import { Card } from "../ui";
 import { MemberAttributesEditor } from "./member-attributes-editor";
 import { MemberStatus } from "./member-status";
+import { PrezntCalendars } from "./preznts-calendar";
 
 export const MemberView: React.FC<{
   setBreadcrumb: (breadcrumb: Breadcrumb) => void;
@@ -34,18 +35,33 @@ export const MemberView: React.FC<{
 
   return (
     <>
-      <Card
-        key={user.email}
-        className="bg-neutral-800 w-[32rem] flex gap-4 items-center"
-      >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={user.image || ""} className="rounded-full w-10 h-10" alt="" />
-        <p className="font-bold mr-auto">{user.name}</p>
+      <div className="max-w-[32rem] flex flex-col gap-2">
+        <Card
+          key={user.email}
+          className="bg-neutral-800 w-full flex gap-4 items-center"
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={user.image || ""}
+            className="rounded-full w-10 h-10"
+            alt=""
+          />
+          <p className="font-bold mr-auto">{user.name}</p>
 
-        <MemberStatus member={memberQuery.data} />
-      </Card>
+          <MemberStatus member={memberQuery.data} />
+        </Card>
 
-      <MemberAttributesEditor member={memberQuery.data} />
+        <div className="flex justify-center bg-background-secondary rounded p-2">
+          <div className="w-72">
+            <PrezntCalendars
+              preznts={memberQuery.data.user.redeemedPreznts}
+              size="sm"
+            />
+          </div>
+        </div>
+
+        <MemberAttributesEditor member={memberQuery.data} />
+      </div>
     </>
   );
 };

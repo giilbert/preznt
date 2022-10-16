@@ -11,10 +11,8 @@ export const MemberAttributesEditor: React.FC<{
   member: OrganizationOnUser & { attributes: UserAttribute[] };
 }> = ({ member }) => {
   return (
-    <div className="mt-4">
-      <Heading>Attributes</Heading>
-
-      <table className="w-[32rem] bg-background-secondary border-spacing-x-5 mt-2">
+    <div className="w-full">
+      <table className="w-full bg-background-secondary border-spacing-x-5 mt-2">
         <thead>
           <tr>
             <th className={clsx(tableCellClasses, "font-bold text-start")}>
