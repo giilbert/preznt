@@ -5,6 +5,7 @@ import clsx from "clsx";
 
 const tableCellClasses = "border-2 border-neutral-800 px-6 py-2";
 
+// TODO: make look not awful
 export const AttributesList: React.FC = () => {
   const organization = useOrganization();
   const {
@@ -22,13 +23,11 @@ export const AttributesList: React.FC = () => {
     <div>
       <Heading>Attributes</Heading>
       {attributes.length > 0 ? (
-        <table className="w-96 bg-background-secondary border-spacing-x-5 mt-2">
+        <table className="w-full bg-background-secondary border-spacing-x-5 mt-2">
           <thead>
             <tr>
-              <th
-                className={clsx(tableCellClasses, "font-bold w-48 text-start")}
-              >
-                ATTRIBUTE
+              <th className={clsx(tableCellClasses, "font-bold text-start")}>
+                NAME
               </th>
               <th className={clsx(tableCellClasses, "font-bold text-start")}>
                 VALUE

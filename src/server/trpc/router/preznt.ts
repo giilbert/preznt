@@ -140,30 +140,38 @@ export const prezntRouter = t.router({
         where: {
           OR: preznt.actions.map((action) => ({
             name: action.attribute,
-            userId: organizationMember?.id,
+            userId: organizationMember?.userId,
           })),
         },
       });
 
       await ctx.prisma.$transaction(
-        preznt.actions.map(({ attribute, value, defaultValue }) => {
-          const change =
-            attributes.find((a) => a.name === attribute)?.value || defaultValue;
+        preznt.actions.map(({ attribute, value: change, defaultValue }) => {
+          const before = parseFloat(
+            attributes.find((a) => a.name === attribute)?.value ||
+              defaultValue.toString()
+          );
+
           return ctx.prisma.userAttribute.upsert({
             where: {
-              // the above checks enforce that a user is part / has joined an organization
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              userId_name: { userId: organizationMember!.id, name: attribute },
+              organizationId_userId_name: {
+                // the above checks enforce that a user is part / has joined an organization
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                userId: organizationMember!.userId,
+                name: attribute,
+                organizationId: preznt.organizationId,
+              },
             },
             update: {
-              value: value + change,
+              value: String(change + before),
             },
             create: {
               name: attribute,
-              value: value + defaultValue,
+              value: String(change + defaultValue),
               // the above checks enforce that a user is part / has joined an organization
               // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              userId: organizationMember!.id,
+              userId: organizationMember!.userId,
+              organizationId: preznt.organizationId,
             },
           });
         })

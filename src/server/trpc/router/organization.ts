@@ -136,6 +136,7 @@ export const organizationRouter = t.router({
               id: true,
               slug: true,
               name: true,
+              headerUrl: true,
             },
           },
         },
@@ -289,7 +290,7 @@ export const organizationRouter = t.router({
 
       const user = await ctx.prisma.organizationOnUser.findUnique({
         where: { userId_organizationId: input },
-        include: { user: true },
+        include: { user: true, attributes: true },
       });
 
       if (!user)
@@ -299,5 +300,31 @@ export const organizationRouter = t.router({
         });
 
       return user;
+    }),
+
+  editMemberAttribute: authedProcedure
+    .input(
+      z.object({
+        organizationId: z.string(),
+        userId: z.string(),
+        name: z.string(),
+        value: z.string(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      await enforceOrganizationAdmin(ctx, input);
+
+      await ctx.prisma.userAttribute.update({
+        where: {
+          organizationId_userId_name: {
+            organizationId: input.organizationId,
+            userId: input.userId,
+            name: input.name,
+          },
+        },
+        data: {
+          value: { set: input.value },
+        },
+      });
     }),
 });

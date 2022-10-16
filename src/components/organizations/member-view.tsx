@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { useEffect, useMemo } from "react";
 import { Breadcrumb } from "../layout/navbar";
 import { Card } from "../ui";
+import { MemberAttributesEditor } from "./member-attributes-editor";
 import { MemberStatus } from "./member-status";
 
 export const MemberView: React.FC<{
@@ -43,6 +44,8 @@ export const MemberView: React.FC<{
 
         <MemberStatus member={memberQuery.data} />
       </Card>
+
+      <MemberAttributesEditor member={memberQuery.data} />
     </>
   );
 };
