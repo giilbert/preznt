@@ -42,9 +42,11 @@ export const PrezntCalendars: React.FC<{
 
   return (
     <>
-      <Heading level="h3" className="mb-2">
-        Preznts in {moment().format("MMMM")}
-      </Heading>
+      {!decoration && (
+        <Heading level="h3" className="mb-2">
+          Preznts in {moment().format("MMMM")}
+        </Heading>
+      )}
       <div
         className={clsx(
           "grid grid-cols-7",
