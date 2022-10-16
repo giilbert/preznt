@@ -3,6 +3,6 @@
 ---
 
 <div align="center">
-  The attendance app!
+  The better <a href="https://github.com/iDarkLightning/meetxl">MeetXL</a>.
 </div>
   
