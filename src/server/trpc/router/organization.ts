@@ -295,6 +295,11 @@ export const organizationRouter = t.router({
           user: {
             include: {
               redeemedPreznts: {
+                where: {
+                  preznt: {
+                    organizationId: input.organizationId,
+                  },
+                },
                 include: {
                   preznt: true,
                 },
