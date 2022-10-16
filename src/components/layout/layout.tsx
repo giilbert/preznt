@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import Head from "next/head";
 import { PropsWithChildren } from "react";
 import { Breadcrumb, Navbar, Tab } from "./navbar";
@@ -21,7 +22,12 @@ export const Layout: React.FC<
         selectedTab={selectedTab ? selectedTab : undefined}
       />
 
-      <div className="mx-4 mt-40 flex justify-center">
+      <div
+        className={clsx(
+          (tabs || []).length === 0 ? "mt-32" : "mt-40",
+          "mx-4 flex justify-center"
+        )}
+      >
         <main className="max-w-7xl w-screen">{children}</main>
       </div>
     </>
