@@ -147,12 +147,9 @@ const Checkbox: React.FC<SimpleInputProps> = ({ name, label, tip }) => {
 };
 
 // gets an image from the user and stores the base64 in the `name` field
-const Image: React.FC<SimpleInputProps & { aspectRatio: string }> = ({
-  name,
-  label,
-  tip,
-  aspectRatio,
-}) => {
+const Image: React.FC<
+  SimpleInputProps & { defaultName?: string; aspectRatio: string }
+> = ({ name, label, tip, aspectRatio, defaultName }) => {
   const form = useFormContext();
 
   return (
@@ -168,6 +165,7 @@ const Image: React.FC<SimpleInputProps & { aspectRatio: string }> = ({
         }}
         className="w-full mt-2"
         name={name}
+        defaultValue={form.getValues(defaultName || "") || null}
       />
 
       {tip && <p className={tipClasses}>{tip}</p>}

@@ -1,5 +1,6 @@
 import {
   createOrganizationSchema,
+  editOrganizationSchema,
   joinOrganizationSchema,
 } from "@/schemas/organization";
 import { enforceOrganizationAdmin } from "@/server/common/organization-perms";
@@ -335,6 +336,23 @@ export const organizationRouter = t.router({
         },
         data: {
           value: { set: input.value },
+        },
+      });
+    }),
+
+  editOrganizationSettings: authedProcedure
+    .input(editOrganizationSchema)
+    .mutation(async ({ input, ctx }) => {
+      const { organization } = await enforceOrganizationAdmin(ctx, input);
+      const key = storage.unkey(organization.headerUrl);
+
+      if (input.header) storage.uploadPublic(key, input.header);
+
+      await ctx.prisma.organization.update({
+        where: { id: input.organizationId },
+        data: {
+          name: input.name,
+          private: input.private,
         },
       });
     }),

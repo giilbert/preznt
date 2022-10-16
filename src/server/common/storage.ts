@@ -19,9 +19,11 @@ const clone = async (from: string, to: string) => {
 };
 
 const key = (key: string) => `${BASE_URL}/${key}`;
+const unkey = (url: string) => url.replace(`${BASE_URL}/`, "");
 
 export const storage = {
   uploadPublic,
   clone,
   key,
+  unkey,
 };

@@ -16,6 +16,7 @@ export const enforceOrganizationAdmin = async (
       userId: ctx.session.user.id,
       status: { not: OrganizationStatus.MEMBER },
     },
+    include: { organization: true },
   });
 
   if (!organizationMember) throw new TRPCError({ code: "UNAUTHORIZED" });

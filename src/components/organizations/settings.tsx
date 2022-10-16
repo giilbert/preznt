@@ -1,5 +1,10 @@
 import { useOrganization } from "@/lib/use-organization";
 import { trpc } from "@/utils/trpc";
+import { Tab } from "@headlessui/react";
+import { OrganizationSettingsEditor } from "./settings-editor";
+
+const tabClasses =
+  "md:text-start w-full bg-neutral-900 hover:bg-neutral-800 px-4 py-2 rounded transition-colors";
 
 export const OrganizationSettings: React.FC = () => {
   const { id } = useOrganization();
@@ -13,12 +18,26 @@ export const OrganizationSettings: React.FC = () => {
   if (status === "error") return <p>Error: {error.message}</p>;
 
   return (
-    <>
-      <p>Id: {organization.id}</p>
-      <p>Name: {organization.name}</p>
-      <p>Join code: {organization.joinCode}</p>
-      <p>Slug: {organization.slug}</p>
-      <p>Private: {organization.private ? "Yes" : "No"}</p>
-    </>
+    <div className="md:flex gap-2">
+      <Tab.Group>
+        <Tab.List
+          as="div"
+          className="flex md:flex-col gap-2 md:bg-background-primary w-full md:w-96 md:px-3 py-1 rounded items-start text-lg"
+        >
+          <Tab className={tabClasses}>Settings</Tab>
+          <Tab className={tabClasses}>Sign Up Form</Tab>
+        </Tab.List>
+
+        <Tab.Panels as="div" className="w-full">
+          <Tab.Panel className="w-full">
+            <OrganizationSettingsEditor organization={organization} />
+          </Tab.Panel>
+
+          <Tab.Panel>
+            <p>Sign up form</p>
+          </Tab.Panel>
+        </Tab.Panels>
+      </Tab.Group>
+    </div>
   );
 };

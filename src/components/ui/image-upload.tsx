@@ -7,8 +7,9 @@ export const ImageUpload: React.FC<{
   onChange: (file: File) => void;
   className?: string;
   name: string;
-}> = ({ aspectRatio, onChange, className, name }) => {
-  const [imageDataUrl, setImageDataUrl] = useState<string | null>();
+  defaultValue?: string;
+}> = ({ aspectRatio, onChange, className, name, defaultValue = null }) => {
+  const [imageDataUrl, setImageDataUrl] = useState<string | null>(defaultValue);
   const [file, setFile] = useState<File | null>();
   const [error, setError] = useState<string | null>();
 

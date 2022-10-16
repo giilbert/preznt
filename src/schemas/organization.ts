@@ -22,3 +22,10 @@ export const createOrganizationSchema = z.object({
 export const joinOrganizationSchema = z.object({
   joinCode: z.string(),
 });
+
+export const editOrganizationSchema = z.object({
+  name: z.string(),
+  organizationId: z.string(),
+  header: z.string().max(MAX_FILE_SIZE).optional(),
+  private: z.boolean(),
+});
