@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   closestCenter,
   KeyboardSensor,
@@ -21,7 +21,12 @@ import {
   restrictToVerticalAxis,
   restrictToWindowEdges,
 } from "@dnd-kit/modifiers";
-import { Heading } from "../ui";
+import { Button, Heading } from "../ui";
+import { SignUpField } from "@prisma/client";
+import { trpc } from "@/utils/trpc";
+import { FiPlus } from "react-icons/fi";
+import { useOrganization } from "@/lib/use-organization";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 
 type Question = {
   id: string;
@@ -66,29 +71,20 @@ except:
 
 */
 
-export const SignUpFormEditor: React.FC = () => {
-  const [fields, setFields] = useState<Question[]>([
-    {
-      id: "one",
-      name: "one",
-      description: "asdasd",
-    },
-    {
-      id: "two",
-      name: "two",
-      description: "Asdasdzx",
-    },
-    {
-      id: "three",
-      name: "three",
-      description: "asdsa",
-    },
-    {
-      id: "four",
-      name: "four",
-      description: "poewpo",
-    },
-  ]);
+type SignUpFieldWithId = SignUpField & { id: string };
+
+export const SignUpFormEditor: React.FC<{
+  fields: SignUpFieldWithId[];
+}> = ({ fields: f }) => {
+  const createField = trpc.organization.signUpForm.createField.useMutation();
+  const reorderField = trpc.organization.signUpForm.reorder.useMutation();
+  const trpcContext = trpc.useContext();
+  const organization = useOrganization();
+  const [fields, setFields] = useState<SignUpFieldWithId[]>(f);
+  useEffect(() => {
+    setFields(f);
+  }, [f]);
+  const [ref, enableAutoAnimate] = useAutoAnimate<HTMLDivElement>();
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -98,6 +94,7 @@ export const SignUpFormEditor: React.FC = () => {
 
   const handleDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event;
+    enableAutoAnimate(true);
 
     if (active.id !== over?.id) {
       setFields((items) => {
@@ -109,6 +106,11 @@ export const SignUpFormEditor: React.FC = () => {
         );
 
         console.log(`index ${oldIndex} moved to ${newIndex}`);
+        reorderField.mutate({
+          organizationId: organization.id,
+          fromIndex: oldIndex,
+          toIndex: newIndex,
+        });
 
         return arrayMove(items, oldIndex, newIndex);
       });
@@ -116,26 +118,45 @@ export const SignUpFormEditor: React.FC = () => {
   }, []);
 
   return (
-    <DndContext
-      sensors={sensors}
-      collisionDetection={closestCenter}
-      onDragEnd={handleDragEnd}
-      modifiers={[
-        restrictToVerticalAxis,
-        restrictToWindowEdges,
-        restrictToParentElement,
-      ]}
-    >
-      <SortableContext items={fields} strategy={verticalListSortingStrategy}>
-        {fields.map((field) => (
-          <Question key={field.name} field={field} />
-        ))}
-      </SortableContext>
-    </DndContext>
+    <div ref={ref} className="mb-12">
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragStart={() => enableAutoAnimate(false)}
+        onDragEnd={handleDragEnd}
+        modifiers={[
+          restrictToVerticalAxis,
+          restrictToWindowEdges,
+          restrictToParentElement,
+        ]}
+      >
+        <SortableContext items={fields} strategy={verticalListSortingStrategy}>
+          {fields.map((field) => (
+            <Question key={field.name} field={field} />
+          ))}
+        </SortableContext>
+      </DndContext>
+
+      <Button
+        className="w-full h-12"
+        variant="outline-secondary"
+        loading={createField.isLoading}
+        onClick={async () => {
+          await createField
+            .mutateAsync({
+              organizationId: organization.id,
+            })
+            .catch(() => 0);
+          await trpcContext.organization.signUpForm.getAllFields.invalidate();
+        }}
+      >
+        <FiPlus className="mr-2" /> Add field
+      </Button>
+    </div>
   );
 };
 
-const Question: React.FC<{ field: Question }> = (props) => {
+const Question: React.FC<{ field: SignUpFieldWithId }> = (props) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: props.field.id });
 

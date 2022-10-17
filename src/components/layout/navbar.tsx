@@ -25,7 +25,7 @@ export const Navbar: React.FC<{
   tabs?: Tab[];
   selectedTab?: string;
 }> = ({ breadcrumbs, tabs, selectedTab }) => (
-  <div className="fixed top-0 left-0 px-4 pt-6 pb-2 w-screen bg-background-tint border-b-neutral-800 border-b flex justify-center">
+  <div className="z-10 fixed top-0 left-0 px-4 pt-6 pb-2 w-screen bg-background-tint border-b-neutral-800 border-b flex justify-center">
     <div className="w-full max-w-7xl">
       <div className="flex items-center w-full">
         <div className="mr-auto flex items-center">

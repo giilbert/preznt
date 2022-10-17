@@ -9,14 +9,32 @@ const tabClasses =
 
 export const OrganizationSettings: React.FC = () => {
   const { id } = useOrganization();
-  const {
-    status,
-    data: organization,
-    error,
-  } = trpc.organization.getOrganizationAsAdmin.useQuery({ organizationId: id });
+  const organizationQuery = trpc.organization.getOrganizationAsAdmin.useQuery({
+    organizationId: id,
+  });
+  const signUpFormFieldQuery =
+    trpc.organization.signUpForm.getAllFields.useQuery({
+      organizationId: id,
+    });
 
-  if (status === "loading") return <p>Loading</p>;
-  if (status === "error") return <p>Error: {error.message}</p>;
+  if (
+    organizationQuery.status === "loading" ||
+    signUpFormFieldQuery.status === "loading"
+  )
+    return <p>Loading</p>;
+  if (
+    organizationQuery.status === "error" ||
+    signUpFormFieldQuery.status === "error"
+  )
+    return (
+      <p>
+        Error:{" "}
+        {organizationQuery.error?.message ||
+          signUpFormFieldQuery.error?.message}
+      </p>
+    );
+
+  console.log("outer: ", signUpFormFieldQuery.data);
 
   return (
     <div className="md:flex gap-2">
@@ -31,11 +49,11 @@ export const OrganizationSettings: React.FC = () => {
 
         <Tab.Panels as="div" className="w-full">
           <Tab.Panel className="w-full">
-            <OrganizationSettingsEditor organization={organization} />
+            <OrganizationSettingsEditor organization={organizationQuery.data} />
           </Tab.Panel>
 
           <Tab.Panel>
-            <SignUpFormEditor />
+            <SignUpFormEditor fields={signUpFormFieldQuery.data} />
           </Tab.Panel>
         </Tab.Panels>
       </Tab.Group>
