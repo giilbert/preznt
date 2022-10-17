@@ -1,6 +1,8 @@
 import { enforceOrganizationAdmin } from "@/server/common/organization-perms";
+import { alphanumericNanoid } from "@/utils/alphanumericNanoid";
 import { SignUpFieldType } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
+import { nanoid } from "nanoid";
 import { z } from "zod";
 import { authedProcedure, t } from "../trpc";
 
@@ -38,17 +40,66 @@ export const organizationSignUpFormRouter = t.router({
         where: { organizationId: input.organizationId },
       });
 
+      const id = nanoid();
+
       await ctx.prisma.signUpField.create({
         data: {
           organizationId: input.organizationId,
           order,
-          attribute: `Untitled-${order}`,
+          attribute: `Untitled-${id}`,
           description: "",
           meta: {},
-          name: `Untitled-${order}`,
+          name: `Untitled-${id}`,
           type: SignUpFieldType.TEXT,
         },
       });
+    }),
+
+  deleteField: authedProcedure
+    .input(
+      z.object({
+        organizationId: z.string(),
+        attribute: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      await enforceOrganizationAdmin(ctx, input);
+      const toBeDeleted = await ctx.prisma.signUpField.findUnique({
+        where: { organizationId_attribute: input },
+      });
+
+      if (!toBeDeleted) throw new TRPCError({ code: "NOT_FOUND" });
+
+      await ctx.prisma.$transaction([
+        ctx.prisma.signUpField.delete({
+          where: { organizationId_attribute: input },
+        }),
+        ctx.prisma.signUpField.updateMany({
+          where: {
+            organizationId: input.organizationId,
+            order: {
+              gt: toBeDeleted.order,
+            },
+          },
+          data: {
+            order: {
+              decrement: 1,
+            },
+          },
+        }),
+      ]);
+    }),
+
+  updateField: authedProcedure
+    .input(
+      z.object({
+        organizationId: z.string(),
+        attribute: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      await enforceOrganizationAdmin(ctx, input);
+      // TODO
     }),
 
   reorder: authedProcedure
@@ -67,7 +118,7 @@ export const organizationSignUpFormRouter = t.router({
       console.log("!!!!!!!!!!!!!!!!!", input);
 
       const fromField = await ctx.prisma.signUpField.findFirst({
-        where: { order: input.fromIndex },
+        where: { organizationId: input.organizationId, order: input.fromIndex },
       });
       if (!fromField)
         throw new TRPCError({

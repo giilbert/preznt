@@ -24,10 +24,12 @@ import {
 import { Button, Heading } from "../ui";
 import { SignUpField } from "@prisma/client";
 import { trpc } from "@/utils/trpc";
-import { FiPlus } from "react-icons/fi";
+import { FiMenu, FiPlus, FiTrash } from "react-icons/fi";
 import { useOrganization } from "@/lib/use-organization";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { z } from "zod";
+import { TinyButton } from "../ui/tiny-button";
+import { Spinner } from "../util/spinner";
 
 type Question = {
   id: string;
@@ -112,7 +114,7 @@ export const SignUpFormEditor: React.FC<{
       </DndContext>
 
       <Button
-        className="w-full h-12"
+        className="w-full h-12 mt-2"
         variant="outline-secondary"
         loading={createField.isLoading}
         onClick={async () => {
@@ -133,6 +135,9 @@ export const SignUpFormEditor: React.FC<{
 const Question: React.FC<{ field: SignUpFieldWithId }> = ({ field }) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: field.id });
+  const deleteField = trpc.organization.signUpForm.deleteField.useMutation();
+  const organization = useOrganization();
+  const trpcContext = trpc.useContext();
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -144,11 +149,27 @@ const Question: React.FC<{ field: SignUpFieldWithId }> = ({ field }) => {
       className="bg-background-secondary my-1 px-4 p-2 rounded"
       ref={setNodeRef}
       style={style}
-      {...attributes}
-      {...listeners}
     >
-      <Heading level="h3">{field.name}</Heading>
-      {field.description && <p>{field.description}</p>}
+      <div className="flex items-center gap-2">
+        <p {...attributes} {...listeners}>
+          <FiMenu />
+        </p>
+        <Heading level="h3">{field.name}</Heading>
+        {field.description && <p>{field.description}</p>}
+
+        <TinyButton
+          className="ml-auto bg-red-500 hover:bg-red-600 transition-colors"
+          onClick={async () => {
+            await deleteField.mutateAsync({
+              organizationId: organization.id,
+              attribute: field.attribute,
+            });
+            await trpcContext.organization.signUpForm.getAllFields.invalidate();
+          }}
+        >
+          {deleteField.isLoading ? <Spinner /> : <FiTrash />}
+        </TinyButton>
+      </div>
     </div>
   );
 };
