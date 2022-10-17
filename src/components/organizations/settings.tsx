@@ -2,6 +2,7 @@ import { useOrganization } from "@/lib/use-organization";
 import { trpc } from "@/utils/trpc";
 import { Tab } from "@headlessui/react";
 import { OrganizationSettingsEditor } from "./settings-editor";
+import { SignUpFormEditor } from "./sign-up-form-editor";
 
 const tabClasses =
   "md:text-start w-full bg-neutral-900 hover:bg-neutral-800 px-4 py-2 rounded transition-colors";
@@ -34,7 +35,7 @@ export const OrganizationSettings: React.FC = () => {
           </Tab.Panel>
 
           <Tab.Panel>
-            <p>Sign up form</p>
+            <SignUpFormEditor />
           </Tab.Panel>
         </Tab.Panels>
       </Tab.Group>

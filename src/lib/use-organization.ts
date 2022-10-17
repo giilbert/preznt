@@ -1,7 +1,10 @@
 import { Organization, OrganizationStatus } from "@prisma/client";
 import { createContext, useContext } from "react";
 
-export type PublicOrganization = Omit<Organization, "joinCode" | "private"> & {
+export type PublicOrganization = Omit<
+  Organization,
+  "joinCode" | "private" | "signUpFormTitle"
+> & {
   status: OrganizationStatus;
 };
 

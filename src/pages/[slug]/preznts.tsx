@@ -10,7 +10,6 @@ import { useOrganization } from "@/lib/use-organization";
 import { trpc } from "@/utils/trpc";
 import { OrganizationStatus } from "@prisma/client";
 import { NextPage } from "next";
-import { useRouter } from "next/router";
 
 const OrganizationPrezntsPage: NextPage = () => {
   const createPrezntDisclosure = useDisclosure();
@@ -58,7 +57,6 @@ const RedeemedPreznts: React.FC = () => {
   } = trpc.preznt.getRedeemedPreznts.useQuery({
     organizationId: organization.id,
   });
-  const router = useRouter();
 
   if (status === "loading") return null;
   if (status === "error") return <p>Error: {error.message}</p>;

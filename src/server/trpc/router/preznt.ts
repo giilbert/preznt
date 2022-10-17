@@ -308,7 +308,7 @@ export const prezntRouter = t.router({
       })
     )
     .query(async ({ input, ctx }) => {
-      return (
+      const preznts = (
         await ctx.prisma.user.findUnique({
           where: { id: ctx.user.id },
           include: {
@@ -326,6 +326,11 @@ export const prezntRouter = t.router({
         redeemedAt: p.redeemedAt,
         ...p.preznt,
       }));
+
+      if (!preznts)
+        throw new TRPCError({ code: "NOT_FOUND", message: "User not found." });
+
+      return preznts;
     }),
 
   getRedeemedPrezntsInMonth: authedProcedure

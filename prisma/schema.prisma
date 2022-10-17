@@ -59,6 +59,7 @@ model VerificationToken {
 }
 
 model OrganizationOnUser {
+    hasSignedUp     Boolean            @default(false)
     userId          String
     user            User               @relation(fields: [userId], references: [id])
     organizationId  String
@@ -71,15 +72,18 @@ model OrganizationOnUser {
 }
 
 model Organization {
-    id         String               @id @default(cuid())
-    headerUrl  String
-    slug       String               @unique
-    joinCode   String               @unique
-    private    Boolean
-    name       String
-    users      OrganizationOnUser[]
-    preznts    Preznt[]
-    attributes UserAttribute[]
+    id           String               @id @default(cuid())
+    headerUrl    String
+    slug         String               @unique
+    joinCode     String               @unique
+    private      Boolean
+    name         String
+    users        OrganizationOnUser[]
+    preznts      Preznt[]
+    attributes   UserAttribute[]
+
+    signUpFormTitle String?
+    signUpFields    SignUpField[]
 }
 
 model UserAttribute {
@@ -135,6 +139,20 @@ model PrezntOnUser {
     @@unique([prezntId, userId])
 }
 
+model SignUpField {
+    organizationId String
+    organization   Organization @relation(fields: [organizationId], references: [id])
+
+    attribute   String
+    name        String
+    description String
+
+    type SignUpFieldType
+    meta Json
+
+    @@id([organizationId, attribute])
+}
+
 enum KeyValueAction {
     INCREMENT
     DECREMENT
@@ -147,3 +165,11 @@ enum OrganizationStatus {
     MEMBER
 }
 
+enum SignUpFieldType {
+    NONE // used for justy displaying text, has no input
+    TEXT
+    EMAIL
+    NUMBER
+    SCALE
+    CHECKBOXES
+}
