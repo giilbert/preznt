@@ -18,6 +18,7 @@ import { alphanumericNanoid } from "@/utils/alphanumericNanoid";
 import { TRPCError } from "@trpc/server";
 import { organizationMemberTabs } from "@/utils/tabs/organization";
 import { storage } from "@/server/common/storage";
+import { organizationSignUpFormRouter } from "./organizationSignupForm";
 
 const PER_PAGE = 16;
 
@@ -361,4 +362,6 @@ export const organizationRouter = t.router({
         },
       });
     }),
+
+  signUpForm: organizationSignUpFormRouter,
 });
