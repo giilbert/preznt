@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   closestCenter,
   KeyboardSensor,
@@ -27,49 +27,13 @@ import { trpc } from "@/utils/trpc";
 import { FiPlus } from "react-icons/fi";
 import { useOrganization } from "@/lib/use-organization";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { z } from "zod";
 
 type Question = {
   id: string;
   name: string;
   description: string;
 };
-
-/*
-
-Mechanics of drag in drop in database:
-
-DETECTING IF ITEM MOVES TO AN EARLIER / LATER POSITION:
-  EARLIER -- from > to
-  LATER   -- from < to
-
-0  0          0  0
-1 v1 <<<      1  3 <
-2 v2   ^      2  1 <
-3 v3 >>^      3  2 <
-4  4          4  4
-5  5          5  5
-
-WHEN TO IS EARLIER THAN FROM
-1. `from`'s index becomes `to`'s index
-2. every index between the from (exclusive) and to (inclusive) is -= 1
-   ex: 3 moved to the place of 1
-     - 2 -> 1
-     - 3 -> 2
-
-WHEN TO IS LATER THAN FROM
-0  0          0  0
-1 ^1 >>v      1  2 <
-2 ^2   v      2  3 <
-3 ^3 <<<      3  1 <
-4  4          4  4
-5  5          5  5
-except:
-2. every index between from (INCLUSIVE) and to (EXCLUSIVE) is += 1
-   ex: 1 moved to the place of 3
-     - 1 -> 2
-     - 2 -> 3
-
-*/
 
 type SignUpFieldWithId = SignUpField & { id: string };
 
@@ -84,17 +48,26 @@ export const SignUpFormEditor: React.FC<{
   useEffect(() => {
     setFields(f);
   }, [f]);
-  const [ref, enableAutoAnimate] = useAutoAnimate<HTMLDivElement>();
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
   );
+  const [queue, setQueue] = useState<
+    Parameters<typeof reorderField["mutate"]>[0][]
+  >([]);
+
+  useEffect(() => {
+    if (reorderField.status === "loading") return;
+    const next = queue.shift();
+    if (next) {
+      reorderField.mutate(next);
+    }
+  }, [queue.length, reorderField.status]);
 
   const handleDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event;
-    enableAutoAnimate(true);
 
     if (active.id !== over?.id) {
       setFields((items) => {
@@ -105,12 +78,14 @@ export const SignUpFormEditor: React.FC<{
           ({ id }) => id === (over?.id as string)
         );
 
-        console.log(`index ${oldIndex} moved to ${newIndex}`);
-        reorderField.mutate({
-          organizationId: organization.id,
-          fromIndex: oldIndex,
-          toIndex: newIndex,
-        });
+        setQueue((old) => [
+          ...old,
+          {
+            organizationId: organization.id,
+            fromIndex: oldIndex,
+            toIndex: newIndex,
+          },
+        ]);
 
         return arrayMove(items, oldIndex, newIndex);
       });
@@ -118,11 +93,10 @@ export const SignUpFormEditor: React.FC<{
   }, []);
 
   return (
-    <div ref={ref} className="mb-12">
+    <div className="mb-12">
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
-        onDragStart={() => enableAutoAnimate(false)}
         onDragEnd={handleDragEnd}
         modifiers={[
           restrictToVerticalAxis,
@@ -156,9 +130,9 @@ export const SignUpFormEditor: React.FC<{
   );
 };
 
-const Question: React.FC<{ field: SignUpFieldWithId }> = (props) => {
+const Question: React.FC<{ field: SignUpFieldWithId }> = ({ field }) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: props.field.id });
+    useSortable({ id: field.id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -167,14 +141,14 @@ const Question: React.FC<{ field: SignUpFieldWithId }> = (props) => {
 
   return (
     <div
-      className="bg-background-secondary my-1 px-4 p-2"
+      className="bg-background-secondary my-1 px-4 p-2 rounded"
       ref={setNodeRef}
       style={style}
       {...attributes}
       {...listeners}
     >
-      <Heading>{props.field.name}</Heading>
-      {props.field.description}
+      <Heading level="h3">{field.name}</Heading>
+      {field.description && <p>{field.description}</p>}
     </div>
   );
 };

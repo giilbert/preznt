@@ -50,7 +50,7 @@ export const organizationSignUpFormRouter = t.router({
         },
       });
     }),
-  // TODO: TESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTEST
+
   reorder: authedProcedure
     .input(
       z.object({
