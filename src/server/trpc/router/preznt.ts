@@ -2,7 +2,7 @@
 
 import { createPrezntSchema } from "@/schemas/preznt";
 import { enforceOrganizationAdmin } from "@/server/common/organization-perms";
-import { alphanumericNanoid } from "@/utils/alphanumericNanoid";
+import { alphanumericNanoid } from "@/utils/alphanumeric-nanoid";
 import {
   OrganizationStatus,
   Preznt,

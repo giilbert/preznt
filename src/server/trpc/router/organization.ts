@@ -14,11 +14,11 @@ import { z } from "zod";
 import { t, authedProcedure } from "../trpc";
 import { customAlphabet, nanoid } from "nanoid";
 import { Context } from "../context";
-import { alphanumericNanoid } from "@/utils/alphanumericNanoid";
+import { alphanumericNanoid } from "@/utils/alphanumeric-nanoid";
 import { TRPCError } from "@trpc/server";
 import { organizationMemberTabs } from "@/utils/tabs/organization";
 import { storage } from "@/server/common/storage";
-import { organizationSignUpFormRouter } from "./organizationSignupForm";
+import { organizationSignUpFormRouter } from "./organization-sign-up-form";
 
 const PER_PAGE = 16;
 
