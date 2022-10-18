@@ -22,14 +22,15 @@ import {
   restrictToWindowEdges,
 } from "@dnd-kit/modifiers";
 import { Button, Heading } from "../ui";
-import { SignUpField } from "@prisma/client";
+import { SignUpField, SignUpFieldType } from "@prisma/client";
 import { trpc } from "@/utils/trpc";
 import { FiMenu, FiPlus, FiTrash } from "react-icons/fi";
 import { useOrganization } from "@/lib/use-organization";
-import { useAutoAnimate } from "@formkit/auto-animate/react";
-import { z } from "zod";
 import { TinyButton } from "../ui/tiny-button";
 import { Spinner } from "../util/spinner";
+import { useZodForm } from "@/lib/use-zod-form";
+import { editSignUpFieldSchema } from "@/schemas/organization";
+import { FormProvider, useFormContext } from "react-hook-form";
 
 type Question = {
   id: string;
@@ -138,6 +139,10 @@ const Question: React.FC<{ field: SignUpFieldWithId }> = ({ field }) => {
   const deleteField = trpc.organization.signUpForm.deleteField.useMutation();
   const organization = useOrganization();
   const trpcContext = trpc.useContext();
+  const form = useZodForm({
+    schema: editSignUpFieldSchema,
+    defaultValues: field,
+  });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -146,30 +151,73 @@ const Question: React.FC<{ field: SignUpFieldWithId }> = ({ field }) => {
 
   return (
     <div
-      className="bg-background-secondary my-1 px-4 p-2 rounded"
+      className="bg-background-secondary my-1 px-4 p-2 rounded flex gap-4"
       ref={setNodeRef}
       style={style}
     >
-      <div className="flex items-center gap-2">
-        <p {...attributes} {...listeners}>
-          <FiMenu />
-        </p>
-        <Heading level="h3">{field.name}</Heading>
-        {field.description && <p>{field.description}</p>}
+      <p {...attributes} {...listeners} className="mt-2">
+        <FiMenu size="20" />
+      </p>
 
-        <TinyButton
-          className="ml-auto bg-red-500 hover:bg-red-600 transition-colors"
-          onClick={async () => {
-            await deleteField.mutateAsync({
-              organizationId: organization.id,
-              attribute: field.attribute,
-            });
-            await trpcContext.organization.signUpForm.getAllFields.invalidate();
-          }}
+      <FormProvider {...form}>
+        <form
+          onSubmit={form.handleSubmit(async (values) => {
+            console.log(values);
+          })}
+          className="w-full flex flex-col gap-2"
         >
-          {deleteField.isLoading ? <Spinner /> : <FiTrash />}
-        </TinyButton>
-      </div>
+          <div className="flex gap-1">
+            <select className="px-1 py-1 rounded" {...form.register("type")}>
+              {Object.keys(SignUpFieldType).map((v) => (
+                <option>{v}</option>
+              ))}
+            </select>
+
+            <input
+              {...form.register("name")}
+              className="px-3 py-1 rounded w-full"
+              placeholder="Name"
+            />
+          </div>
+
+          <textarea
+            {...form.register("description")}
+            className="px-3 py-1 rounded w-full h-32 resize-none"
+            placeholder="Description"
+          />
+
+          <QuestionInputField />
+
+          <div className="flex items-center gap-2">
+            <p>Attribute</p>
+            <input
+              {...form.register("attribute")}
+              className="px-3 py-1 rounded w-96 font-mono"
+              placeholder="Name"
+            />
+          </div>
+        </form>
+      </FormProvider>
+
+      <TinyButton
+        className="ml-auto bg-red-500 hover:bg-red-600 transition-colors"
+        onClick={async () => {
+          await deleteField.mutateAsync({
+            organizationId: organization.id,
+            attribute: field.attribute,
+          });
+          await trpcContext.organization.signUpForm.getAllFields.invalidate();
+        }}
+      >
+        {deleteField.isLoading ? <Spinner /> : <FiTrash />}
+      </TinyButton>
     </div>
   );
+};
+
+const QuestionInputField: React.FC = () => {
+  const form = useFormContext();
+  const type: SignUpFieldType = form.watch("type");
+
+  return <p>TODO: {type}</p>;
 };

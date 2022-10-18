@@ -1,3 +1,4 @@
+import { SignUpFieldType } from "@prisma/client";
 import { z } from "zod";
 
 const RESERVED_SLUGS = ["design", "api"];
@@ -28,4 +29,13 @@ export const editOrganizationSchema = z.object({
   organizationId: z.string(),
   header: z.string().max(MAX_FILE_SIZE).optional(),
   private: z.boolean(),
+});
+
+export const editSignUpFieldSchema = z.object({
+  attribute: z.string(),
+  name: z.string(),
+  description: z.string(),
+  type: z.nativeEnum(SignUpFieldType),
+  // TODO:
+  meta: z.any(),
 });
