@@ -11,7 +11,10 @@ export const Modal: React.FC<
       <Dialog
         as="div"
         onClose={onClose}
-        className={clsx("bg-red-200 max-w-2xl h-96 rounded transform translate-x-1/2 translate-y-1/2", className)}
+        className={clsx(
+          "bg-red-200 max-w-2xl h-96 rounded transform translate-x-1/2 translate-y-1/2",
+          className
+        )}
         {...rest}
       >
         {children}
