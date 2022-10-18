@@ -1,3 +1,4 @@
+import { editSignUpFieldSchema } from "@/schemas/organization";
 import { enforceOrganizationAdmin } from "@/server/common/organization-perms";
 import { alphanumericNanoid } from "@/utils/alphanumeric-nanoid";
 import { SignUpFieldType } from "@prisma/client";
@@ -14,17 +15,12 @@ export const organizationSignUpFormRouter = t.router({
       })
     )
     .query(async ({ ctx, input }) => {
-      return (
-        await ctx.prisma.signUpField.findMany({
-          where: { organizationId: input.organizationId },
-          orderBy: {
-            order: "asc",
-          },
-        })
-      ).map((v) => ({
-        id: `${v.organizationId}-${v.attribute}`,
-        ...v,
-      }));
+      return await ctx.prisma.signUpField.findMany({
+        where: { organizationId: input.organizationId },
+        orderBy: {
+          order: "asc",
+        },
+      });
     }),
 
   createField: authedProcedure
@@ -59,20 +55,20 @@ export const organizationSignUpFormRouter = t.router({
     .input(
       z.object({
         organizationId: z.string(),
-        attribute: z.string(),
+        id: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
       await enforceOrganizationAdmin(ctx, input);
       const toBeDeleted = await ctx.prisma.signUpField.findUnique({
-        where: { organizationId_attribute: input },
+        where: { organizationId_id: input },
       });
 
       if (!toBeDeleted) throw new TRPCError({ code: "NOT_FOUND" });
 
       await ctx.prisma.$transaction([
         ctx.prisma.signUpField.delete({
-          where: { organizationId_attribute: input },
+          where: { organizationId_id: input },
         }),
         ctx.prisma.signUpField.updateMany({
           where: {
@@ -92,14 +88,31 @@ export const organizationSignUpFormRouter = t.router({
 
   updateField: authedProcedure
     .input(
-      z.object({
-        organizationId: z.string(),
-        attribute: z.string(),
-      })
+      editSignUpFieldSchema.merge(
+        z.object({
+          id: z.string(),
+          organizationId: z.string(),
+        })
+      )
     )
     .mutation(async ({ ctx, input }) => {
       await enforceOrganizationAdmin(ctx, input);
       // TODO
+      await ctx.prisma.signUpField.update({
+        where: {
+          organizationId_id: {
+            organizationId: input.organizationId,
+            id: input.id,
+          },
+        },
+        data: {
+          attribute: input.attribute,
+          description: input.description,
+          meta: input.meta,
+          name: input.name,
+          type: input.type,
+        },
+      });
     }),
 
   reorder: authedProcedure

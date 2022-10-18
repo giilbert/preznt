@@ -140,6 +140,7 @@ model PrezntOnUser {
 }
 
 model SignUpField {
+    id             String       @id @default(cuid())
     organizationId String
     organization   Organization @relation(fields: [organizationId], references: [id])
 
@@ -151,7 +152,10 @@ model SignUpField {
     type SignUpFieldType
     meta Json
 
-    @@id([organizationId, attribute])
+    @@index([organizationId, order])
+    @@unique([organizationId, attribute])
+    // disallow users from other organizations to write to organizations they dont own
+    @@unique([organizationId, id])
 }
 
 enum KeyValueAction {

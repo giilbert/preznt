@@ -31,6 +31,10 @@ import { Spinner } from "../util/spinner";
 import { useZodForm } from "@/lib/use-zod-form";
 import { editSignUpFieldSchema } from "@/schemas/organization";
 import { FormProvider, useFormContext } from "react-hook-form";
+import { QuestionInputField } from "./sign-up-form-field-editor";
+import clsx from "clsx";
+import { debounce } from "@/utils/debounce";
+import { z } from "zod";
 
 type Question = {
   id: string;
@@ -67,7 +71,7 @@ export const SignUpFormEditor: React.FC<{
     if (next) {
       reorderField.mutate(next);
     }
-  }, [queue.length, reorderField.status]);
+  }, [queue, reorderField, queue.length, reorderField.status]);
 
   const handleDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event;
@@ -109,7 +113,7 @@ export const SignUpFormEditor: React.FC<{
       >
         <SortableContext items={fields} strategy={verticalListSortingStrategy}>
           {fields.map((field) => (
-            <Question key={field.name} field={field} />
+            <Field key={field.name} field={field} />
           ))}
         </SortableContext>
       </DndContext>
@@ -133,16 +137,40 @@ export const SignUpFormEditor: React.FC<{
   );
 };
 
-const Question: React.FC<{ field: SignUpFieldWithId }> = ({ field }) => {
+const inputClasses =
+  "px-3 py-1 rounded w-full ring-accent-primary focus:ring-2";
+
+const Field: React.FC<{ field: SignUpFieldWithId }> = ({ field }) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: field.id });
   const deleteField = trpc.organization.signUpForm.deleteField.useMutation();
+  const updateField = trpc.organization.signUpForm.updateField.useMutation();
   const organization = useOrganization();
   const trpcContext = trpc.useContext();
   const form = useZodForm({
     schema: editSignUpFieldSchema,
     defaultValues: field,
   });
+
+  useEffect(() => {
+    type Fields = z.infer<typeof editSignUpFieldSchema>;
+    const { unsubscribe } = form.watch(
+      debounce(({ type, description, attribute, name }: Partial<Fields>) => {
+        updateField.mutate({
+          organizationId: organization.id,
+          id: field.id,
+          type: type as SignUpFieldType,
+          description: description as string,
+          attribute: attribute as string,
+          name: name as string,
+        });
+      })
+    );
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -167,22 +195,24 @@ const Question: React.FC<{ field: SignUpFieldWithId }> = ({ field }) => {
           className="w-full flex flex-col gap-2"
         >
           <div className="flex gap-1">
-            <select className="px-1 py-1 rounded" {...form.register("type")}>
-              {Object.keys(SignUpFieldType).map((v) => (
-                <option>{v}</option>
-              ))}
-            </select>
-
             <input
               {...form.register("name")}
-              className="px-3 py-1 rounded w-full"
+              className={inputClasses}
               placeholder="Name"
             />
+            <select
+              className={clsx(inputClasses, "w-min")}
+              {...form.register("type")}
+            >
+              {Object.keys(SignUpFieldType).map((v) => (
+                <option key={v}>{v}</option>
+              ))}
+            </select>
           </div>
 
           <textarea
             {...form.register("description")}
-            className="px-3 py-1 rounded w-full h-32 resize-none"
+            className={clsx(inputClasses, "h-24 resize-none")}
             placeholder="Description"
           />
 
@@ -192,7 +222,7 @@ const Question: React.FC<{ field: SignUpFieldWithId }> = ({ field }) => {
             <p>Attribute</p>
             <input
               {...form.register("attribute")}
-              className="px-3 py-1 rounded w-96 font-mono"
+              className={clsx(inputClasses)}
               placeholder="Name"
             />
           </div>
@@ -204,7 +234,7 @@ const Question: React.FC<{ field: SignUpFieldWithId }> = ({ field }) => {
         onClick={async () => {
           await deleteField.mutateAsync({
             organizationId: organization.id,
-            attribute: field.attribute,
+            id: field.id,
           });
           await trpcContext.organization.signUpForm.getAllFields.invalidate();
         }}
@@ -213,11 +243,4 @@ const Question: React.FC<{ field: SignUpFieldWithId }> = ({ field }) => {
       </TinyButton>
     </div>
   );
-};
-
-const QuestionInputField: React.FC = () => {
-  const form = useFormContext();
-  const type: SignUpFieldType = form.watch("type");
-
-  return <p>TODO: {type}</p>;
 };
