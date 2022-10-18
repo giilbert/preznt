@@ -229,8 +229,8 @@ const Field: React.FC<{ field: SignUpFieldWithId }> = ({ field }) => {
         </form>
       </FormProvider>
 
-      <TinyButton
-        className="ml-auto bg-red-500 hover:bg-red-600 transition-colors"
+      <button
+        className="w-8 h-8 flex justify-center items-center rounded ml-auto bg-red-500 hover:bg-red-600 transition-colors"
         onClick={async () => {
           await deleteField.mutateAsync({
             organizationId: organization.id,
@@ -240,7 +240,7 @@ const Field: React.FC<{ field: SignUpFieldWithId }> = ({ field }) => {
         }}
       >
         {deleteField.isLoading ? <Spinner /> : <FiTrash />}
-      </TinyButton>
+      </button>
     </div>
   );
 };
