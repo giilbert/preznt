@@ -20,10 +20,10 @@ export const DialogWrapper: React.FC<
         leaveFrom="opacity-100"
         leaveTo="opacity-0"
       >
-        <div className="fixed inset-0 bg-black bg-opacity-50 md:backdrop-blur-sm" />
+        <div className="fixed inset-0 bg-black bg-opacity-50 md:backdrop-blur-sm z-20" />
       </Transition.Child>
 
-      <div className="fixed inset-0 overflow-y-auto z-20">
+      <div className="fixed inset-0 overflow-y-auto z-30">
         <div className="flex min-h-full items-center justify-center">
           <Transition.Child as={Fragment} {...transitionClasses}>
             <Dialog.Panel className="h-full w-full md:w-min md:h-min bg-background-secondary p-6 md:rounded-md border-accent-stroke border-2">
