@@ -8,6 +8,39 @@ import { z } from "zod";
 import { authedProcedure, t } from "../trpc";
 
 export const organizationSignUpFormRouter = t.router({
+  getOrganizationSignUpForm: authedProcedure
+    .input(
+      z.object({
+        slug: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const organization = await ctx.prisma.organization.findUnique({
+        where: { slug: input.slug },
+        include: {
+          signUpFields: true,
+        },
+      });
+
+      if (!organization) throw new TRPCError({ code: "NOT_FOUND" });
+
+      if (organization.private) {
+        const organizationOnUser =
+          await ctx.prisma.organizationOnUser.findUnique({
+            where: {
+              userId_organizationId: {
+                userId: ctx.user.id,
+                organizationId: organization.id,
+              },
+            },
+          });
+
+        if (!organizationOnUser) throw new TRPCError({ code: "UNAUTHORIZED" });
+      }
+
+      return organization;
+    }),
+
   getAllFields: authedProcedure
     .input(
       z.object({
