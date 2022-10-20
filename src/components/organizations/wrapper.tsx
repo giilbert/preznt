@@ -39,6 +39,13 @@ export const OrganizationWrapper: React.FC<{
   )
     router.push("/");
 
+  if (
+    status === "success" &&
+    organization.status === OrganizationStatus.MEMBER &&
+    !organization.hasSignedUp
+  )
+    router.push(`/join/${router.query.slug}`);
+
   return (
     <OrganizationContext.Provider value={organization}>
       <Layout

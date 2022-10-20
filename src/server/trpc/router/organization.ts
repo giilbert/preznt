@@ -148,6 +148,7 @@ export const organizationRouter = t.router({
 
       return {
         ...organizationMember.organization,
+        hasSignedUp: organizationMember.hasSignedUp,
         status: organizationMember.status,
       };
     }),
