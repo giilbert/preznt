@@ -1,3 +1,4 @@
+import { fieldsToZod } from "@/lib/fields-to-zod";
 import { editSignUpFieldSchema } from "@/schemas/organization";
 import { enforceOrganizationAdmin } from "@/server/common/organization-perms";
 import { alphanumericNanoid } from "@/utils/alphanumeric-nanoid";
@@ -18,7 +19,11 @@ export const organizationSignUpFormRouter = t.router({
       const organization = await ctx.prisma.organization.findUnique({
         where: { slug: input.slug },
         include: {
-          signUpFields: true,
+          signUpFields: {
+            orderBy: {
+              order: "asc",
+            },
+          },
         },
       });
 
@@ -211,5 +216,76 @@ export const organizationSignUpFormRouter = t.router({
             });
 
       await ctx.prisma.$transaction([shiftOrders, setToToFrom]);
+    }),
+
+  completeSignUp: authedProcedure
+    .input(
+      z.object({
+        organizationId: z.string(),
+        data: z.any(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const organization = await ctx.prisma.organizationOnUser.findUnique({
+        where: {
+          userId_organizationId: {
+            userId: ctx.user.id,
+            organizationId: input.organizationId,
+          },
+        },
+        include: {
+          organization: {
+            include: {
+              signUpFields: true,
+            },
+          },
+        },
+      });
+
+      if (!organization)
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message:
+            "You cannot complete sign up for an organization you're not already in.",
+        });
+
+      if (organization.hasSignedUp)
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "You've already signed up.",
+        });
+
+      const signUpSchema = fieldsToZod(organization.organization.signUpFields);
+      const safeParse = signUpSchema.safeParse(input.data);
+
+      if (!safeParse.success)
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Fields does not fit sign up form schema.",
+        });
+
+      await ctx.prisma.$transaction([
+        ...Object.entries(safeParse.data).map(([attribute, value]) =>
+          ctx.prisma.userAttribute.create({
+            data: {
+              organizationId: organization.organizationId,
+              userId: ctx.user.id,
+              name: attribute,
+              value,
+            },
+          })
+        ),
+        ctx.prisma.organizationOnUser.update({
+          where: {
+            userId_organizationId: {
+              userId: organization.userId,
+              organizationId: organization.organizationId,
+            },
+          },
+          data: {
+            hasSignedUp: true,
+          },
+        }),
+      ]);
     }),
 });

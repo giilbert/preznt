@@ -9,5 +9,7 @@ export const QuestionInputField: React.FC = () => {
 
   if (NO_CONFIG_INPUTS.indexOf(type) !== -1) return null;
 
-  return <p>TODO: {type}</p>;
+  return null;
+
+  //   return <p>TODO: {type}</p>;
 };

@@ -5,7 +5,7 @@ export type PublicOrganization = Omit<
   Organization,
   "joinCode" | "private" | "signUpFormTitle"
 > & {
-  status: OrganizationStatus;
+  status: OrganizationStatus | "NONE";
 };
 
 export const OrganizationContext = createContext<

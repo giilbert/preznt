@@ -204,9 +204,10 @@ const Field: React.FC<{ field: SignUpFieldWithId }> = ({ field }) => {
               className={clsx(inputClasses, "w-min")}
               {...form.register("type")}
             >
-              {Object.keys(SignUpFieldType).map((v) => (
-                <option key={v}>{v}</option>
-              ))}
+              <option>NONE</option>
+              <option>TEXT</option>
+              <option>EMAIL</option>
+              <option>NUMBER</option>
             </select>
           </div>
 
