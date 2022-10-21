@@ -14,6 +14,7 @@ import { Layout } from "../layout/layout";
 import { Text } from "@/components/ui";
 import { Breadcrumb } from "../layout/navbar";
 import { Spinner } from "../util/spinner";
+import { UnauthedRedirect } from "../auth/unauthed-redirect";
 
 export const OrganizationWrapper: React.FC<{
   selectedTab?: string;
@@ -48,36 +49,38 @@ export const OrganizationWrapper: React.FC<{
 
   return (
     <OrganizationContext.Provider value={organization}>
-      <Layout
-        breadcrumbs={
-          !!organization && [
-            {
-              name: organization.name,
-              path: `/[slug]`,
-            },
-            ...(breadcrumbs ? breadcrumbs : []),
-          ]
-        }
-        tabs={
-          organization?.status === OrganizationStatus.ADMIN ||
-          organization?.status === OrganizationStatus.OWNER
-            ? organizationAdminTabs
-            : organizationMemberTabs
-        }
-        selectedTab={selectedTab}
-      >
-        <>
-          {status === "loading" && (
-            <div className="flex justify-center items-center mt-8">
-              <Spinner />
-            </div>
-          )}
-          {organization &&
-            (typeof children === "function"
-              ? children(organization)
-              : children)}
-        </>
-      </Layout>
+      <UnauthedRedirect>
+        <Layout
+          breadcrumbs={
+            !!organization && [
+              {
+                name: organization.name,
+                path: `/[slug]`,
+              },
+              ...(breadcrumbs ? breadcrumbs : []),
+            ]
+          }
+          tabs={
+            organization?.status === OrganizationStatus.ADMIN ||
+            organization?.status === OrganizationStatus.OWNER
+              ? organizationAdminTabs
+              : organizationMemberTabs
+          }
+          selectedTab={selectedTab}
+        >
+          <>
+            {status === "loading" && (
+              <div className="flex justify-center items-center mt-8">
+                <Spinner />
+              </div>
+            )}
+            {organization &&
+              (typeof children === "function"
+                ? children(organization)
+                : children)}
+          </>
+        </Layout>
+      </UnauthedRedirect>
     </OrganizationContext.Provider>
   );
 };

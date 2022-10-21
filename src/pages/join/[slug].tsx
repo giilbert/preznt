@@ -1,3 +1,4 @@
+import { UnauthedRedirect } from "@/components/auth/unauthed-redirect";
 import { Button, Heading } from "@/components/ui";
 import { fieldsToZod } from "@/lib/fields-to-zod";
 import { OrganizationContext, useOrganization } from "@/lib/use-organization";
@@ -141,4 +142,10 @@ const OrganizationJoinPage: NextPage = () => {
   );
 };
 
-export default OrganizationJoinPage;
+const PageWrapped: NextPage = () => (
+  <UnauthedRedirect>
+    <OrganizationJoinPage />
+  </UnauthedRedirect>
+);
+
+export default PageWrapped;
