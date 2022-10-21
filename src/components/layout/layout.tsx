@@ -24,7 +24,7 @@ export const Layout: React.FC<
 
       <div
         className={clsx(
-          (tabs || []).length === 0 ? "mt-32" : "mt-40",
+          (tabs || []).length === 0 ? "mt-28" : "mt-36",
           "mx-4 flex justify-center"
         )}
       >
