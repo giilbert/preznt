@@ -34,8 +34,8 @@ export const Navbar: React.FC<{
               <Image
                 src="/logo.svg"
                 alt=""
-                width="50px"
-                height="50px"
+                width="36px"
+                height="36px"
                 className="cursor-pointer hover:scale-105 transition-transform"
               />
             </a>
