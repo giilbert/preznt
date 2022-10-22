@@ -1,30 +1,60 @@
 import { trpc } from "@/utils/trpc";
 import Link from "next/link";
-import { FiChevronRight } from "react-icons/fi";
-import { Card, Text } from "../ui";
+import { Text } from "../ui";
+import { SkeletonCard } from "../ui/skeletons";
+import { ErrorMessage } from "../util/error-message";
+import { PrezntCalendars } from "./preznts-calendar";
 
 export const OrganizationList: React.FC = () => {
-  const {
-    data: organizations,
-    status,
-    error,
-  } = trpc.organization.getAllJoined.useQuery();
+  const organizationsQuery = trpc.organization.getAllJoined.useQuery();
 
-  if (status === "loading") return <Text>Loading</Text>;
-  if (status === "error") return <Text>Error: {error.message}</Text>;
+  if (organizationsQuery.status === "loading")
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <SkeletonCard amount={4} className="mt-4 h-80 m-0" />
+      </div>
+    );
+  if (organizationsQuery.status === "error")
+    return <ErrorMessage error={organizationsQuery.error} />;
+
+  const { organizations, preznts } = organizationsQuery.data;
 
   return (
-    <div>
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mt-3 gap-4">
       {organizations.map(({ organization }) => (
         <Link href={`/${organization.slug}`} key={organization.id} passHref>
           <a>
-            <Card
+            <div
               key={organization.id}
-              className="my-3 flex flex-row items-center hover:border-gray-700"
+              className="m-0 bg-background-secondary rounded-md hover:ring-2 ring-accent-primary transition-shadow"
             >
-              <p className="text-xl mr-auto">{organization.name}</p>
-              <FiChevronRight size="24" />
-            </Card>
+              <div
+                className="w-full rounded-tl-md rounded-tr-md"
+                style={{
+                  backgroundImage: `url("${organization.headerUrl}")`,
+                  backgroundRepeat: "no-repeat",
+                  backgroundSize: "cover",
+                  aspectRatio: "5/1",
+                }}
+              />
+
+              <div className="p-3 border-b-2 border-b-neutral-800">
+                <p className="text-xl mr-auto text-ellipsis w-full overflow-hidden">
+                  {organization.name}
+                </p>
+              </div>
+
+              <div className="flex justify-center">
+                <div className="w-96 sm:w-full m-2">
+                  <PrezntCalendars
+                    preznts={preznts[organization.id] || []}
+                    size="sm"
+                    showDays={false}
+                    decoration={true}
+                  />
+                </div>
+              </div>
+            </div>
           </a>
         </Link>
       ))}

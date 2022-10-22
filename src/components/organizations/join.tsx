@@ -5,17 +5,15 @@ import { trpc } from "@/utils/trpc";
 import { useDisclosure } from "@/lib/use-disclosure";
 import { Fragment } from "react";
 import { Modal } from "../ui/modal";
+import { InputField } from "../ui/input-field";
+import { FormProvider } from "react-hook-form";
 
 export const JoinOrganization: React.FC = () => {
-  const {
-    handleSubmit,
-    register,
-    reset,
-    formState: { errors },
-  } = useZodForm({
+  const form = useZodForm({
     schema: joinOrganizationSchema,
   });
-  const { mutateAsync } = trpc.organization.joinOrganization.useMutation();
+  const { mutate, isLoading, error } =
+    trpc.organization.joinOrganization.useMutation();
   const { organization } = trpc.useContext();
   const modalDisclosure = useDisclosure();
 
@@ -24,35 +22,44 @@ export const JoinOrganization: React.FC = () => {
       <Button onClick={modalDisclosure.onOpen}>Join Organization</Button>
       <DialogWrapper
         isOpen={modalDisclosure.isOpen}
-        onClose={modalDisclosure.onClose}
+        onClose={() => {
+          modalDisclosure.onClose();
+          form.reset();
+        }}
       >
-        <Heading className="mb-4">Join an Organization</Heading>
-        <form
-          onSubmit={handleSubmit(async (data) => {
-            console.log(data);
-            await mutateAsync(data);
-            organization.getAllJoined.invalidate();
-            reset();
-          })}
-          className="flex flex-col gap-4"
-        >
-          <div>
-            <label htmlFor="join-code" className="text-gray-100 mr-2">
-              Join Code
-            </label>
-            <input
-              {...register("joinCode")}
-              autoComplete="off"
-              id="join-code"
-              className="bg-neutral-800 px-3 py-1 text-gray-100 rounded"
+        <Heading className="mb-4">Join Organization</Heading>
+        <FormProvider {...form}>
+          <form
+            onSubmit={form.handleSubmit(async (data) => {
+              mutate(data, {
+                async onSuccess() {
+                  form.reset();
+                  modalDisclosure.onClose();
+                  await organization.getAllJoined.invalidate();
+                },
+              });
+            })}
+            className="flex flex-col gap-4 min-w-[24rem] w-full"
+          >
+            <InputField.Text
+              name="joinCode"
+              label="Join Code"
+              tip="You should be given this by an organization's admin."
             />
-            <Text className="text-red-400">{errors.joinCode?.message}</Text>
-          </div>
 
-          <Button type="submit" className="flex justify-center">
-            Join
-          </Button>
-        </form>
+            <Button
+              type="submit"
+              className="flex justify-center"
+              loading={isLoading}
+            >
+              Join
+            </Button>
+
+            {error && (
+              <Text className="text-red-400">Error: {error.message}</Text>
+            )}
+          </form>
+        </FormProvider>
       </DialogWrapper>
     </>
   );

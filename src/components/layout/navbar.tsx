@@ -8,6 +8,7 @@ import { Fragment } from "react";
 import Link from "next/link";
 import clsx from "clsx";
 import { useRouter } from "next/router";
+import { ParsedUrlQuery } from "querystring";
 
 export interface Breadcrumb {
   name: string;
@@ -24,18 +25,20 @@ export const Navbar: React.FC<{
   tabs?: Tab[];
   selectedTab?: string;
 }> = ({ breadcrumbs, tabs, selectedTab }) => (
-  <div className="fixed top-0 left-0 p-2 w-screen bg-background-tint border-b-neutral-800 border-b flex justify-center">
-    <div className="w-full max-w-5xl">
+  <div className="z-10 fixed top-0 left-0 px-4 pt-6 pb-2 w-screen bg-background-tint border-b-neutral-800 border-b flex justify-center">
+    <div className="w-full max-w-7xl">
       <div className="flex items-center w-full">
         <div className="mr-auto flex items-center">
           <Link href="/">
-            <Image
-              src="/logo.svg"
-              alt=""
-              width="40px"
-              height="40px"
-              className="cursor-pointer hover:scale-105"
-            />
+            <a>
+              <Image
+                src="/logo.svg"
+                alt=""
+                width="36px"
+                height="36px"
+                className="cursor-pointer hover:scale-105 transition-transform"
+              />
+            </a>
           </Link>
 
           {breadcrumbs && <Breadcrumbs breadcrumbs={breadcrumbs} />}
@@ -57,8 +60,13 @@ const Breadcrumbs: React.FC<{ breadcrumbs: Breadcrumb[] }> = ({
     <>
       {breadcrumbs.map((breadcrumb, i) => {
         return (
-          <p className="text-gray-300 ml-3 text-lg" key={i}>
-            <Link href={{ pathname: breadcrumb.path, query: router.query }}>
+          <p className="text-gray-300 ml-4 text-lg" key={i}>
+            <Link
+              href={{
+                pathname: breadcrumb.path,
+                query: createQuery(router.query, breadcrumb.path),
+              }}
+            >
               {breadcrumb.name}
             </Link>
             {i + 1 !== breadcrumbs.length && (
@@ -89,7 +97,10 @@ const ProfileButton: React.FC = () => {
         <Popover.Panel className="absolute right-1/2 z-10 mt-3 w-56 transform translate-x-9 px-4">
           {() => (
             <Button
-              onClick={() => signOut()}
+              onClick={async () => {
+                await signOut();
+                window.location.href = "/";
+              }}
               variant="danger"
               size="sm"
               className="w-full flex justify-center"
@@ -110,12 +121,12 @@ const Tabs: React.FC<{ tabs: Tab[]; selected: string }> = ({
   const router = useRouter();
 
   return (
-    <div className="w-full mt-3 flex gap-4">
+    <div className="w-full mt-4 flex gap-4">
       {tabs.map((tab, i) => (
         <Link
           href={{
             pathname: tab.path,
-            query: router.query,
+            query: createQuery(router.query, tab.path),
           }}
           passHref
           key={i}
@@ -124,7 +135,7 @@ const Tabs: React.FC<{ tabs: Tab[]; selected: string }> = ({
             className={clsx(
               "text-gray-400 hover:text-gray-50 hover:bg-background-secondary w-min px-2 py-0.5 rounded cursor-pointer transition-all",
               tab.name === selected &&
-                "text-gray-50 after:border-b-2 after:border-gray-100 after:block after:relative after:-bottom-2"
+                "text-gray-50 after:border-b-2 after:border-accent-primary after:block after:relative after:-bottom-2.5"
             )}
           >
             {tab.name}
@@ -134,3 +145,12 @@ const Tabs: React.FC<{ tabs: Tab[]; selected: string }> = ({
     </div>
   );
 };
+
+// makes it so only query parameters valid in the pathname is exposed
+function createQuery(query: ParsedUrlQuery, path: string) {
+  return Object.fromEntries(
+    Object.entries(query as Record<string, string>).filter((v) =>
+      path.includes(v[0])
+    )
+  );
+}

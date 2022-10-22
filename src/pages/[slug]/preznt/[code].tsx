@@ -1,27 +1,28 @@
-import { Text } from "@/components/ui";
-import { trpc } from "@/utils/trpc";
+import { RenderIfStatus } from "@/components/auth/render-if-status";
+import { OrganizationWrapper } from "@/components/organizations/wrapper";
+import { PrezntInfo } from "@/components/preznt/info";
+import { RedeemPrezntPage } from "@/components/preznt/redeem-page";
+import { OrganizationStatus } from "@prisma/client";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
 
 const PrezntPage: NextPage = () => {
   const { query } = useRouter();
-  const { mutateAsync, status, error, data } = trpc.preznt.redeem.useMutation();
-
-  useEffect(() => {
-    if (status === "idle" && query.code && query.slug)
-      mutateAsync({
-        code: query.code as string,
-        slug: query.slug as string,
-      });
-  }, [query, mutateAsync, status]);
 
   return (
-    <div className="m-4">
-      {status === "loading" && <Text>Redeeming {query.code as string}</Text>}
-      {status === "success" && <Text>Success! {JSON.stringify(data)}</Text>}
-      {status === "error" && <Text>Error: {error.message}</Text>}
-    </div>
+    <OrganizationWrapper
+      selectedTab="Preznts"
+      breadcrumbs={[
+        {
+          name: query.code as string,
+          path: "/[slug]/preznt/[code]",
+        },
+      ]}
+    >
+      <RenderIfStatus status={OrganizationStatus.ADMIN}>
+        {(isAdmin) => (isAdmin ? <PrezntInfo /> : <RedeemPrezntPage />)}
+      </RenderIfStatus>
+    </OrganizationWrapper>
   );
 };
 

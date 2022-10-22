@@ -1,3 +1,8 @@
-# preznt
+<img src="public/large-logo.svg">
 
-thanks to nirjhor who made all the dead simple ui components i dont want to make
+---
+
+<div align="center">
+  The better <a href="https://github.com/iDarkLightning/meetxl">MeetXL</a>.
+</div>
+  

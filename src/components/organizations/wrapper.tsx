@@ -1,4 +1,7 @@
-import { OrganizationContext } from "@/lib/use-organization";
+import {
+  OrganizationContext,
+  PublicOrganization,
+} from "@/lib/use-organization";
 import {
   organizationAdminTabs,
   organizationMemberTabs,
@@ -10,13 +13,15 @@ import { PropsWithChildren, ReactNode } from "react";
 import { Layout } from "../layout/layout";
 import { Text } from "@/components/ui";
 import { Breadcrumb } from "../layout/navbar";
+import { Spinner } from "../util/spinner";
+import { UnauthedRedirect } from "../auth/unauthed-redirect";
 
 export const OrganizationWrapper: React.FC<{
   selectedTab?: string;
   breadcrumbs?: Breadcrumb[];
-  children: ReactNode | ((organization: Organization) => ReactNode);
+  children: ReactNode | ((organization: PublicOrganization) => ReactNode);
   requiresAdmin?: boolean;
-}> = ({ requiresAdmin = true, selectedTab = "", breadcrumbs, children }) => {
+}> = ({ requiresAdmin = false, selectedTab = "", breadcrumbs, children }) => {
   const router = useRouter();
   const {
     data: organization,
@@ -28,39 +33,54 @@ export const OrganizationWrapper: React.FC<{
   );
 
   if (
+    (status === "success" &&
+      organization.status === OrganizationStatus.MEMBER &&
+      requiresAdmin) ||
+    status === "error"
+  )
+    router.push("/");
+
+  if (
     status === "success" &&
     organization.status === OrganizationStatus.MEMBER &&
-    requiresAdmin
+    !organization.hasSignedUp
   )
-    router.back();
+    router.push(`/join/${router.query.slug}`);
 
   return (
     <OrganizationContext.Provider value={organization}>
-      <Layout
-        breadcrumbs={
-          !!organization && [
-            {
-              name: organization.name,
-              path: `/[slug]`,
-            },
-            ...(breadcrumbs ? breadcrumbs : []),
-          ]
-        }
-        tabs={
-          organization?.status === OrganizationStatus.MEMBER
-            ? organizationMemberTabs
-            : organizationAdminTabs
-        }
-        selectedTab={selectedTab}
-      >
-        <>
-          {status === "loading" && <Text>Loading</Text>}
-          {organization &&
-            (typeof children === "function"
-              ? children(organization)
-              : children)}
-        </>
-      </Layout>
+      <UnauthedRedirect>
+        <Layout
+          breadcrumbs={
+            !!organization && [
+              {
+                name: organization.name,
+                path: `/[slug]`,
+              },
+              ...(breadcrumbs ? breadcrumbs : []),
+            ]
+          }
+          tabs={
+            organization?.status === OrganizationStatus.ADMIN ||
+            organization?.status === OrganizationStatus.OWNER
+              ? organizationAdminTabs
+              : organizationMemberTabs
+          }
+          selectedTab={selectedTab}
+        >
+          <>
+            {status === "loading" && (
+              <div className="flex justify-center items-center mt-8">
+                <Spinner />
+              </div>
+            )}
+            {organization &&
+              (typeof children === "function"
+                ? children(organization)
+                : children)}
+          </>
+        </Layout>
+      </UnauthedRedirect>
     </OrganizationContext.Provider>
   );
 };

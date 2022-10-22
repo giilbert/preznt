@@ -13,15 +13,9 @@ export const RenderIfStatus: React.FC<{
   status: OrganizationStatus;
   children: React.ReactNode | ((higher: boolean) => React.ReactNode);
 }> = ({ status, children }) => {
-  const { id } = useOrganization();
-  const { data, status: queryStatus } = trpc.organization.getRelation.useQuery({
-    organizationId: id,
-  });
+  const organization = useOrganization();
 
-  if (queryStatus === "loading") return null;
-  if (queryStatus === "error") return null;
-
-  const isHighEnough = hierarchy[data] >= hierarchy[status];
+  const isHighEnough = hierarchy[organization.status] >= hierarchy[status];
 
   if (typeof children === "function") return <>{children(isHighEnough)}</>;
 

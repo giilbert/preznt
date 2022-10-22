@@ -46,8 +46,8 @@ model User {
     sessions      Session[]
     
     organizations   OrganizationOnUser[]
-    createdPreznts  Preznt[] @relation("CreatedPreznts")
-    redeemedPreznts Preznt[] @relation("RedeemedPreznts")
+    createdPreznts  Preznt[]             @relation("CreatedPreznts")
+    redeemedPreznts PrezntOnUser[]
 }
 
 model VerificationToken {
@@ -59,9 +59,7 @@ model VerificationToken {
 }
 
 model OrganizationOnUser {
-    // this is needed for relations :D
-    id              String             @id @unique @default(cuid())
-
+    hasSignedUp     Boolean            @default(false)
     userId          String
     user            User               @relation(fields: [userId], references: [id])
     organizationId  String
@@ -74,22 +72,29 @@ model OrganizationOnUser {
 }
 
 model Organization {
-    id       String               @id @default(cuid())
-    slug     String               @unique
-    joinCode String               @unique
-    private  Boolean
-    name     String
-    users    OrganizationOnUser[]
-    preznts  Preznt[]
+    id           String               @id @default(cuid())
+    headerUrl    String
+    slug         String               @unique
+    joinCode     String               @unique
+    private      Boolean
+    name         String
+    users        OrganizationOnUser[]
+    preznts      Preznt[]
+    attributes   UserAttribute[]
+
+    signUpFormTitle String?
+    signUpFields    SignUpField[]
 }
 
 model UserAttribute {
-    name         String
-    value        Float
-    userId       String
-    user         OrganizationOnUser? @relation(fields: [userId], references: [id])
+    name           String
+    value          String
+    organizationId String
+    organization   Organization        @relation(fields: [organizationId], references: [id])
+    userId         String
+    user           OrganizationOnUser? @relation(fields: [userId, organizationId], references: [userId, organizationId])
 
-    @@unique([userId, name])
+    @@unique([organizationId, userId, name])
 }
 
 model UserAttributeAction {
@@ -118,10 +123,39 @@ model Preznt {
     creator   User     @relation(name: "CreatedPreznts", fields: [creatorId], references: [id])
 
     organizationId String
-    organization   Organization         @relation(fields: [organizationId], references: [id])
-    redeemedBy     User[]               @relation("RedeemedPreznts")
+    organization   Organization   @relation(fields: [organizationId], references: [id])
+    redeemedBy     PrezntOnUser[]
 
     @@unique([code, organizationId])
+}
+
+model PrezntOnUser {
+    prezntId   String
+    preznt     Preznt   @relation(fields: [prezntId], references: [id])
+    userId     String
+    user       User     @relation(fields: [userId], references: [id])
+    redeemedAt DateTime @default(now())
+
+    @@unique([prezntId, userId])
+}
+
+model SignUpField {
+    id             String       @id @default(cuid())
+    organizationId String
+    organization   Organization @relation(fields: [organizationId], references: [id])
+
+    order       Int
+    attribute   String
+    name        String
+    description String
+
+    type SignUpFieldType
+    meta Json
+
+    @@index([organizationId, order])
+    @@unique([organizationId, attribute])
+    // disallow users from other organizations to write to organizations they dont own
+    @@unique([organizationId, id])
 }
 
 enum KeyValueAction {
@@ -136,3 +170,11 @@ enum OrganizationStatus {
     MEMBER
 }
 
+enum SignUpFieldType {
+    NONE // used for justy displaying text, has no input
+    TEXT
+    EMAIL
+    NUMBER
+    SCALE
+    CHECKBOXES
+}

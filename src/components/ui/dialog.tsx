@@ -20,13 +20,13 @@ export const DialogWrapper: React.FC<
         leaveFrom="opacity-100"
         leaveTo="opacity-0"
       >
-        <div className="fixed inset-0 bg-black bg-opacity-50" />
+        <div className="fixed inset-0 bg-black bg-opacity-50 md:backdrop-blur-sm z-20" />
       </Transition.Child>
 
-      <div className="fixed inset-0 overflow-y-auto">
-        <div className="flex min-h-full items-center justify-center md:m-4">
+      <div className="fixed inset-0 overflow-y-auto z-30">
+        <div className="flex min-h-full items-center justify-center">
           <Transition.Child as={Fragment} {...transitionClasses}>
-            <Dialog.Panel className="h-screen w-screen md:w-min md:h-min bg-background-secondary p-6 md:rounded-md border-accent-stroke border-2">
+            <Dialog.Panel className="h-full w-full md:w-min md:h-min bg-background-secondary p-6 md:rounded-md border-accent-stroke border-2">
               <FiX
                 onClick={props.onClose}
                 className="ml-auto cursor-pointer transform hover:scale-105 position: absolute right-4"

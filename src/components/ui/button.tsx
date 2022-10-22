@@ -13,7 +13,7 @@ const sizes = {
 const variants = {
   primary: "bg-accent-primary text-foreground-primary hover:bg-opacity-80",
   secondary:
-    "border-solid border-2 border-accent-stroke bg-accent-secondary text-white hover:bg-opacity-60",
+    "border-accent-stroke bg-accent-secondary text-white hover:bg-opacity-60",
   "outline-primary":
     "border-solid border-2 border-accent-primary hover:bg-accent-primary hover:text-foreground-primary",
   "outline-secondary":
@@ -90,24 +90,30 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         <button
           ref={ref}
           className={clsx(
-            `font-medium transition-all truncate flex items-center max-w-xs`,
+            `font-medium transition-all truncate flex justify-center items-center`,
             sizes[size],
             variants[variant],
             !disabled && !loading && `${variantHover[variant]} active:scale-95`,
-            disabled && "opacity-50 cursor-not-allowed",
+            (disabled || loading) && "opacity-50 cursor-not-allowed",
             className
           )}
           aria-disabled={disabled}
           role={href ? "link" : "button"}
           {...rest}
         >
-          <span>
-            {!loading && icon}
-            {loading && <Spinner />}
-          </span>
-          <span className={clsx((icon || loading) && rest.children && "ml-2")}>
-            {props.children}
-          </span>
+          {icon && <span>{icon}</span>}
+
+          <div
+            className={clsx(loading ? "opacity-100" : "opacity-0", "absolute")}
+          >
+            <Spinner />
+          </div>
+
+          {loading ? (
+            <span className="opacity-0">{props.children}</span>
+          ) : (
+            props.children
+          )}
         </button>
       </WrapperComponent>
     );

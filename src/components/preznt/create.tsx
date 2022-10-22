@@ -1,224 +1,172 @@
 import { useZodForm } from "@/lib/use-zod-form";
 import { trpc } from "@/utils/trpc";
 import { Text, DialogWrapper, Button, Heading } from "@/components/ui";
-import { createPrezntSchema } from "@/schemas/preznt";
+import { Action, createPrezntSchema } from "@/schemas/preznt";
 import { z } from "zod";
 import { PropsWithChildren, useCallback, useState } from "react";
 import { KeyValueAction } from "@prisma/client";
 import { useOrganization } from "@/lib/use-organization";
-import { useDisclosure } from "@/lib/use-disclosure";
-import { FiX } from "react-icons/fi";
+import { Disclosure, useDisclosure } from "@/lib/use-disclosure";
+import { FiPlus, FiX } from "react-icons/fi";
+import { HiSparkles } from "react-icons/hi";
+import { TinyButton } from "../ui/tiny-button";
+import { CreateAction } from "./create-action";
+import { ListActions } from "./list-actions";
+import { FormProvider, useFormContext } from "react-hook-form";
+import { InputField } from "../ui/input-field";
+import { Moment } from "moment";
+import moment from "moment";
 
-type Action = z.infer<typeof createPrezntSchema>["actions"][0];
-
-export const CreatePreznt: React.FC = () => {
+export const CreatePreznt: React.FC<Disclosure> = (modalDisclosure) => {
   const { id: organizationId } = useOrganization();
-  const {
-    handleSubmit,
-    register,
-    reset,
-    setValue,
-    getValues,
-    trigger,
-    formState: { errors },
-  } = useZodForm({
+  const form = useZodForm({
     schema: createPrezntSchema.omit({ organizationId: true }),
     defaultValues: {
       actions: [],
     },
   });
-  const { organization } = trpc.useContext();
-  const { mutateAsync } = trpc.preznt.create.useMutation();
-  const modalDisclosure = useDisclosure();
-
+  const { preznt } = trpc.useContext();
+  const { mutateAsync, isLoading } = trpc.preznt.create.useMutation();
+  const [stage, setStage] = useState<"general" | "actions">("general");
   const addAction = useCallback(
     (action: Action) => {
-      setValue("actions", [action, ...getValues("actions")]);
+      form.setValue("actions", [action, ...form.getValues("actions")]);
       // forces the form to rerender
-      trigger("actions");
+      form.trigger("actions");
     },
-    [getValues, setValue, trigger]
+    [form]
   );
 
   return (
-    <>
-      <Button onClick={modalDisclosure.onOpen}>Create Preznt</Button>
-      <DialogWrapper {...modalDisclosure}>
-        <div className="flex items-center">
-          <Heading level="h2" className="pb-2">
-            Create Preznt
-          </Heading>
-        </div>
+    <DialogWrapper
+      {...modalDisclosure}
+      onClose={() => {
+        form.reset();
+        setStage("general");
+        modalDisclosure.onClose();
+      }}
+    >
+      <FormProvider {...form}>
         <form
-          onSubmit={handleSubmit(async (data) => {
-            console.log(data);
-            await mutateAsync({
-              ...data,
-              organizationId,
-            });
-            organization.getAllPreznts.invalidate();
-            reset();
+          onSubmit={form.handleSubmit(async (data) => {
+            if (stage === "general") {
+              setStage("actions");
+            } else if (stage === "actions") {
+              await mutateAsync({
+                ...data,
+                organizationId,
+              });
+              await preznt.getPreznts.invalidate();
+
+              setStage("general");
+              modalDisclosure.onClose();
+              form.reset();
+            }
           })}
           className="md:w-screen md:max-w-2xl flex gap-2 flex-col"
         >
-          <label htmlFor="name" className="text-gray-100">
-            Name
-          </label>
-          <input
-            {...register("name")}
-            autoComplete="off"
-            id="name"
-            className="bg-neutral-800 px-3 py-2 text-gray-100 rounded"
-          />
-          <Text className="text-red-400">{errors.name?.message}</Text>
+          {stage === "general" && (
+            <>
+              <div className="flex items-center">
+                <Heading level="h2" className="pb-2">
+                  Create Preznt
+                </Heading>
+              </div>
 
-          <label htmlFor="expires" className="text-gray-100">
-            Expires
-          </label>
-          <input
-            {...register("expires", { valueAsDate: true })}
-            autoComplete="off"
-            type="date"
-            id="expires"
-            className="bg-neutral-800 px-3 py-2 text-gray-100 rounded"
-          />
-          <Text className="text-red-400">{errors.expires?.message}</Text>
+              <InputField.Text name="name" label="Name" />
 
-          <div>
-            <label htmlFor="main" className="text-gray-100 mr-3">
-              Show on calendar
-            </label>
-            <input
-              {...register("main")}
-              type="checkbox"
-              id="main"
-              className="scale-150"
-            />
-          </div>
+              <InputField.Date name="expires" label="Expires" />
+              <p className="mt-1 text-gray-400">
+                You&apos;ll be able to set the Preznt active or inactive after
+                this.
+              </p>
 
-          <Text className="text-red-400">{errors.main?.message}</Text>
+              <ExpiresSuggestions />
 
-          <div>
-            <label htmlFor="allow-join" className="text-gray-100 mr-3">
-              Allow users to join the organization using this Preznt
-            </label>
-            <input
-              {...register("allowJoin")}
-              type="checkbox"
-              id="allow-join"
-              className="scale-150"
-            />
-          </div>
-          <Text className="text-red-400">{errors.allowJoin?.message}</Text>
+              <hr />
 
-          <hr className="border-gray-800 my-2" />
+              <InputField.Checkbox
+                name="main"
+                label="Main Preznt of the day"
+                tip="Makes the Preznt green on the calendar for redeemer. Useful for daily attendance, etc."
+              />
+              <InputField.Checkbox
+                name="allowJoin"
+                label="Allow users to join organization"
+                tip="Allow users to join the organization from this Preznt, if they haven't already."
+              />
 
-          <Heading level="h2">Actions</Heading>
-          <CreateAction actions={getValues("actions")} addAction={addAction} />
+              <Button className="mt-4 text-center w-min" type="submit">
+                Next
+              </Button>
+            </>
+          )}
 
-          <Button type="submit" className="mt-4">
-            Create Preznt
-          </Button>
+          {stage === "actions" && (
+            <>
+              <Heading level="h2">Create Preznt: Actions</Heading>
+
+              <ListActions actions={form.getValues("actions")} />
+              <hr />
+              <CreateAction addAction={addAction} />
+
+              <div className="flex gap-2 mt-4">
+                <Button
+                  type="submit"
+                  className="text-center w-min"
+                  loading={isLoading}
+                >
+                  Create
+                </Button>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  className="text-center w-min"
+                  onClick={() => {
+                    setStage("general");
+                    form.trigger("expires");
+                  }}
+                >
+                  Go Back
+                </Button>
+              </div>
+            </>
+          )}
         </form>
-      </DialogWrapper>
-    </>
+      </FormProvider>
+    </DialogWrapper>
   );
 };
 
-const CreateAction: React.FC<{
-  actions: Action[];
-  addAction: (action: Action) => void;
-}> = ({ actions, addAction }) => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useZodForm({
-    schema: z.object({
-      attribute: z.string().min(1),
-      action: z.nativeEnum(KeyValueAction),
-      value: z.number(),
-      defaultValue: z.number(),
-    }),
-    defaultValues: {
-      defaultValue: 0,
-      value: 0,
+const suggestionClasses =
+  "bg-neutral-800 px-3 py-0.5 rounded hover:bg-neutral-700 cursor-pointer transition-all hover:scale-105";
+
+const ExpiresSuggestions: React.FC = () => {
+  const form = useFormContext();
+
+  const offset = useCallback(
+    (amount: number, unit: moment.unitOfTime.DurationConstructor) => {
+      return () => {
+        form.setValue("expires", moment().add(amount, unit).toDate());
+      };
     },
-  });
+    [form]
+  );
 
-  // this cant be a form since a <form> inside a <form> is invalid DOM
   return (
-    <div className="flex flex-col">
-      {actions.map(({ attribute, action, value, defaultValue }, i) => (
-        <Text className="mt-2" key={i}>
-          <DarkBg>{action}</DarkBg> <DarkBg>{attribute}</DarkBg> by{" "}
-          <DarkBg>{value}</DarkBg>, defaulting to{" "}
-          <DarkBg>{defaultValue}</DarkBg>
-        </Text>
-      ))}
+    <div className="flex gap-2 items-center flex-wrap">
+      <HiSparkles size="20" className="text-yellow-200" />
 
-      <hr className="border-gray-800 my-4" />
-
-      <div className="flex gap-2 items-center flex-wrap">
-        <select
-          id="action"
-          className="bg-neutral-800 px-3 py-3 text-gray-100 rounded"
-          {...register("action")}
-        >
-          <option>INCREMENT</option>
-          <option>DECREMENT</option>
-          <option>SET</option>
-        </select>
-
-        <input
-          placeholder="Attribute"
-          id="attribute"
-          className="bg-neutral-800 px-3 py-2 text-gray-100 rounded font-mono w-32"
-          {...register("attribute")}
-        />
-
-        <label htmlFor="value" className="text-gray-100 mr-1">
-          by
-        </label>
-        <input
-          id="value"
-          type="number"
-          className="bg-neutral-800 px-3 py-2 text-gray-100 rounded w-24"
-          {...register("value", { valueAsNumber: true })}
-        />
-
-        <label htmlFor="default-value" className="text-gray-100 mr-1">
-          or default to
-        </label>
-        <input
-          id="default-value"
-          type="number"
-          className="bg-neutral-800 px-3 py-2 text-gray-100 rounded w-24"
-          {...register("defaultValue", { valueAsNumber: true })}
-        />
-      </div>
-
-      {Object.values(errors).map((err) => (
-        <Text key={err.ref?.name} className="text-red-400">
-          {err.ref?.name}: {err.message}
-        </Text>
-      ))}
-      <Button
-        className="w-min mt-3"
-        variant="outline-secondary"
-        type="button"
-        onClick={handleSubmit((data) => {
-          addAction(data);
-          reset();
-        })}
-      >
-        Add Action
-      </Button>
+      <p>Suggestions: </p>
+      <p className={suggestionClasses} onClick={offset(5, "minutes")}>
+        In 5 minutes
+      </p>
+      <p className={suggestionClasses} onClick={offset(30, "minutes")}>
+        In 30 minutes
+      </p>
+      <p className={suggestionClasses} onClick={offset(1, "hour")}>
+        In 1 hour
+      </p>
     </div>
   );
 };
-
-const DarkBg: React.FC<PropsWithChildren<unknown>> = ({ children }) => (
-  <span className="px-2 py-1 bg-gray-800 rounded">{children}</span>
-);
