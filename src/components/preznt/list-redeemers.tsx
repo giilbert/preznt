@@ -1,11 +1,11 @@
-import { Card, Heading } from "../ui";
-import Image from "next/image";
+import { Card } from "../ui";
 import { PrezntOnUser } from "@prisma/client";
 import moment from "moment";
 import { useOrganization } from "@/lib/use-organization";
 import Link from "next/link";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 
-type Redeemer = PrezntOnUser & {
+export type Redeemer = PrezntOnUser & {
   user: {
     name: string | null;
     image: string | null;
@@ -17,9 +17,10 @@ export const ListPrezntRedeemers: React.FC<{
   redeemers: Redeemer[];
 }> = ({ redeemers }) => {
   const organization = useOrganization();
+  const [ref] = useAutoAnimate<HTMLDivElement>();
 
   return (
-    <div>
+    <div className="flex flex-col gap-2" ref={ref}>
       {redeemers.map(({ user, ...redeemer }) => (
         <Link
           href={{

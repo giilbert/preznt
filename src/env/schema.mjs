@@ -15,6 +15,9 @@ export const serverSchema = z.object({
 
   GOOGLE_CLOUD_SERVICE_CREDENTIALS: z.string(),
   GOOGLE_CLOUD_STORAGE_BUCKET_NAME: z.string(),
+
+  PUSHER_APP_SECRET: z.string(),
+  PUSHER_APP_ID: z.string(),
 });
 
 /**
@@ -24,6 +27,8 @@ export const serverSchema = z.object({
  */
 export const clientSchema = z.object({
   // NEXT_PUBLIC_BAR: z.string(),
+  NEXT_PUBLIC_PUSHER_APP_KEY: z.string(),
+  NEXT_PUBLIC_PUSHER_CLUSTER: z.string(),
 });
 
 /**
@@ -33,5 +38,6 @@ export const clientSchema = z.object({
  * @type {{ [k in keyof z.infer<typeof clientSchema>]: z.infer<typeof clientSchema>[k] | undefined }}
  */
 export const clientEnv = {
-  // NEXT_PUBLIC_BAR: process.env.NEXT_PUBLIC_BAR,
+  NEXT_PUBLIC_PUSHER_APP_KEY: process.env.NEXT_PUBLIC_PUSHER_APP_KEY,
+  NEXT_PUBLIC_PUSHER_CLUSTER: process.env.NEXT_PUBLIC_PUSHER_CLUSTER,
 };

@@ -70,7 +70,7 @@ export const PrezntCalendars: React.FC<{
           <div key={`pad-${i}`} />
         ))}
         {range(daysInMonth).map((i) => {
-          const preznts = prezntsData.get(i);
+          const preznts = prezntsData.get(i + 1);
           const hasMainPreznt = preznts?.some(({ preznt }) => preznt.main);
 
           return (

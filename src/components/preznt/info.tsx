@@ -1,3 +1,4 @@
+import { env } from "@/env/client.mjs";
 import { useDisclosure } from "@/lib/use-disclosure";
 import { useOrganization } from "@/lib/use-organization";
 import { useWindow } from "@/lib/use-window";
@@ -5,13 +6,15 @@ import { trpc } from "@/utils/trpc";
 import { Transition } from "@headlessui/react";
 import moment from "moment";
 import { useRouter } from "next/router";
-import { Fragment, useState } from "react";
+import Pusher from "pusher-js";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { FiX } from "react-icons/fi";
 import { ImEnlarge } from "react-icons/im";
 import QRCode from "react-qr-code";
 import { Button, Heading } from "../ui";
 import { TinyButton } from "../ui/tiny-button";
-import { ListPrezntRedeemers } from "./list-redeemers";
+import { ListPrezntRedeemers, Redeemer } from "./list-redeemers";
+import * as superjson from "superjson";
 
 export const PrezntInfo: React.FC = () => {
   const router = useRouter();
@@ -20,17 +23,66 @@ export const PrezntInfo: React.FC = () => {
     status,
     data: preznt,
     error,
-  } = trpc.preznt.getByCode.useQuery(
-    {
-      code: router.query.code as string,
-      organizationId: organization.id,
-    },
-    { refetchOnWindowFocus: false }
-  );
+  } = trpc.preznt.getByCode.useQuery({
+    code: router.query.code as string,
+    organizationId: organization.id,
+  });
   const { isOpen, onOpen, onClose } = useDisclosure();
   const window = useWindow();
+  const pusher = useRef<Pusher>();
+  const [redeemers, setRedeemers] = useState<Map<string, Redeemer> | null>(
+    null
+  );
 
-  if (status === "loading") return <p>Loading..</p>;
+  useEffect(() => {
+    if (!preznt) return;
+    const map = new Map<string, Redeemer>();
+    preznt.redeemedBy.map((r) => map.set(r.userId, r));
+    setRedeemers(map);
+  }, [preznt]);
+
+  useEffect(() => {
+    if (!preznt) return;
+
+    if (!pusher.current) {
+      pusher.current = new Pusher(env.NEXT_PUBLIC_PUSHER_APP_KEY, {
+        cluster: "us2",
+        userAuthentication: {
+          endpoint: "/api/pusher/authenticate-user",
+          transport: "ajax",
+        },
+        channelAuthorization: {
+          endpoint: "/api/pusher/authenticate-channel",
+          transport: "ajax",
+        },
+      });
+      pusher.current.connect();
+
+      const channel = pusher.current.subscribe(`private-preznt-${preznt.id}`);
+      channel.bind("redeemerAdd", (data: { raw: string }) => {
+        const redeemer = superjson.parse<Redeemer>(data.raw);
+        setRedeemers((redeemers) => {
+          const newMap = cloneMap(redeemers || new Map());
+          newMap.set(redeemer.userId, redeemer);
+          return newMap;
+        });
+      });
+    }
+
+    return () => {
+      pusher.current?.unbind_all();
+    };
+  }, [preznt]);
+
+  const redeemersArray = useMemo(
+    () =>
+      Array.from((redeemers || new Map()).values())
+        .slice(0, 50)
+        .sort((a, b) => a.redeemedAt.getTime() - b.redeemedAt.getTime()),
+    [redeemers]
+  );
+
+  if (status === "loading" || !redeemers) return <p>Loading..</p>;
   if (status === "error") return <p>Error: {error.message}</p>;
 
   return (
@@ -46,7 +98,7 @@ export const PrezntInfo: React.FC = () => {
           leaveFrom="opacity-100 scale-100"
           leaveTo="opacity-0 scale-95"
         >
-          <div className="w-screen h-screen fixed top-0 left-0 bg-background-secondary">
+          <div className="w-screen h-screen fixed top-0 left-0 bg-background-secondary z-40">
             <div className="flex p-4 border-b border-b-neutral-700">
               <p className="text-2xl">{preznt.name}</p>
               <TinyButton onClick={onClose} className="ml-auto">
@@ -78,7 +130,7 @@ export const PrezntInfo: React.FC = () => {
 
               <div className="pt-8 w-full mr-4">
                 <Heading className="mb-2">Redeemed by</Heading>
-                <ListPrezntRedeemers redeemers={preznt.redeemedBy} />
+                <ListPrezntRedeemers redeemers={redeemersArray} />
               </div>
             </div>
           </div>
@@ -109,8 +161,15 @@ export const PrezntInfo: React.FC = () => {
 
       <div className="w-full">
         <Heading className="mb-2">Redeemed by</Heading>
-        <ListPrezntRedeemers redeemers={preznt.redeemedBy} />
+        <ListPrezntRedeemers redeemers={redeemersArray} />
       </div>
     </div>
   );
 };
+
+// i am worried about performance...
+function cloneMap<K, V>(old: Map<K, V>): Map<K, V> {
+  const newMap = new Map<K, V>();
+  old.forEach((v, k) => newMap.set(k, v));
+  return newMap;
+}

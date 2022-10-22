@@ -1,5 +1,6 @@
 // prepare some bleach for your eyes!
 
+import { env } from "@/env/server.mjs";
 import { createPrezntSchema } from "@/schemas/preznt";
 import { enforceOrganizationAdmin } from "@/server/common/organization-perms";
 import { alphanumericNanoid } from "@/utils/alphanumeric-nanoid";
@@ -11,9 +12,12 @@ import {
 } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import moment from "moment";
+import Pusher from "pusher";
 import { z } from "zod";
 import { Context } from "../context";
 import { authedProcedure, t } from "../trpc";
+import * as superjson from "superjson";
+import { pusher } from "@/server/common/pusher";
 
 type CompletePrezntType = Preznt & { actions: UserAttributeAction[] } & (
     | {
@@ -182,6 +186,14 @@ export const prezntRouter = t.router({
           userId: ctx.user.id,
           prezntId: preznt.id,
         },
+      });
+
+      pusher.trigger(`private-preznt-${preznt.id}`, "redeemerAdd", {
+        raw: superjson.stringify({
+          userId: ctx.user.id,
+          redeemedAt: Date.now(),
+          user: ctx.user,
+        }),
       });
 
       return {
