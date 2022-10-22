@@ -368,4 +368,18 @@ export const prezntRouter = t.router({
         },
       });
     }),
+
+  delete: authedProcedure
+    .input(
+      z.object({
+        organizationId: z.string(),
+        code: z.string(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      await enforceOrganizationAdmin(ctx, input);
+      await ctx.prisma.preznt.delete({
+        where: { code_organizationId: input },
+      });
+    }),
 });

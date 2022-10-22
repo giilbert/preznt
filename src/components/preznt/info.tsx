@@ -8,13 +8,14 @@ import moment from "moment";
 import { useRouter } from "next/router";
 import Pusher from "pusher-js";
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
-import { FiX } from "react-icons/fi";
+import { FiTrash, FiX } from "react-icons/fi";
 import { ImEnlarge } from "react-icons/im";
 import QRCode from "react-qr-code";
 import { Button, Heading } from "../ui";
 import { TinyButton } from "../ui/tiny-button";
 import { ListPrezntRedeemers, Redeemer } from "./list-redeemers";
 import * as superjson from "superjson";
+import { ListActions } from "./list-actions";
 
 export const PrezntInfo: React.FC = () => {
   const router = useRouter();
@@ -27,6 +28,7 @@ export const PrezntInfo: React.FC = () => {
     code: router.query.code as string,
     organizationId: organization.id,
   });
+  const deletePreznt = trpc.preznt.delete.useMutation();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const window = useWindow();
   const pusher = useRef<Pusher>();
@@ -86,7 +88,7 @@ export const PrezntInfo: React.FC = () => {
   if (status === "error") return <p>Error: {error.message}</p>;
 
   return (
-    <div className="flex gap-4">
+    <div className="flex gap-8">
       {window && (
         <Transition
           as={Fragment}
@@ -107,8 +109,8 @@ export const PrezntInfo: React.FC = () => {
             </div>
 
             <div className="flex gap-8 h-full">
-              <div className="flex flex-col pt-24 items-center w-[36rem] border-r-neutral-700 border-r">
-                <div className="p-4 bg-background-primary rounded">
+              <div className="flex flex-col pt-24 items-center w-[48rem] border-r-neutral-700 border-r">
+                <div className="p-4 rounded">
                   <QRCode
                     value={`${window.location.origin}/${
                       router.query.slug as string
@@ -126,6 +128,10 @@ export const PrezntInfo: React.FC = () => {
                     </div>
                   ))}
                 </div>
+
+                <p className="text-gray-300 mt-1">
+                  Scan the QR code or enter in the code above
+                </p>
               </div>
 
               <div className="pt-8 w-full mr-4">
@@ -137,13 +143,31 @@ export const PrezntInfo: React.FC = () => {
         </Transition>
       )}
 
-      <div className="w-[50rem] text-lg">
+      <div className="w-[64rem] text-lg">
         <div className="flex gap-2">
           <Heading level="h1">{preznt.name}</Heading>
+
+          <Button
+            onClick={async () => {
+              await deletePreznt
+                .mutateAsync({
+                  organizationId: organization.id,
+                  code: preznt.code,
+                })
+                .catch(() => 0)
+                .then(() => router.back());
+            }}
+            size="sm"
+            variant="danger"
+            className="ml-auto"
+            loading={deletePreznt.isLoading}
+          >
+            Delete
+          </Button>
           <Button
             onClick={onOpen}
             icon={<ImEnlarge />}
-            className="items-center gap-2 ml-auto"
+            className="items-center gap-2"
             size="sm"
             variant="secondary"
           >
@@ -157,6 +181,11 @@ export const PrezntInfo: React.FC = () => {
         <p>
           Code: <span className="font-mono">{preznt.code}</span>
         </p>
+
+        <hr />
+
+        <Heading>Actions: </Heading>
+        <ListActions actions={preznt.actions} />
       </div>
 
       <div className="w-full">

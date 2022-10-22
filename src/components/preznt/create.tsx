@@ -116,7 +116,7 @@ export const CreatePreznt: React.FC<Disclosure> = (modalDisclosure) => {
                   className="text-center w-min"
                   loading={isLoading}
                 >
-                  Submit
+                  Create
                 </Button>
                 <Button
                   type="button"

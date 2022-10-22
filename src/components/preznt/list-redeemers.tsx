@@ -21,6 +21,9 @@ export const ListPrezntRedeemers: React.FC<{
 
   return (
     <div className="flex flex-col gap-2" ref={ref}>
+      {redeemers.length === 0 && (
+        <p className="text-gray-300">No redeemers yet</p>
+      )}
       {redeemers.map(({ user, ...redeemer }) => (
         <Link
           href={{
