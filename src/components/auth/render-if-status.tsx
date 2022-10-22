@@ -1,8 +1,8 @@
 import { useOrganization } from "@/lib/use-organization";
-import { trpc } from "@/utils/trpc";
 import { OrganizationStatus } from "@prisma/client";
 
-const hierarchy: Record<OrganizationStatus, number> = {
+const hierarchy: Record<OrganizationStatus | "NONE", number> = {
+  NONE: -1,
   MEMBER: 0,
   ADMIN: 1,
   OWNER: 2,
