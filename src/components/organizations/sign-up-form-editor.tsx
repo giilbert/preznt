@@ -220,11 +220,10 @@ const Field: React.FC<{ field: SignUpFieldWithId }> = ({ field }) => {
           <QuestionInputField />
 
           <div className="flex items-center gap-2">
-            <p>Attribute</p>
+            <label className="w-32">Attribute Name</label>
             <input
               {...form.register("attribute")}
               className={clsx(inputClasses)}
-              placeholder="Name"
             />
           </div>
         </form>

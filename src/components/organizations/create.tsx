@@ -57,7 +57,11 @@ export const CreateOrganization: React.FC = () => {
                 aspectRatio="5/1"
               />
               <InputField.Text name="name" label="Organization name" />
-              <InputField.Text name="slug" label="Slug" />
+              <InputField.Text
+                name="slug"
+                label="Slug"
+                tip="You won't be able to change this after creating the organization."
+              />
               <InputField.Checkbox
                 name="private"
                 label="Private"

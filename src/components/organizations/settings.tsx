@@ -1,6 +1,9 @@
 import { useOrganization } from "@/lib/use-organization";
+import { useWindow } from "@/lib/use-window";
 import { trpc } from "@/utils/trpc";
 import { Tab } from "@headlessui/react";
+import Link from "next/link";
+import { Heading } from "../ui";
 import { ErrorMessage } from "../util/error-message";
 import { OrganizationSettingsEditor } from "./settings-editor";
 import { SignUpFormEditor } from "./sign-up-form-editor";
@@ -17,6 +20,7 @@ export const OrganizationSettings: React.FC = () => {
     trpc.organization.signUpForm.getAllFields.useQuery({
       organizationId: id,
     });
+  const window = useWindow();
 
   if (
     organizationQuery.status === "loading" ||
@@ -33,6 +37,8 @@ export const OrganizationSettings: React.FC = () => {
       />
     );
 
+  const organization = organizationQuery.data;
+
   return (
     <div className="md:flex gap-2">
       <Tab.Group>
@@ -46,10 +52,28 @@ export const OrganizationSettings: React.FC = () => {
 
         <Tab.Panels as="div" className="w-full">
           <Tab.Panel className="w-full">
-            <OrganizationSettingsEditor organization={organizationQuery.data} />
+            <Heading level="h1" className="mb-2">
+              Info
+            </Heading>
+
+            <p className="text-lg">
+              Invite Code:{" "}
+              <span className="font-mono">{organization.joinCode}</span>
+            </p>
+            <p className="text-lg">
+              Join Link:{" "}
+              <span className="text-blue-500">{`${window?.location.origin}/join/${organization.slug}`}</span>
+            </p>
+            <hr />
+            <OrganizationSettingsEditor organization={organization} />
           </Tab.Panel>
 
           <Tab.Panel>
+            <Heading>Sign Up Form</Heading>
+            <p>
+              Users will be prompted to enter these values when they sign up.
+            </p>
+            <hr />
             <SignUpFormEditor fields={signUpFormFieldQuery.data} />
           </Tab.Panel>
         </Tab.Panels>

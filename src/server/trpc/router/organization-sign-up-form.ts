@@ -80,16 +80,14 @@ export const organizationSignUpFormRouter = t.router({
         where: { organizationId: input.organizationId },
       });
 
-      const id = nanoid();
-
       await ctx.prisma.signUpField.create({
         data: {
           organizationId: input.organizationId,
           order,
-          attribute: `Untitled-${id}`,
+          attribute: `untitled-${order + 1}`,
           description: "",
           meta: {},
-          name: `Untitled-${id}`,
+          name: `Untitled ${order + 1}`,
           type: SignUpFieldType.TEXT,
         },
       });

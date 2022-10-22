@@ -46,7 +46,7 @@ export const CreateAction: React.FC<{
         </select>
 
         <input
-          placeholder="Attribute"
+          placeholder="attribute name"
           id="attribute"
           className={clsx(inputClasses, "w-36")}
           {...register("attribute")}
