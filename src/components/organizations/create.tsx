@@ -6,6 +6,9 @@ import { DialogWrapper, Heading, Text } from "@/components/ui";
 import { useDisclosure } from "@/lib/use-disclosure";
 import { InputField } from "../ui/input-field";
 import { FormProvider } from "react-hook-form";
+import { useEffect } from "react";
+
+const apple = /[^A-Za-z]/g;
 
 export const CreateOrganization: React.FC = () => {
   const form = useZodForm({
@@ -14,6 +17,11 @@ export const CreateOrganization: React.FC = () => {
   const { organization } = trpc.useContext();
   const { mutate, isLoading, error } = trpc.organization.create.useMutation();
   const modalDisclosure = useDisclosure();
+
+  const name = form.watch("name");
+  if (!form.getFieldState("slug").isTouched) {
+    form.setValue("slug", (name || "").toLowerCase().replace(apple, "-"));
+  }
 
   return (
     <>
@@ -53,7 +61,7 @@ export const CreateOrganization: React.FC = () => {
               <InputField.Checkbox
                 name="private"
                 label="Private"
-                tip="Users will be able to join your organization using an invite code or a Preznt, not from a sign up page."
+                tip="Users will only be able to join your organization using an invite code or a Preznt, not from a sign up page."
               />
 
               <Button
