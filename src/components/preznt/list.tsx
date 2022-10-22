@@ -89,6 +89,12 @@ export const PrezntList: React.FC = () => {
         </tbody>
       </table>
 
+      {preznts.length === 0 && (
+        <p className="text-gray-300 w-full text-center mb-8 text-md">
+          Wait are you waiting for? Create a preznt!
+        </p>
+      )}
+
       <div className="flex gap-4 justify-center items-center mb-4">
         <TinyButton onClick={() => page > 0 && setPage(page - 1)}>
           <FiArrowLeft />
