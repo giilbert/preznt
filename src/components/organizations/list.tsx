@@ -1,13 +1,18 @@
 import { trpc } from "@/utils/trpc";
 import Link from "next/link";
-import { FiChevronRight } from "react-icons/fi";
-import { Card, Text } from "../ui";
+import { Text } from "../ui";
+import { SkeletonCard } from "../ui/skeletons";
 import { PrezntCalendars } from "./preznts-calendar";
 
 export const OrganizationList: React.FC = () => {
   const organizationsQuery = trpc.organization.getAllJoined.useQuery();
 
-  if (organizationsQuery.status === "loading") return <Text>Loading</Text>;
+  if (organizationsQuery.status === "loading")
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <SkeletonCard amount={4} className="mt-4 h-80 m-0" />
+      </div>
+    );
   if (organizationsQuery.status === "error")
     return <Text>Error: {organizationsQuery.error.message}</Text>;
 

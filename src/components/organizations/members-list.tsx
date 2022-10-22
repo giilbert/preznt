@@ -15,7 +15,12 @@ export const OrganizationMembersList: React.FC = () => {
     organizationId: organization.id,
   });
 
-  if (status === "loading") return <SkeletonCard amount={10} />;
+  if (status === "loading")
+    return (
+      <div className="mt-1">
+        <SkeletonCard amount={8} className="h-[52.5px]" />
+      </div>
+    );
   if (status === "error") return <Text>Error: {error.message}</Text>;
 
   return (

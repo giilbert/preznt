@@ -33,7 +33,11 @@ export const PrezntList: React.FC = () => {
   const [ref] = useAutoAnimate<HTMLTableSectionElement>();
 
   if (prezntPagesStatus === "loading" || status === "loading")
-    return <SkeletonCard amount={5} />;
+    return (
+      <div className="mt-2">
+        <SkeletonCard amount={5} />
+      </div>
+    );
   if (prezntPagesStatus === "error" || status === "error")
     return <Text>Error: {error?.message || prezntPagesError?.message}</Text>;
 
