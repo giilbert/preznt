@@ -87,8 +87,8 @@ export const CreatePreznt: React.FC<Disclosure> = (modalDisclosure) => {
 
               <InputField.Checkbox
                 name="main"
-                label="Show on calendar"
-                tip="Shows the Preznt on the calendar for redeemer. Useful for daily attendance, etc."
+                label="Main Preznt of the day"
+                tip="Makes the Preznt green on the calendar for redeemer. Useful for daily attendance, etc."
               />
               <InputField.Checkbox
                 name="allowJoin"

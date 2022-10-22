@@ -36,7 +36,7 @@ export const MemberView: React.FC<{
 
   return (
     <div className="flex gap-4">
-      <div className="max-w-[32rem] flex flex-col gap-2 w-full">
+      <div className="max-w-[36rem] flex flex-col gap-2 w-full">
         <Card
           key={user.email}
           className="bg-neutral-800 w-full flex gap-4 items-center"

@@ -2,7 +2,6 @@ import { debounce } from "@/utils/debounce";
 import { trpc } from "@/utils/trpc";
 import { OrganizationOnUser, UserAttribute } from "@prisma/client";
 import clsx from "clsx";
-import { Heading } from "../ui";
 import { Spinner } from "../util/spinner";
 
 const tableCellClasses = "border-2 border-neutral-800 px-6 py-2";

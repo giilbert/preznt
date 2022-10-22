@@ -20,9 +20,21 @@ const Home: NextPage = () => {
           height={282.84 / 3}
           alt="Large preznt logo"
         />
+        <p className="text-gray-300 text-lg">
+          &quot;If I don&apos;t get into college it&apos;s on you Gilbert&quot;
+          -{" "}
+          <a
+            href="https://www.nirnath.tech/"
+            className="underline text-blue-500 hover:text-blue-400 transition-colors"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Nirjhor
+          </a>
+        </p>
 
-        <Button onClick={() => signIn("google")} className="w-24">
-          Sign in
+        <Button onClick={() => signIn("google")}>
+          Sign in to the super duper cool app
         </Button>
       </div>
     );

@@ -22,6 +22,8 @@ export const AttributesList: React.FC = () => {
   return (
     <div>
       <Heading>Attributes</Heading>
+      <span className="text-gray-300">Things about you</span>
+
       {attributes.length > 0 ? (
         <table className="w-full bg-background-secondary border-spacing-x-5 mt-2">
           <thead>

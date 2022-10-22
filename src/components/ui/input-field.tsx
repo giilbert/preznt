@@ -120,7 +120,7 @@ const Checkbox: React.FC<SimpleInputProps> = ({ name, label, tip }) => {
   return (
     <div className="my-1">
       <div
-        className="flex bg-neutral-800 py-2 rounded cursor-pointer select-none hover:bg-neutral-850 transition-colors"
+        className="flex bg-neutral-800 py-2 rounded cursor-pointer select-none hover:bg-neutral-850 transition-colors pr-2"
         onClick={() => {
           form.setValue(name, !form.getValues(name));
         }}
