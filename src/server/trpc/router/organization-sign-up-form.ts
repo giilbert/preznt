@@ -288,7 +288,8 @@ export const organizationSignUpFormRouter = t.router({
               organizationId: organization.id,
               userId: ctx.user.id,
               name: attribute,
-              value,
+              // TODO: more field types
+              value: value.toString(),
             },
           })
         ),

@@ -11,7 +11,7 @@ export const ErrorMessage: React.FC<{
   if (!error) return null;
 
   return (
-    <div className="bg-red-500 rounded py-2 px-4 flex items-center gap-4 mt-2">
+    <div className="bg-red-500 rounded py-2 px-4 flex items-center gap-4 m-2">
       <FiX size="28" />
       <div className="">
         <Heading level="h3">

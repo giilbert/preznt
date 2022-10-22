@@ -100,7 +100,7 @@ const OrganizationJoinPage: NextPage = () => {
   const organization = organizationQuery.data;
 
   // user has already signed up
-  if (organization.users.length !== 0) {
+  if (organization.users[0]?.hasSignedUp) {
     router.push(`/${router.query.slug as string}`);
   }
 
