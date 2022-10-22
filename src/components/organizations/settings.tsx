@@ -1,6 +1,7 @@
 import { useOrganization } from "@/lib/use-organization";
 import { trpc } from "@/utils/trpc";
 import { Tab } from "@headlessui/react";
+import { ErrorMessage } from "../util/error-message";
 import { OrganizationSettingsEditor } from "./settings-editor";
 import { SignUpFormEditor } from "./sign-up-form-editor";
 
@@ -27,14 +28,10 @@ export const OrganizationSettings: React.FC = () => {
     signUpFormFieldQuery.status === "error"
   )
     return (
-      <p>
-        Error:{" "}
-        {organizationQuery.error?.message ||
-          signUpFormFieldQuery.error?.message}
-      </p>
+      <ErrorMessage
+        error={organizationQuery.error || signUpFormFieldQuery.error}
+      />
     );
-
-  console.log("outer: ", signUpFormFieldQuery.data);
 
   return (
     <div className="md:flex gap-2">

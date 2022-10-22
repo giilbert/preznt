@@ -10,6 +10,7 @@ import { Card, Heading, Text } from "../ui";
 import { SkeletonCard } from "../ui/skeletons";
 import { TinyButton } from "../ui/tiny-button";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { ErrorMessage } from "../util/error-message";
 
 export const PrezntList: React.FC = () => {
   const router = useRouter();
@@ -39,7 +40,7 @@ export const PrezntList: React.FC = () => {
       </div>
     );
   if (prezntPagesStatus === "error" || status === "error")
-    return <Text>Error: {error?.message || prezntPagesError?.message}</Text>;
+    return <ErrorMessage error={error || prezntPagesError} />;
 
   return (
     <div>

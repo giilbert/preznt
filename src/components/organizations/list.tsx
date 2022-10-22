@@ -2,6 +2,7 @@ import { trpc } from "@/utils/trpc";
 import Link from "next/link";
 import { Text } from "../ui";
 import { SkeletonCard } from "../ui/skeletons";
+import { ErrorMessage } from "../util/error-message";
 import { PrezntCalendars } from "./preznts-calendar";
 
 export const OrganizationList: React.FC = () => {
@@ -14,7 +15,7 @@ export const OrganizationList: React.FC = () => {
       </div>
     );
   if (organizationsQuery.status === "error")
-    return <Text>Error: {organizationsQuery.error.message}</Text>;
+    return <ErrorMessage error={organizationsQuery.error} />;
 
   const { organizations, preznts } = organizationsQuery.data;
 

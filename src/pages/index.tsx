@@ -6,6 +6,7 @@ import { Button } from "@/components/ui";
 import { JoinOrganization } from "@/components/organizations/join";
 import { Layout } from "@/components/layout/layout";
 import Image from "next/image";
+import { ErrorMessage } from "@/components/util/error-message";
 
 const Home: NextPage = () => {
   const { status } = useSession();

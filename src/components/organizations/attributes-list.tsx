@@ -2,6 +2,7 @@ import { trpc } from "@/utils/trpc";
 import { Text, Heading } from "@/components/ui";
 import { useOrganization } from "@/lib/use-organization";
 import clsx from "clsx";
+import { ErrorMessage } from "../util/error-message";
 
 const tableCellClasses = "border-2 border-neutral-800 px-6 py-2";
 
@@ -17,7 +18,7 @@ export const AttributesList: React.FC = () => {
   });
 
   if (status === "loading") return <Text>Loading</Text>;
-  if (status === "error") return <Text>Error: {error.message}</Text>;
+  if (status === "error") return <ErrorMessage error={error} />;
 
   return (
     <div>

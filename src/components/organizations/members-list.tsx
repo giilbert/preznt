@@ -3,6 +3,7 @@ import { trpc } from "@/utils/trpc";
 import Link from "next/link";
 import { Card, Heading, Text } from "../ui";
 import { SkeletonCard } from "../ui/skeletons";
+import { ErrorMessage } from "../util/error-message";
 import { MemberStatus } from "./member-status";
 
 export const OrganizationMembersList: React.FC = () => {
@@ -21,7 +22,7 @@ export const OrganizationMembersList: React.FC = () => {
         <SkeletonCard amount={8} className="h-[52.5px]" />
       </div>
     );
-  if (status === "error") return <Text>Error: {error.message}</Text>;
+  if (status === "error") return <ErrorMessage error={error} />;
 
   return (
     <>

@@ -1,5 +1,6 @@
 import { UnauthedRedirect } from "@/components/auth/unauthed-redirect";
 import { Button, Heading } from "@/components/ui";
+import { ErrorMessage } from "@/components/util/error-message";
 import { fieldsToZod } from "@/lib/fields-to-zod";
 import { OrganizationContext, useOrganization } from "@/lib/use-organization";
 import { useZodForm } from "@/lib/use-zod-form";
@@ -95,7 +96,7 @@ const OrganizationJoinPage: NextPage = () => {
 
   if (organizationQuery.status === "loading") return <p>Loading</p>;
   if (organizationQuery.status === "error")
-    return <p>Error: {organizationQuery.error.message}</p>;
+    return <ErrorMessage error={organizationQuery.error} />;
   const organization = organizationQuery.data;
 
   // user has already signed up

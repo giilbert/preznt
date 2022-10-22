@@ -16,6 +16,7 @@ import { TinyButton } from "../ui/tiny-button";
 import { ListPrezntRedeemers, Redeemer } from "./list-redeemers";
 import * as superjson from "superjson";
 import { ListActions } from "./list-actions";
+import { ErrorMessage } from "../util/error-message";
 
 export const PrezntInfo: React.FC = () => {
   const router = useRouter();
@@ -85,7 +86,7 @@ export const PrezntInfo: React.FC = () => {
   );
 
   if (status === "loading" || !redeemers) return <p>Loading..</p>;
-  if (status === "error") return <p>Error: {error.message}</p>;
+  if (status === "error") return <ErrorMessage error={error} />;
 
   return (
     <div className="flex gap-8">
