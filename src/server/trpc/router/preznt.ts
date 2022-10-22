@@ -5,6 +5,7 @@ import { createPrezntSchema } from "@/schemas/preznt";
 import { enforceOrganizationAdmin } from "@/server/common/organization-perms";
 import { alphanumericNanoid } from "@/utils/alphanumeric-nanoid";
 import {
+  KeyValueAction,
   OrganizationStatus,
   Preznt,
   PrezntOnUser,
@@ -98,6 +99,12 @@ export const prezntRouter = t.router({
           message: "Preznt not found.",
         });
 
+      if (preznt.expires.getTime() < new Date().getTime())
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Preznt expired.",
+        });
+
       let organizationMember = await ctx.prisma.organizationOnUser.findUnique({
         where: {
           userId_organizationId: {
@@ -150,35 +157,55 @@ export const prezntRouter = t.router({
       });
 
       await ctx.prisma.$transaction(
-        preznt.actions.map(({ attribute, value: change, defaultValue }) => {
-          const before = parseFloat(
-            attributes.find((a) => a.name === attribute)?.value ||
-              defaultValue.toString()
-          );
+        preznt.actions.map(
+          ({ attribute, value: change, defaultValue, action }) => {
+            const before = parseFloat(
+              attributes.find((a) => a.name === attribute)?.value ||
+                defaultValue.toString()
+            );
 
-          return ctx.prisma.userAttribute.upsert({
-            where: {
-              organizationId_userId_name: {
+            if (isNaN(before))
+              throw new TRPCError({
+                code: "CONFLICT",
+                message: `Cannot convert ${attribute} to a number.`,
+              });
+
+            return ctx.prisma.userAttribute.upsert({
+              where: {
+                organizationId_userId_name: {
+                  // the above checks enforce that a user is part / has joined an organization
+                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                  userId: organizationMember!.userId,
+                  name: attribute,
+                  organizationId: preznt.organizationId,
+                },
+              },
+              update: {
+                value: String(
+                  action === "INCREMENT"
+                    ? change + before
+                    : action === "DECREMENT"
+                    ? before - change
+                    : change // SET action
+                ),
+              },
+              create: {
+                name: attribute,
+                value: String(
+                  action === "INCREMENT"
+                    ? change + defaultValue
+                    : action === "DECREMENT"
+                    ? defaultValue - change
+                    : change // SET action
+                ),
                 // the above checks enforce that a user is part / has joined an organization
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 userId: organizationMember!.userId,
-                name: attribute,
                 organizationId: preznt.organizationId,
               },
-            },
-            update: {
-              value: String(change + before),
-            },
-            create: {
-              name: attribute,
-              value: String(change + defaultValue),
-              // the above checks enforce that a user is part / has joined an organization
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              userId: organizationMember!.userId,
-              organizationId: preznt.organizationId,
-            },
-          });
-        })
+            });
+          }
+        )
       );
 
       await ctx.prisma.prezntOnUser.create({
