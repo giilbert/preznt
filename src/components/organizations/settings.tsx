@@ -2,7 +2,6 @@ import { useOrganization } from "@/lib/use-organization";
 import { useWindow } from "@/lib/use-window";
 import { trpc } from "@/utils/trpc";
 import { Tab } from "@headlessui/react";
-import Link from "next/link";
 import { Heading } from "../ui";
 import { ErrorMessage } from "../util/error-message";
 import { OrganizationSettingsEditor } from "./settings-editor";

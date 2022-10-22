@@ -21,12 +21,11 @@ import {
   restrictToVerticalAxis,
   restrictToWindowEdges,
 } from "@dnd-kit/modifiers";
-import { Button, Heading } from "../ui";
+import { Button } from "../ui";
 import { SignUpField, SignUpFieldType } from "@prisma/client";
 import { trpc } from "@/utils/trpc";
 import { FiMenu, FiPlus, FiTrash } from "react-icons/fi";
 import { useOrganization } from "@/lib/use-organization";
-import { TinyButton } from "../ui/tiny-button";
 import { Spinner } from "../util/spinner";
 import { useZodForm } from "@/lib/use-zod-form";
 import { editSignUpFieldSchema } from "@/schemas/organization";
@@ -35,12 +34,6 @@ import { QuestionInputField } from "./sign-up-form-field-editor";
 import clsx from "clsx";
 import { debounce } from "@/utils/debounce";
 import { z } from "zod";
-
-type Question = {
-  id: string;
-  name: string;
-  description: string;
-};
 
 type SignUpFieldWithId = SignUpField & { id: string };
 

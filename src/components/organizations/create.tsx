@@ -6,7 +6,6 @@ import { DialogWrapper, Heading, Text } from "@/components/ui";
 import { useDisclosure } from "@/lib/use-disclosure";
 import { InputField } from "../ui/input-field";
 import { FormProvider } from "react-hook-form";
-import { useEffect } from "react";
 
 const apple = /[^A-Za-z]/g;
 

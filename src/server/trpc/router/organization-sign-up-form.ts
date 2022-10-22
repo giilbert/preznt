@@ -3,7 +3,6 @@ import { editSignUpFieldSchema } from "@/schemas/organization";
 import { enforceOrganizationAdmin } from "@/server/common/organization-perms";
 import { OrganizationStatus, SignUpFieldType } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
-import { nanoid } from "nanoid";
 import { z } from "zod";
 import { authedProcedure, t } from "../trpc";
 
